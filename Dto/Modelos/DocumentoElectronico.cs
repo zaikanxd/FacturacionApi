@@ -113,6 +113,8 @@ namespace Dto.Modelos
 
         public string QRFirmado { get; set; }
 
+        public string Logo { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania

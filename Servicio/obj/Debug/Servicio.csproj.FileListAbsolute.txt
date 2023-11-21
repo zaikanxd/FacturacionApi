@@ -1,5 +1,0 @@
-C:\maspilcueta\comercio\FacturacionApi\Servicio\bin\Debug\Servicio.dll
-C:\maspilcueta\comercio\FacturacionApi\Servicio\bin\Debug\Servicio.pdb
-C:\maspilcueta\comercio\FacturacionApi\Servicio\obj\Debug\Servicio.csproj.CoreCompileInputs.cache
-C:\maspilcueta\comercio\FacturacionApi\Servicio\obj\Debug\Servicio.dll
-C:\maspilcueta\comercio\FacturacionApi\Servicio\obj\Debug\Servicio.pdb

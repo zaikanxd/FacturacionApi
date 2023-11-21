@@ -1,6 +1,0 @@
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\bin\Debug\ServiceReference.dll
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\bin\Debug\ServiceReference.pdb
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\obj\Debug\ServiceReference.csproj.AssemblyReference.cache
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\obj\Debug\ServiceReference.csproj.CoreCompileInputs.cache
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\obj\Debug\ServiceReference.dll
-C:\maspilcueta\comercio\FacturacionApi\ServiceReference\obj\Debug\ServiceReference.pdb

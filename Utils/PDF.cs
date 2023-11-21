@@ -7,7 +7,7 @@ namespace FacturacionApi.Utils
 {
     public static class PDF
     {
-        public static void GenerarPDF(DocumentoElectronico documento, byte[] CodigoQr)
+        public static void GenerarPDF(DocumentoElectronico documento)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "/Plantillas/";
             string pathHTMLTemp = path + "HTMLTemp.html";
@@ -16,8 +16,6 @@ namespace FacturacionApi.Utils
             
             string sHtml = GetStringOfFile(pathHTMLPlantilla);
             string resultHtml = "";
-
-            documento.QRFirmado = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(CodigoQr));
 
             resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
 

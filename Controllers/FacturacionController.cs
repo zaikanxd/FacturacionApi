@@ -82,7 +82,16 @@ namespace FacturacionApi.Controllers
                 string saveXMLPath = AppDomain.CurrentDomain.BaseDirectory + $"/ArchivosGenerados/FacturaXML/{documento.IdDocumento}.xml";
                 File.WriteAllBytes(saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
 
-                PDF.GenerarPDF(documento, Convert.FromBase64String(firmadoResponse.CodigoQr));
+                string logoPath = AppDomain.CurrentDomain.BaseDirectory + $"/Logos/{documento.Emisor.NroDocumento}/{documento.Emisor.NroDocumento}.png";
+
+                if (File.Exists(logoPath))
+                {
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(logoPath)));
+                }
+
+                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
+
+                PDF.GenerarPDF(documento);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {

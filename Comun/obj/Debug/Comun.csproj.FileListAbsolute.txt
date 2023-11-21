@@ -1,5 +1,0 @@
-C:\maspilcueta\comercio\FacturacionApi\Comun\bin\Debug\Comun.dll
-C:\maspilcueta\comercio\FacturacionApi\Comun\bin\Debug\Comun.pdb
-C:\maspilcueta\comercio\FacturacionApi\Comun\obj\Debug\Comun.csproj.CoreCompileInputs.cache
-C:\maspilcueta\comercio\FacturacionApi\Comun\obj\Debug\Comun.dll
-C:\maspilcueta\comercio\FacturacionApi\Comun\obj\Debug\Comun.pdb
