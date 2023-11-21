@@ -1,0 +1,9 @@
+C:\maspilcueta\comercio\FacturacionApi\Dto\bin\Debug\Dto.dll
+C:\maspilcueta\comercio\FacturacionApi\Dto\bin\Debug\Dto.pdb
+C:\maspilcueta\comercio\FacturacionApi\Dto\bin\Debug\Newtonsoft.Json.dll
+C:\maspilcueta\comercio\FacturacionApi\Dto\bin\Debug\Newtonsoft.Json.xml
+C:\maspilcueta\comercio\FacturacionApi\Dto\obj\Debug\Dto.csproj.AssemblyReference.cache
+C:\maspilcueta\comercio\FacturacionApi\Dto\obj\Debug\Dto.csproj.CoreCompileInputs.cache
+C:\maspilcueta\comercio\FacturacionApi\Dto\obj\Debug\Dto.csproj.CopyComplete
+C:\maspilcueta\comercio\FacturacionApi\Dto\obj\Debug\Dto.dll
+C:\maspilcueta\comercio\FacturacionApi\Dto\obj\Debug\Dto.pdb

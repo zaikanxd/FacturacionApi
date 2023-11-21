@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{029D75A5-1E98-420C-AC3F-24DCF249E138}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Estructuras</RootNamespace>
+    <AssemblyName>Estructuras</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommonAggregateComponents\AccountingSupplierParty.cs" />
+    <Compile Include="CommonAggregateComponents\AdditionalItemProperty.cs" />
+    <Compile Include="CommonAggregateComponents\AddressLine.cs" />
+    <Compile Include="CommonAggregateComponents\AgentParty.cs" />
+    <Compile Include="CommonAggregateComponents\AllowanceCharge.cs" />
+    <Compile Include="CommonAggregateComponents\AlternativeConditionPrice.cs" />
+    <Compile Include="CommonAggregateComponents\CarrierParty.cs" />
+    <Compile Include="CommonAggregateComponents\CommodityClassification.cs" />
+    <Compile Include="CommonAggregateComponents\CompanyId.cs" />
+    <Compile Include="CommonAggregateComponents\Consignment.cs" />
+    <Compile Include="CommonAggregateComponents\Country.cs" />
+    <Compile Include="CommonAggregateComponents\Delivery.cs" />
+    <Compile Include="CommonAggregateComponents\DeliveryTerms.cs" />
+    <Compile Include="CommonAggregateComponents\Despatch.cs" />
+    <Compile Include="CommonAggregateComponents\DespatchAddress.cs" />
+    <Compile Include="CommonAggregateComponents\DigitalSignatureAttachment.cs" />
+    <Compile Include="CommonAggregateComponents\ExternalReference.cs" />
+    <Compile Include="CommonAggregateComponents\InvoiceDocumentReference.cs" />
+    <Compile Include="CommonAggregateComponents\InvoiceLine.cs" />
+    <Compile Include="CommonAggregateComponents\Item.cs" />
+    <Compile Include="CommonAggregateComponents\LegalMonetaryTotal.cs" />
+    <Compile Include="CommonAggregateComponents\MeasurementDimension.cs" />
+    <Compile Include="CommonAggregateComponents\Party.cs" />
+    <Compile Include="CommonAggregateComponents\PartyIdentification.cs" />
+    <Compile Include="CommonAggregateComponents\PartyLegalEntity.cs" />
+    <Compile Include="CommonAggregateComponents\PartyName.cs" />
+    <Compile Include="CommonAggregateComponents\PartyTaxScheme.cs" />
+    <Compile Include="CommonAggregateComponents\PlannedPickupTransportEvent.cs" />
+    <Compile Include="CommonAggregateComponents\PostalAddress.cs" />
+    <Compile Include="CommonAggregateComponents\Price.cs" />
+    <Compile Include="CommonAggregateComponents\PricingReference.cs" />
+    <Compile Include="CommonAggregateComponents\RegistrationAddress.cs" />
+    <Compile Include="CommonAggregateComponents\SellersItemIdentification.cs" />
+    <Compile Include="CommonAggregateComponents\Shipment.cs" />
+    <Compile Include="CommonAggregateComponents\ShipmentStage.cs" />
+    <Compile Include="CommonAggregateComponents\SignatoryParty.cs" />
+    <Compile Include="CommonAggregateComponents\SignatureCac.cs" />
+    <Compile Include="CommonAggregateComponents\StandardItemIdentification.cs" />
+    <Compile Include="CommonAggregateComponents\TaxCategory.cs" />
+    <Compile Include="CommonAggregateComponents\TaxScheme.cs" />
+    <Compile Include="CommonAggregateComponents\TaxSubtotal.cs" />
+    <Compile Include="CommonAggregateComponents\TaxTotal.cs" />
+    <Compile Include="CommonAggregateComponents\TransportEquipment.cs" />
+    <Compile Include="CommonAggregateComponents\TransportHandlingUnit.cs" />
+    <Compile Include="CommonAggregateComponents\UsabilityPeriod.cs" />
+    <Compile Include="CommonBasicComponents\InvoicedQuantity.cs" />
+    <Compile Include="CommonBasicComponents\PartyIdentificationID.cs" />
+    <Compile Include="CommonBasicComponents\PayableAmount.cs" />
+    <Compile Include="CommonExtensionComponents\ExtensionContent.cs" />
+    <Compile Include="CommonExtensionComponents\UBLExtension.cs" />
+    <Compile Include="CommonExtensionComponents\UBLExtensions.cs" />
+    <Compile Include="EstandarUbl\InfoCredits.cs" />
+    <Compile Include="EstandarUbl\Invoice.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SunatAggregateComponents\AdditionalInformation.cs" />
+    <Compile Include="SunatAggregateComponents\AdditionalMonetaryTotal.cs" />
+    <Compile Include="SunatAggregateComponents\AdditionalProperty.cs" />
+    <Compile Include="SunatAggregateComponents\BillingPayment.cs" />
+    <Compile Include="SunatAggregateComponents\SunatCosts.cs" />
+    <Compile Include="SunatAggregateComponents\SunatEmbededDespatchAdvice.cs" />
+    <Compile Include="SunatAggregateComponents\SunatRoadTransport.cs" />
+    <Compile Include="SunatAggregateComponents\SunatTransaction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Comun\Comun.csproj">
+      <Project>{74CA5EA0-C489-40C9-9D1E-EC481D8DEFF5}</Project>
+      <Name>Comun</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

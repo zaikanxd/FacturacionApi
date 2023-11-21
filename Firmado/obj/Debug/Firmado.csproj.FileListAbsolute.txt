@@ -1,0 +1,17 @@
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Firmado.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Firmado.pdb
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Comun.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Dto.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\System.Security.Cryptography.Algorithms.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\System.Security.Cryptography.Encoding.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\System.Security.Cryptography.Primitives.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\System.Security.Cryptography.X509Certificates.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Newtonsoft.Json.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Comun.pdb
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Dto.pdb
+C:\maspilcueta\comercio\FacturacionApi\Firmado\bin\Debug\Newtonsoft.Json.xml
+C:\maspilcueta\comercio\FacturacionApi\Firmado\obj\Debug\Firmado.csproj.AssemblyReference.cache
+C:\maspilcueta\comercio\FacturacionApi\Firmado\obj\Debug\Firmado.csproj.CoreCompileInputs.cache
+C:\maspilcueta\comercio\FacturacionApi\Firmado\obj\Debug\Firmado.csproj.CopyComplete
+C:\maspilcueta\comercio\FacturacionApi\Firmado\obj\Debug\Firmado.dll
+C:\maspilcueta\comercio\FacturacionApi\Firmado\obj\Debug\Firmado.pdb

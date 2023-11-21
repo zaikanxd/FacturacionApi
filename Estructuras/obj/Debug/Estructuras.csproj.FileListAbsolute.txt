@@ -1,0 +1,9 @@
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\bin\Debug\Estructuras.dll
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\bin\Debug\Estructuras.pdb
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\bin\Debug\Comun.dll
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\bin\Debug\Comun.pdb
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\obj\Debug\Estructuras.csproj.AssemblyReference.cache
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\obj\Debug\Estructuras.csproj.CoreCompileInputs.cache
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\obj\Debug\Estructuras.csproj.CopyComplete
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\obj\Debug\Estructuras.dll
+C:\maspilcueta\comercio\FacturacionApi\Estructuras\obj\Debug\Estructuras.pdb

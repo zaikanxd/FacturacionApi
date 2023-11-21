@@ -1,0 +1,13 @@
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\SOAP.dll
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\SOAP.pdb
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\Comun.dll
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\ServiceReference.dll
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\Servicio.dll
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\Comun.pdb
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\ServiceReference.pdb
+C:\maspilcueta\comercio\FacturacionApi\SOAP\bin\Debug\Servicio.pdb
+C:\maspilcueta\comercio\FacturacionApi\SOAP\obj\Debug\SOAP.csproj.AssemblyReference.cache
+C:\maspilcueta\comercio\FacturacionApi\SOAP\obj\Debug\SOAP.csproj.CoreCompileInputs.cache
+C:\maspilcueta\comercio\FacturacionApi\SOAP\obj\Debug\SOAP.csproj.CopyComplete
+C:\maspilcueta\comercio\FacturacionApi\SOAP\obj\Debug\SOAP.dll
+C:\maspilcueta\comercio\FacturacionApi\SOAP\obj\Debug\SOAP.pdb

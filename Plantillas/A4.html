@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        .contenedor {
+            width: 900px !important;
+            margin: auto;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        p {
+            font-size: 14px;
+            margin: 0px
+        }
+
+        table.tbproductos {
+            border-collapse: collapse;
+            border-spacing: 4px;
+        }
+
+            table.tbproductos thead tr th {
+                background-color: lightgrey;
+                padding: 10px 4px 10px 4px;
+                font-size: 14px;
+            }
+
+            table.tbproductos tbody tr td {
+                padding: 3px 4px;
+                font-size: 14px;
+            }
+
+        .td-item {
+            border-bottom: 2px solid #E8E8E8 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <!--<img src="./Logos/prueba.png" style="width: 250px;" />-->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_Peru_%281884%E2%80%931950%29.svg/2560px-Flag_of_Peru_%281884%E2%80%931950%29.svg.png"
+                         style="width: 250px; max-height: 100px;" />
+                </td>
+                <td style="text-align:center">
+                    <table style="margin-right:0;margin-left:auto">
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold; font-size: 20px;">RUC @Model.Emisor.NroDocumento</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold; font-size: 20px;">FACTURA</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold; font-size: 20px;">ELECTRÓNICA</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold; font-size: 20px;">@Model.IdDocumento</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <p class="title">@Model.Emisor.NombreLegal</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-size: 15px">@Model.Emisor.Direccion</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%">
+            <tr>
+                <td style="text-align:left">
+                    <table>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">DATOS DEL CLIENTE</p>
+                            </td>
+                            <td>
+                                <p></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">RUC</p>
+                            </td>
+                            <td>
+                                <p>: @Model.Receptor.NroDocumento</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">DENOMINACIÓN</p>
+                            </td>
+                            <td>
+                                <p>: @Model.Receptor.NombreLegal</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">DIRECCIÓN</p>
+                            </td>
+                            <td>
+                                <p>: @Model.Receptor.Direccion</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td style="text-align:left">
+                    <table>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">FECHA EMISIÓN</p>
+                            </td>
+                            <td>
+                                <p>: @Model.FechaEmision</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">FECHA DE VENC.</p>
+                            </td>
+                            <td>
+                                <p>: @Model.FechaVencimiento</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">MONEDA</p>
+                            </td>
+                            <td>
+                                <p>: @Model.Moneda</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <br />
+        <br />
+
+        <table class="tbproductos" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width:50px">CANT.</th>
+                    <th style="text-align: center; width:50px">UM</th>
+                    <th style="text-align: center; width:50px">CÓD</th>
+                    <th style="text-align: left;">DESCRIPCIÓN</th>
+                    <th style="text-align: center; width:60px">V/U</th>
+                    <th style="text-align: center; width:60px">P/U</th>
+                    <th style="text-align: right; width:60px">IMPORTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ foreach (var item in Model.Items) {
+                <tr>
+                    <td class="td-item">
+                        <p style="text-align: center;">@item.Cantidad</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: center;">@item.UnidadMedida</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: center;">@item.CodigoItem</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: left;">@item.Descripcion</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: left;">@item.PrecioUnitario</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: left;">@item.PrecioUnitario</p>
+                    </td>
+                    <td class="td-item">
+                        <p style="text-align: right;">@item.TotalVenta</p>
+                    </td>
+                </tr>
+                } }
+            </tbody>
+        </table>
+
+        <table class="tbproductos" style="width:100%">
+            <tbody>
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; text-align: right;">GRAVADA</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: center;">S/</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: right;">@Model.Gravadas</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; text-align: right;">IGV 18.00%</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: center;">S/</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: right;">@Model.TotalIgv</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; text-align: right;">TOTAL</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: center;">S/</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: right;">@Model.TotalVenta</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="padding-top: 15px"><b>IMPORTE EN LETRAS: </b>@Model.MontoEnLetras</p>
+
+        <br />
+        <img src="@Model.QRFirmado" width="250" height="250" />
+    </div>
+
+</body>
+
+</html>
