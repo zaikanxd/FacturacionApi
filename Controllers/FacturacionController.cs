@@ -49,7 +49,12 @@ namespace FacturacionApi.Controllers
 
                 // 2: FIRMAR XML
 
-                string pathCertificado = AppDomain.CurrentDomain.BaseDirectory + "/Certificados/certificado.pfx";
+                string pathCertificado = AppDomain.CurrentDomain.BaseDirectory + $"/Certificados/{documento.Emisor.NroDocumento}/{documento.Emisor.NroDocumento}.pfx";
+
+                if (!File.Exists(pathCertificado))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
 
                 var firmadoRequest = new FirmadoRequest
                 {
