@@ -198,7 +198,7 @@
                         <p style="text-align: left;">@item.PrecioUnitario</p>
                     </td>
                     <td class="td-item">
-                        <p style="text-align: left;">@item.PrecioUnitario</p>
+                        <p style="text-align: left;">@item.PrecioReferencial</p>
                     </td>
                     <td class="td-item">
                         <p style="text-align: right;">@item.TotalVenta</p>
@@ -210,6 +210,17 @@
 
         <table class="tbproductos" style="width:100%">
             <tbody>
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; text-align: right;">DESCUENTO</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: center;">S/</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: right;">@Model.DescuentoGlobal</p>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <p style="font-weight: bold; text-align: right;">GRAVADA</p>
