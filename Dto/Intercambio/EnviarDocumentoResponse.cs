@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Dto.Intercambio
+﻿namespace Dto.Intercambio
 {
     public class EnviarDocumentoResponse : RespuestaComunConArchivo
     {
@@ -15,5 +10,10 @@ namespace Dto.Intercambio
 
         public string NroTicketCdr { get; set; }
 
+        public string qrCode { get; set; }
+
+        public string pdfPath { get; set; }
+
+        public string xmlPath { get; set; }
     }
 }

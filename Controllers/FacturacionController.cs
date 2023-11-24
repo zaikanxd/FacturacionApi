@@ -49,9 +49,9 @@ namespace FacturacionApi.Controllers
 
                 // 2: FIRMAR XML
 
-                string pathCertificado = AppDomain.CurrentDomain.BaseDirectory + $"/Certificados/{documento.Emisor.NroDocumento}/{documento.Emisor.NroDocumento}.pfx";
+                string pathCertificado = AppSettings.pathCertificados + $"{documento.Emisor.NroDocumento}.pfx";
 
-                if (!File.Exists(pathCertificado))
+                if (!File.Exists(AppSettings.pathFile  + pathCertificado))
                 {
                     throw new Exception("La empresa no cuenta con certificado");
                 }
@@ -59,7 +59,7 @@ namespace FacturacionApi.Controllers
                 var firmadoRequest = new FirmadoRequest
                 {
                     TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
-                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(pathCertificado)),
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.pathFile + pathCertificado)),
                     PasswordCertificado = string.Empty,
                     ValoresQr = documentoResponse.ValoresParaQr
                 };
@@ -73,25 +73,36 @@ namespace FacturacionApi.Controllers
                 {
                     using (var mem = new MemoryStream(Convert.FromBase64String(firmadoResponse.CodigoQr)))
                     {
+                        string qrPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\QR\\";
+                        if (!Directory.Exists(AppSettings.pathFile + qrPath))
+                        {
+                            Directory.CreateDirectory(AppSettings.pathFile + qrPath);
+                        }
                         var imagen = Image.FromStream(mem);
-                        string saveQRPath = AppDomain.CurrentDomain.BaseDirectory + $"/ArchivosGenerados/QRs/{documento.IdDocumento}.png";
-                        imagen.Save(saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                        string saveQRPath = qrPath + $"{documento.IdDocumento}.png";
+                        imagen.Save(AppSettings.pathFile + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
                     }
                 }
 
-                string saveXMLPath = AppDomain.CurrentDomain.BaseDirectory + $"/ArchivosGenerados/FacturaXML/{documento.IdDocumento}.xml";
-                File.WriteAllBytes(saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
-
-                string logoPath = AppDomain.CurrentDomain.BaseDirectory + $"/Logos/{documento.Emisor.NroDocumento}/{documento.Emisor.NroDocumento}.png";
-
-                if (File.Exists(logoPath))
+                string xmlPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+                if (!Directory.Exists(AppSettings.pathFile + xmlPath))
                 {
-                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(logoPath)));
+                    Directory.CreateDirectory(AppSettings.pathFile + xmlPath);
+                }
+
+                string saveXMLPath = xmlPath + $"{documento.IdDocumento}.xml";
+                File.WriteAllBytes(AppSettings.pathFile + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+
+                string logoPath = AppSettings.pathCompanyLogo + $"{documento.Emisor.NroDocumento}.png";
+
+                if (File.Exists(AppSettings.pathFile + logoPath))
+                {
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.pathFile + logoPath)));
                 }
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                PDF.GenerarPDF(documento);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -136,9 +147,19 @@ namespace FacturacionApi.Controllers
                     // Quitamos la R y la extensión devueltas por el Servicio.
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
-                    string saveZIPPath = AppDomain.CurrentDomain.BaseDirectory + $"/ArchivosGenerados/TramaZipCdr/{documento.IdDocumento}.zip";
+                    string zipPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+                    if (!Directory.Exists(AppSettings.pathFile + zipPath))
+                    {
+                        Directory.CreateDirectory(AppSettings.pathFile + zipPath);
+                    }
 
-                    File.WriteAllBytes(saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+                    string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
+
+                    File.WriteAllBytes(AppSettings.pathFile + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                    enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
+                    enviarDocumentoResponse.xmlPath = saveXMLPath;
+                    enviarDocumentoResponse.pdfPath = pdfPath;
                 }
             }
             catch (Exception ex)

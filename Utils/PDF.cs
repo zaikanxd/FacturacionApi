@@ -5,11 +5,19 @@ using System.IO;
 
 namespace FacturacionApi.Utils
 {
+    public static class AppSettings
+    {
+        public static string pathFile = System.Configuration.ConfigurationManager.AppSettings["pathFile"];
+        public static string pathCE = System.Configuration.ConfigurationManager.AppSettings["pathCE"];
+        public static string pathCertificados = System.Configuration.ConfigurationManager.AppSettings["pathCertificados"];
+        public static string pathCompanyLogo = System.Configuration.ConfigurationManager.AppSettings["pathCompanyLogo"];
+    }
+    
     public static class PDF
     {
-        public static void GenerarPDF(DocumentoElectronico documento)
+        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "/Plantillas/";
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string pathHTMLTemp = path + "HTMLTemp.html";
 
             string pathHTMLPlantilla = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
@@ -21,8 +29,14 @@ namespace FacturacionApi.Utils
 
             File.WriteAllText(pathHTMLTemp, resultHtml);
 
-            string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "/wkhtmltopdf/wkhtmltopdf.exe";
-            string pathPDF = AppDomain.CurrentDomain.BaseDirectory + $"/ArchivosGenerados/PDFs/{documento.IdDocumento}.pdf";
+            string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+
+            string pdfPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\PDF\\";
+            if (!Directory.Exists(AppSettings.pathFile + pdfPath))
+            {
+                Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
+            }
+            string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
 
             ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
             oProcessStartInfo.UseShellExecute = false;
@@ -30,10 +44,10 @@ namespace FacturacionApi.Utils
 
             if (Formato.A4 == documento.formato)
             {
-                oProcessStartInfo.Arguments = $"{pathHTMLTemp}" + " " + $"{pathPDF}";
+                oProcessStartInfo.Arguments = $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
             } else
             {
-                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {160 + (documento.Items.Count * 15)}mm" + " " + $"{pathHTMLTemp}" + " " + $"{pathPDF}";
+                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {160 + (documento.Items.Count * 15)}mm" + " " + $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
             }
 
             using (Process oProcess = Process.Start(oProcessStartInfo))
@@ -42,6 +56,8 @@ namespace FacturacionApi.Utils
             }
 
             File.Delete(pathHTMLTemp);
+
+            return savePDFPath;
         }
 
         private static string GetStringOfFile(string pathFile)
