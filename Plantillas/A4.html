@@ -183,7 +183,7 @@
                 @{ foreach (var item in Model.Items) {
                 <tr>
                     <td class="td-item">
-                        <p style="text-align: center;">@item.Cantidad</p>
+                        <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
                     </td>
                     <td class="td-item">
                         <p style="text-align: center;">@item.UnidadMedida</p>
@@ -195,13 +195,13 @@
                         <p style="text-align: left;">@item.Descripcion</p>
                     </td>
                     <td class="td-item">
-                        <p style="text-align: left;">@item.PrecioUnitario</p>
+                        <p style="text-align: left;">@Math.Round(@item.PrecioUnitario, 2).ToString("0.00")</p>
                     </td>
                     <td class="td-item">
-                        <p style="text-align: left;">@item.PrecioReferencial</p>
+                        <p style="text-align: left;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
                     </td>
                     <td class="td-item">
-                        <p style="text-align: right;">@item.TotalVenta</p>
+                        <p style="text-align: right;">@Math.Round(@item.TotalVenta, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 } }
@@ -218,7 +218,7 @@
                         <p style="font-weight: bold; text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Model.DescuentoGlobal</p>
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.DescuentoGlobal, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 <tr>
@@ -229,7 +229,7 @@
                         <p style="font-weight: bold; text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Model.Gravadas</p>
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.Gravadas, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 <tr>
@@ -240,7 +240,7 @@
                         <p style="font-weight: bold; text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Model.TotalIgv</p>
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.TotalIgv, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 <tr>
@@ -251,7 +251,7 @@
                         <p style="font-weight: bold; text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Model.TotalVenta</p>
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.TotalVenta, 2).ToString("0.00")</p>
                     </td>
                 </tr>
             </tbody>
