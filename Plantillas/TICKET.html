@@ -36,12 +36,30 @@
         <p style="font-weight: bold; text-align: center;">@Model.Emisor.NombreLegal</p>
         <p style="text-align: center"> @Model.Emisor.Direccion </p>
         <p style="font-weight: bold; text-align: center;">RUC @Model.Emisor.NroDocumento</p>
+        @{
+        if (Model.TipoDocumento == "03")
+        {
         <p style="font-weight: bold; text-align: center;">BOLETA DE VENTA ELECTRÓNICA</p>
+        }
+        else
+        {
+        <p style="font-weight: bold; text-align: center;">FACTURA ELECTRÓNICA</p>
+        }
+        }
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
 
         <div style="padding: 10px 0px; text-align: start">
             <p> <b>ADQUIRIENTE</b> </p>
-            <p> DNI: @Model.Receptor.NroDocumento </p>
+            @{
+            if (Model.TipoDocumento == "01")
+            {
+            <p>RUC: @Model.Receptor.NroDocumento</p>
+            }
+            else
+            {
+            <p>DNI: @Model.Receptor.NroDocumento</p>
+            }
+            }
             <p> @Model.Receptor.NombreLegal </p>
             <p> <b>FECHA EMISIÓN:</b> @Model.FechaEmision </p>
             <p> <b>FECHA DE VENC:</b> @Model.FechaVencimiento </p>
@@ -86,6 +104,9 @@
 
         <table class="tbproductos" style="width:100%">
             <tbody>
+                @{
+                if (Model.DescuentoGlobal > 0)
+                {
                 <tr>
                     <td>
                         <p style="font-weight: bold; text-align: right;">DESCUENTO</p>
@@ -94,9 +115,11 @@
                         <p style="font-weight: bold; text-align: left;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.DescuentoGlobal, 2).ToString("0.00")</p>
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(Model.DescuentoGlobal, 2).ToString("0.00")</p>
                     </td>
                 </tr>
+                }
+                }
                 <tr>
                     <td>
                         <p style="font-weight: bold; text-align: right;">GRAVADA</p>
@@ -138,6 +161,13 @@
         </div>
 
         <p style="text-align: center; padding-top: 15px"><b>IMPORTE EN LETRAS: </b>@Model.MontoEnLetras</p>
+
+        @{
+        if (Model.TipoDocumento == "01" && !Model.Credito)
+        {
+        <p style="text-align: center; padding-top: 15px"><b>FORMA DE PAGO: </b>[CONTADO]</p>
+        }
+        }
 
         <div style="margin: auto; text-align: center;">
             <img src="@Model.QRFirmado" width="250" height="250" />
