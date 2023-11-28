@@ -219,7 +219,7 @@
                         <p style="text-align: left;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
                     </td>
                     <td class="td-item">
-                        <p style="text-align: right;">@Math.Round(@item.TotalVenta, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 } }
