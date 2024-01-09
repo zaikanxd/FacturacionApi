@@ -16,6 +16,7 @@ namespace FacturacionApi.Controllers
     [RoutePrefix("facturacion")]
     public class FacturacionController : ApiController
     {
+        //private const string UrlSunat = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
         private const string UrlSunat = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 
         [HttpPost, Route("facturar")]
@@ -56,11 +57,18 @@ namespace FacturacionApi.Controllers
                     throw new Exception("La empresa no cuenta con certificado");
                 }
 
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == documento.Emisor.NroDocumento);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
                 var firmadoRequest = new FirmadoRequest
                 {
                     TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
                     CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.pathFile + pathCertificado)),
-                    PasswordCertificado = string.Empty,
+                    PasswordCertificado = credencial.passwordCertificado,
                     ValoresQr = documentoResponse.ValoresParaQr
                 };
 
@@ -107,8 +115,8 @@ namespace FacturacionApi.Controllers
                 var documentoRequest = new EnviarDocumentoRequest
                 {
                     Ruc = documento.Emisor.NroDocumento,
-                    UsuarioSol = "MODDATOS",
-                    ClaveSol = "MODDATOS",
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
                     EndPointUrl = UrlSunat,
                     IdDocumento = documento.IdDocumento,
                     TipoDocumento = documento.TipoDocumento,

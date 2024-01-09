@@ -72,4 +72,26 @@ namespace FacturacionApi.Utils
             public const string TICKET = "TICKET";
         }
     }
+
+    public struct CredencialEmpresa
+    {
+        public static readonly Credencial[] credenciales = {
+            new Credencial("20603099126", "DUMBROPE", "gurklansi", "gurklansi206"),
+        };
+    }
+
+    public class Credencial
+    {
+        public string ruc { get; set; }
+        public string usuarioSol { get; set; }
+        public string claveSol { get; set; }
+        public string passwordCertificado { get; set; }
+        public Credencial(string ruc, string usuarioSol, string claveSol, string passwordCertificado)
+        {
+            this.ruc = ruc;
+            this.usuarioSol = usuarioSol;
+            this.claveSol = claveSol;
+            this.passwordCertificado = passwordCertificado;
+        }
+    }
 }
