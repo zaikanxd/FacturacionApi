@@ -204,6 +204,7 @@
     <Content Include="Global.asax" />
     <Content Include="Plantillas\A4.html" />
     <Content Include="Plantillas\TICKET.html" />
+    <Content Include="Plantillas\TICKET_SIN_VALOR_FISCAL.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

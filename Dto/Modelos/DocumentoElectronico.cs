@@ -115,6 +115,12 @@ namespace Dto.Modelos
 
         public string Logo { get; set; }
 
+        public int CompanyId { get; set; }
+
+        public string StoreAddress { get; set; }
+
+        public string StorePhone { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania

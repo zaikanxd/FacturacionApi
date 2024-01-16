@@ -9,6 +9,7 @@ namespace FacturacionApi.Utils
     {
         public static string pathFile = System.Configuration.ConfigurationManager.AppSettings["pathFile"];
         public static string pathCE = System.Configuration.ConfigurationManager.AppSettings["pathCE"];
+        public static string pathCESVF = System.Configuration.ConfigurationManager.AppSettings["pathCESVF"];
         public static string pathCertificados = System.Configuration.ConfigurationManager.AppSettings["pathCertificados"];
         public static string pathCompanyLogo = System.Configuration.ConfigurationManager.AppSettings["pathCompanyLogo"];
     }
@@ -18,7 +19,7 @@ namespace FacturacionApi.Utils
         public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
-            string pathHTMLTemp = path + "HTMLTemp.html";
+            string pathHTMLTemp = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
 
             string pathHTMLPlantilla = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
             
@@ -60,6 +61,45 @@ namespace FacturacionApi.Utils
             return savePDFPath;
         }
 
+        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
+            string pathHTMLTemp = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
+
+            string pathHTMLPlantilla = path + "TICKET_SIN_VALOR_FISCAL.html";
+
+            string sHtml = GetStringOfFile(pathHTMLPlantilla);
+            string resultHtml = "";
+
+            resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
+
+            File.WriteAllText(pathHTMLTemp, resultHtml);
+
+            string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+
+            string pdfPath = AppSettings.pathCESVF + $"{documento.CompanyId}\\";
+            if (!Directory.Exists(AppSettings.pathFile + pdfPath))
+            {
+                Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
+            }
+            string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
+
+            ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
+            oProcessStartInfo.UseShellExecute = false;
+            oProcessStartInfo.FileName = pathWKHTMLTOPDF;
+            
+            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {80 + (documento.Items.Count * 15)}mm" + " " + $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
+
+            using (Process oProcess = Process.Start(oProcessStartInfo))
+            {
+                oProcess.WaitForExit();
+            }
+
+            File.Delete(pathHTMLTemp);
+
+            return savePDFPath;
+        }
+
         private static string GetStringOfFile(string pathFile)
         {
             string contenido = File.ReadAllText(pathFile);
@@ -76,7 +116,8 @@ namespace FacturacionApi.Utils
     public struct CredencialEmpresa
     {
         public static readonly Credencial[] credenciales = {
-            new Credencial("20603099126", "DUMBROPE", "gurklansi", "gurklansi206"),
+            new Credencial("20603099126", "MODDATOS", "MODDATOS", string.Empty),
+            //new Credencial("20603099126", "RM2024PE", "Gurklansi24", "gurklansi206"),
         };
     }
 

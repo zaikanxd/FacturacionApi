@@ -10,14 +10,15 @@ using System;
 using System.Drawing;
 using System.IO;
 using FacturacionApi.Utils;
+using Comun;
 
 namespace FacturacionApi.Controllers
 {
     [RoutePrefix("facturacion")]
     public class FacturacionController : ApiController
     {
-        //private const string UrlSunat = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
-        private const string UrlSunat = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
+        //private const string UrlSunatProd = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
+        private const string UrlSunatPrueba = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 
         [HttpPost, Route("facturar")]
         public async Task<EnviarDocumentoResponse> facturar([FromBody] DocumentoElectronico documento)
@@ -117,7 +118,7 @@ namespace FacturacionApi.Controllers
                     Ruc = documento.Emisor.NroDocumento,
                     UsuarioSol = credencial.usuarioSol,
                     ClaveSol = credencial.claveSol,
-                    EndPointUrl = UrlSunat,
+                    EndPointUrl = UrlSunatPrueba,
                     IdDocumento = documento.IdDocumento,
                     TipoDocumento = documento.TipoDocumento,
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
@@ -178,6 +179,32 @@ namespace FacturacionApi.Controllers
             }
 
             return enviarDocumentoResponse;
+        }
+
+        [HttpPost, Route("comprobanteSinValorFiscal")]
+        public async Task<ComprobanteSinValorFiscalResponse> comprobanteSinValorFiscal([FromBody] DocumentoElectronico documento)
+        {
+            var comprobanteSinValorFiscalResponse = new ComprobanteSinValorFiscalResponse();
+
+            try
+            {
+                DateTime tiempoActual = DateTime.Now;
+
+                documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
+
+                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento);
+
+                comprobanteSinValorFiscalResponse.Exito = true;
+                comprobanteSinValorFiscalResponse.pdfPath = pdfPath;
+            }
+            catch (Exception ex)
+            {
+                comprobanteSinValorFiscalResponse.MensajeError = ex.Message;
+                comprobanteSinValorFiscalResponse.Pila = ex.StackTrace;
+                comprobanteSinValorFiscalResponse.Exito = false;
+            }
+
+            return comprobanteSinValorFiscalResponse;
         }
     }
 }
