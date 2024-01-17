@@ -39,22 +39,21 @@
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
 
         <div style="padding: 10px 0px; text-align: start">
-            <p> <b>ADQUIRIENTE</b> </p>
             @{
-            if (Model.Receptor.NroDocumento != "")
+            if ((Model.Receptor.NroDocumento != "" && Model.Receptor.NroDocumento != null) 
+               || (Model.Receptor.NombreLegal != "" && Model.Receptor.NombreLegal != null))
             {
-                if (Model.TipoDocumento == "01")
-                {
-                    <p>RUC: @Model.Receptor.NroDocumento</p>
-                }
-                else
-                {
-                    <p>DNI: @Model.Receptor.NroDocumento</p>
-                }
+                <p> <b>ADQUIRIENTE</b> </p>
             }
             }
             @{
-            if (Model.Receptor.NombreLegal != "")
+            if (Model.Receptor.NroDocumento != "" && Model.Receptor.NroDocumento != null)
+            {
+                <p>DNI: @Model.Receptor.NroDocumento</p>
+            }
+            }
+            @{
+            if (Model.Receptor.NombreLegal != "" && Model.Receptor.NombreLegal != null)
             {
                 <p> @Model.Receptor.NombreLegal </p>
             }

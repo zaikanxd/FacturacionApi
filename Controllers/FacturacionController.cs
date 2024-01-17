@@ -182,14 +182,12 @@ namespace FacturacionApi.Controllers
         }
 
         [HttpPost, Route("comprobanteSinValorFiscal")]
-        public async Task<ComprobanteSinValorFiscalResponse> comprobanteSinValorFiscal([FromBody] DocumentoElectronico documento)
+        public ComprobanteSinValorFiscalResponse comprobanteSinValorFiscal([FromBody] DocumentoElectronico documento)
         {
             var comprobanteSinValorFiscalResponse = new ComprobanteSinValorFiscalResponse();
 
             try
             {
-                DateTime tiempoActual = DateTime.Now;
-
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
 
                 string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento);
