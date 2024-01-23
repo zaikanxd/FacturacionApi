@@ -190,7 +190,9 @@ namespace FacturacionApi.Controllers
             {
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
 
-                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento);
+                string folderPath = (documento.EsTicketConsumo) ? AppSettings.pathTCSVF : AppSettings.pathCESVF;
+
+                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento, folderPath);
 
                 comprobanteSinValorFiscalResponse.Exito = true;
                 comprobanteSinValorFiscalResponse.pdfPath = pdfPath;

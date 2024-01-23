@@ -10,6 +10,7 @@ namespace FacturacionApi.Utils
         public static string pathFile = System.Configuration.ConfigurationManager.AppSettings["pathFile"];
         public static string pathCE = System.Configuration.ConfigurationManager.AppSettings["pathCE"];
         public static string pathCESVF = System.Configuration.ConfigurationManager.AppSettings["pathCESVF"];
+        public static string pathTCSVF = System.Configuration.ConfigurationManager.AppSettings["pathTCSVF"];
         public static string pathCertificados = System.Configuration.ConfigurationManager.AppSettings["pathCertificados"];
         public static string pathCompanyLogo = System.Configuration.ConfigurationManager.AppSettings["pathCompanyLogo"];
     }
@@ -61,7 +62,7 @@ namespace FacturacionApi.Utils
             return savePDFPath;
         }
 
-        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento)
+        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento, string folderPath)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string pathHTMLTemp = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
@@ -77,7 +78,7 @@ namespace FacturacionApi.Utils
 
             string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
 
-            string pdfPath = AppSettings.pathCESVF + $"{documento.CompanyId}\\";
+            string pdfPath = folderPath + $"{documento.CompanyId}\\";
             if (!Directory.Exists(AppSettings.pathFile + pdfPath))
             {
                 Directory.CreateDirectory(AppSettings.pathFile + pdfPath);

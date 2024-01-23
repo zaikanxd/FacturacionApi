@@ -121,6 +121,8 @@ namespace Dto.Modelos
 
         public string StorePhone { get; set; }
 
+        public bool EsTicketConsumo { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
