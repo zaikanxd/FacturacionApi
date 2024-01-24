@@ -49,7 +49,14 @@
             @{
             if (Model.Receptor.NroDocumento != "" && Model.Receptor.NroDocumento != null)
             {
+                if (Model.TipoDocumento == "01")
+                {
+                <p>RUC: @Model.Receptor.NroDocumento</p>
+                }
+                else
+                {
                 <p>DNI: @Model.Receptor.NroDocumento</p>
+                }
             }
             }
             @{
