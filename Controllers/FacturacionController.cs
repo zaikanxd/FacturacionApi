@@ -38,6 +38,17 @@ namespace FacturacionApi.Controllers
 
             try
             {
+                string projectPath = Array.Find(Project.projects, e => e == documento.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                } 
+                else 
+                {
+                    projectPath = $"Proyectos\\{projectPath}\\";
+                }
+
                 // 1: GENERAR XML
 
                 var invoice = _documentoXml.Generar(documento);
@@ -82,7 +93,7 @@ namespace FacturacionApi.Controllers
                 {
                     using (var mem = new MemoryStream(Convert.FromBase64String(firmadoResponse.CodigoQr)))
                     {
-                        string qrPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\QR\\";
+                        string qrPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\QR\\";
                         if (!Directory.Exists(AppSettings.pathFile + qrPath))
                         {
                             Directory.CreateDirectory(AppSettings.pathFile + qrPath);
@@ -93,7 +104,7 @@ namespace FacturacionApi.Controllers
                     }
                 }
 
-                string xmlPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+                string xmlPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
                 if (!Directory.Exists(AppSettings.pathFile + xmlPath))
                 {
                     Directory.CreateDirectory(AppSettings.pathFile + xmlPath);
@@ -111,7 +122,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -156,7 +167,7 @@ namespace FacturacionApi.Controllers
                     // Quitamos la R y la extensión devueltas por el Servicio.
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
-                    string zipPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+                    string zipPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
                     if (!Directory.Exists(AppSettings.pathFile + zipPath))
                     {
                         Directory.CreateDirectory(AppSettings.pathFile + zipPath);
@@ -188,11 +199,20 @@ namespace FacturacionApi.Controllers
 
             try
             {
+                string projectPath = Array.Find(Project.projects, e => e == documento.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = $"Proyectos\\{projectPath}\\" + ((documento.EsTicketConsumo) ? AppSettings.pathTCSVF : AppSettings.pathCESVF);
+                }
+
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
 
-                string folderPath = (documento.EsTicketConsumo) ? AppSettings.pathTCSVF : AppSettings.pathCESVF;
-
-                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento, folderPath);
+                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento, projectPath);
 
                 comprobanteSinValorFiscalResponse.Exito = true;
                 comprobanteSinValorFiscalResponse.pdfPath = pdfPath;

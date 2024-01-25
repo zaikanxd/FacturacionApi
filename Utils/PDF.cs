@@ -17,7 +17,7 @@ namespace FacturacionApi.Utils
     
     public static class PDF
     {
-        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento)
+        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string pathHTMLTemp = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
@@ -33,7 +33,7 @@ namespace FacturacionApi.Utils
 
             string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
 
-            string pdfPath = AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\PDF\\";
+            string pdfPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\PDF\\";
             if (!Directory.Exists(AppSettings.pathFile + pdfPath))
             {
                 Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
@@ -62,7 +62,7 @@ namespace FacturacionApi.Utils
             return savePDFPath;
         }
 
-        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento, string folderPath)
+        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento, string projectPath)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string pathHTMLTemp = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
@@ -78,7 +78,7 @@ namespace FacturacionApi.Utils
 
             string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
 
-            string pdfPath = folderPath + $"{documento.CompanyId}\\";
+            string pdfPath = projectPath + $"{documento.CompanyId}\\";
             if (!Directory.Exists(AppSettings.pathFile + pdfPath))
             {
                 Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
@@ -120,6 +120,8 @@ namespace FacturacionApi.Utils
             new Credencial("20603099126", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("22222222222", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("88888888888", "MODDATOS", "MODDATOS", string.Empty),
+            new Credencial("20607076805", "MODDATOS", "MODDATOS", string.Empty),
+            new Credencial("20609800811", "MODDATOS", "MODDATOS", string.Empty),
             //new Credencial("20603099126", "RM2024PE", "Gurklansi24", "gurklansi206"),
         };
     }
@@ -137,5 +139,13 @@ namespace FacturacionApi.Utils
             this.claveSol = claveSol;
             this.passwordCertificado = passwordCertificado;
         }
+    }
+
+    public class Project
+    {
+        public static readonly string[] projects = {
+            "Creditos",
+            "Commerce",
+        };
     }
 }

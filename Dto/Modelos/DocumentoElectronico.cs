@@ -123,6 +123,8 @@ namespace Dto.Modelos
 
         public bool EsTicketConsumo { get; set; }
 
+        public string Project { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
