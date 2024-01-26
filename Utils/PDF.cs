@@ -7,12 +7,13 @@ namespace FacturacionApi.Utils
 {
     public static class AppSettings
     {
-        public static string pathFile = System.Configuration.ConfigurationManager.AppSettings["pathFile"];
-        public static string pathCE = System.Configuration.ConfigurationManager.AppSettings["pathCE"];
-        public static string pathCESVF = System.Configuration.ConfigurationManager.AppSettings["pathCESVF"];
-        public static string pathTCSVF = System.Configuration.ConfigurationManager.AppSettings["pathTCSVF"];
-        public static string pathCertificados = System.Configuration.ConfigurationManager.AppSettings["pathCertificados"];
-        public static string pathCompanyLogo = System.Configuration.ConfigurationManager.AppSettings["pathCompanyLogo"];
+        public static string filePath = System.Configuration.ConfigurationManager.AppSettings["filePath"];
+        public static string projectsPath = System.Configuration.ConfigurationManager.AppSettings["projectsPath"];
+        public static string cePath = System.Configuration.ConfigurationManager.AppSettings["cePath"];
+        public static string cesvfPath = System.Configuration.ConfigurationManager.AppSettings["cesvfPath"];
+        public static string tcsvfPath = System.Configuration.ConfigurationManager.AppSettings["tcsvfPath"];
+        public static string certificadosPath = System.Configuration.ConfigurationManager.AppSettings["certificadosPath"];
+        public static string companyLogoPath = System.Configuration.ConfigurationManager.AppSettings["companyLogoPath"];
     }
     
     public static class PDF
@@ -20,36 +21,36 @@ namespace FacturacionApi.Utils
         public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
-            string pathHTMLTemp = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
+            string HTMLTempPath = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
 
-            string pathHTMLPlantilla = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
+            string HTMLPlantillaPath = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
             
-            string sHtml = GetStringOfFile(pathHTMLPlantilla);
+            string sHtml = GetStringOfFile(HTMLPlantillaPath);
             string resultHtml = "";
 
             resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
 
-            File.WriteAllText(pathHTMLTemp, resultHtml);
+            File.WriteAllText(HTMLTempPath, resultHtml);
 
-            string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+            string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
 
-            string pdfPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\PDF\\";
-            if (!Directory.Exists(AppSettings.pathFile + pdfPath))
+            string pdfPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\PDF\\";
+            if (!Directory.Exists(AppSettings.filePath + pdfPath))
             {
-                Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
+                Directory.CreateDirectory(AppSettings.filePath + pdfPath);
             }
             string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
 
             ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
             oProcessStartInfo.UseShellExecute = false;
-            oProcessStartInfo.FileName = pathWKHTMLTOPDF;
+            oProcessStartInfo.FileName = WKHTMLTOPDFPath;
 
             if (Formato.A4 == documento.formato)
             {
-                oProcessStartInfo.Arguments = $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
+                oProcessStartInfo.Arguments = $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
             } else
             {
-                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {160 + (documento.Items.Count * 15)}mm" + " " + $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
+                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {160 + (documento.Items.Count * 15)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
             }
 
             using (Process oProcess = Process.Start(oProcessStartInfo))
@@ -57,7 +58,7 @@ namespace FacturacionApi.Utils
                 oProcess.WaitForExit();
             }
 
-            File.Delete(pathHTMLTemp);
+            File.Delete(HTMLTempPath);
 
             return savePDFPath;
         }
@@ -65,38 +66,38 @@ namespace FacturacionApi.Utils
         public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento, string projectPath)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
-            string pathHTMLTemp = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
+            string HTMLTempPath = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
 
-            string pathHTMLPlantilla = path + "TICKET_SIN_VALOR_FISCAL.html";
+            string HTMLPlantillaPath = path + "TICKET_SIN_VALOR_FISCAL.html";
 
-            string sHtml = GetStringOfFile(pathHTMLPlantilla);
+            string sHtml = GetStringOfFile(HTMLPlantillaPath);
             string resultHtml = "";
 
             resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
 
-            File.WriteAllText(pathHTMLTemp, resultHtml);
+            File.WriteAllText(HTMLTempPath, resultHtml);
 
-            string pathWKHTMLTOPDF = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+            string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
 
             string pdfPath = projectPath + $"{documento.CompanyId}\\";
-            if (!Directory.Exists(AppSettings.pathFile + pdfPath))
+            if (!Directory.Exists(AppSettings.filePath + pdfPath))
             {
-                Directory.CreateDirectory(AppSettings.pathFile + pdfPath);
+                Directory.CreateDirectory(AppSettings.filePath + pdfPath);
             }
             string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
 
             ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
             oProcessStartInfo.UseShellExecute = false;
-            oProcessStartInfo.FileName = pathWKHTMLTOPDF;
+            oProcessStartInfo.FileName = WKHTMLTOPDFPath;
             
-            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {80 + (documento.Items.Count * 15)}mm" + " " + $"{pathHTMLTemp}" + " " + $"{AppSettings.pathFile + savePDFPath}";
+            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {80 + (documento.Items.Count * 15)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
 
             using (Process oProcess = Process.Start(oProcessStartInfo))
             {
                 oProcess.WaitForExit();
             }
 
-            File.Delete(pathHTMLTemp);
+            File.Delete(HTMLTempPath);
 
             return savePDFPath;
         }

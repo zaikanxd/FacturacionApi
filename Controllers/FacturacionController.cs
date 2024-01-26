@@ -46,7 +46,7 @@ namespace FacturacionApi.Controllers
                 } 
                 else 
                 {
-                    projectPath = $"Proyectos\\{projectPath}\\";
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
                 // 1: GENERAR XML
@@ -62,9 +62,9 @@ namespace FacturacionApi.Controllers
 
                 // 2: FIRMAR XML
 
-                string pathCertificado = AppSettings.pathCertificados + $"{documento.Emisor.NroDocumento}.pfx";
+                string certificadoPath = AppSettings.certificadosPath + $"{documento.Emisor.NroDocumento}.pfx";
 
-                if (!File.Exists(AppSettings.pathFile  + pathCertificado))
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
                 {
                     throw new Exception("La empresa no cuenta con certificado");
                 }
@@ -79,7 +79,7 @@ namespace FacturacionApi.Controllers
                 var firmadoRequest = new FirmadoRequest
                 {
                     TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
-                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.pathFile + pathCertificado)),
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + certificadoPath)),
                     PasswordCertificado = credencial.passwordCertificado,
                     ValoresQr = documentoResponse.ValoresParaQr
                 };
@@ -93,31 +93,31 @@ namespace FacturacionApi.Controllers
                 {
                     using (var mem = new MemoryStream(Convert.FromBase64String(firmadoResponse.CodigoQr)))
                     {
-                        string qrPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\QR\\";
-                        if (!Directory.Exists(AppSettings.pathFile + qrPath))
+                        string qrPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\QR\\";
+                        if (!Directory.Exists(AppSettings.filePath + qrPath))
                         {
-                            Directory.CreateDirectory(AppSettings.pathFile + qrPath);
+                            Directory.CreateDirectory(AppSettings.filePath + qrPath);
                         }
                         var imagen = Image.FromStream(mem);
                         string saveQRPath = qrPath + $"{documento.IdDocumento}.png";
-                        imagen.Save(AppSettings.pathFile + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                        imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
                     }
                 }
 
-                string xmlPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
-                if (!Directory.Exists(AppSettings.pathFile + xmlPath))
+                string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+                if (!Directory.Exists(AppSettings.filePath + xmlPath))
                 {
-                    Directory.CreateDirectory(AppSettings.pathFile + xmlPath);
+                    Directory.CreateDirectory(AppSettings.filePath + xmlPath);
                 }
 
                 string saveXMLPath = xmlPath + $"{documento.IdDocumento}.xml";
-                File.WriteAllBytes(AppSettings.pathFile + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
 
-                string logoPath = AppSettings.pathCompanyLogo + $"{documento.Emisor.NroDocumento}.png";
+                string logoPath = AppSettings.companyLogoPath + $"{documento.Emisor.NroDocumento}.png";
 
-                if (File.Exists(AppSettings.pathFile + logoPath))
+                if (File.Exists(AppSettings.filePath + logoPath))
                 {
-                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.pathFile + logoPath)));
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + logoPath)));
                 }
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
@@ -167,15 +167,15 @@ namespace FacturacionApi.Controllers
                     // Quitamos la R y la extensión devueltas por el Servicio.
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
-                    string zipPath = projectPath + AppSettings.pathCE + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
-                    if (!Directory.Exists(AppSettings.pathFile + zipPath))
+                    string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+                    if (!Directory.Exists(AppSettings.filePath + zipPath))
                     {
-                        Directory.CreateDirectory(AppSettings.pathFile + zipPath);
+                        Directory.CreateDirectory(AppSettings.filePath + zipPath);
                     }
 
                     string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
 
-                    File.WriteAllBytes(AppSettings.pathFile + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
 
                     enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
                     enviarDocumentoResponse.xmlPath = saveXMLPath;
@@ -207,7 +207,7 @@ namespace FacturacionApi.Controllers
                 }
                 else
                 {
-                    projectPath = $"Proyectos\\{projectPath}\\" + ((documento.EsTicketConsumo) ? AppSettings.pathTCSVF : AppSettings.pathCESVF);
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\" + ((documento.EsTicketConsumo) ? AppSettings.tcsvfPath : AppSettings.cesvfPath);
                 }
 
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
