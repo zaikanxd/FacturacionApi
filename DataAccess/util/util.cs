@@ -7,6 +7,6 @@
 
     public static class AppSettings
     {
-        public static string cnxBillingBD = System.Configuration.ConfigurationManager.AppSettings["cnxBillingBD"];
+        public static string cnxBillingBD = System.Configuration.ConfigurationManager.ConnectionStrings["cnxBillingBD"].ConnectionString;
     }
 }

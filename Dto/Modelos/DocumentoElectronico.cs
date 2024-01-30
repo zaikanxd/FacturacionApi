@@ -125,6 +125,8 @@ namespace Dto.Modelos
 
         public string Project { get; set; }
 
+        public string UserCreated { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
