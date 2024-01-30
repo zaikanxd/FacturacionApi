@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacturacionApi", "FacturacionApi.csproj", "{466911F2-F2B8-40C0-BBE0-07590054E85C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{98F37976-8D83-4AD8-83D2-1EB751261906} = {98F37976-8D83-4AD8-83D2-1EB751261906}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estructuras", "Estructuras\Estructuras.csproj", "{029D75A5-1E98-420C-AC3F-24DCF249E138}"
 EndProject
@@ -20,6 +23,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOAP", "SOAP\SOAP.csproj", "{D56F4644-2261-477A-B14C-C9862ACDA37D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceReference", "ServiceReference\ServiceReference.csproj", "{0D4782DE-9BA7-4081-8D5B-6BC74F62F68D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessEntity", "BusinessEntity\BusinessEntity.csproj", "{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{98F37976-8D83-4AD8-83D2-1EB751261906}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6} = {8E846FA6-9C00-46DD-8E7A-9A163D751DD6}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceData", "InterfaceData\InterfaceData.csproj", "{D3EC6674-5450-49ED-AE61-855FD0804B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +77,22 @@ Global
 		{0D4782DE-9BA7-4081-8D5B-6BC74F62F68D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D4782DE-9BA7-4081-8D5B-6BC74F62F68D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D4782DE-9BA7-4081-8D5B-6BC74F62F68D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98F37976-8D83-4AD8-83D2-1EB751261906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F37976-8D83-4AD8-83D2-1EB751261906}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F37976-8D83-4AD8-83D2-1EB751261906}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F37976-8D83-4AD8-83D2-1EB751261906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3EC6674-5450-49ED-AE61-855FD0804B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3EC6674-5450-49ED-AE61-855FD0804B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3EC6674-5450-49ED-AE61-855FD0804B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3EC6674-5450-49ED-AE61-855FD0804B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,12 +11,19 @@ using System.Drawing;
 using System.IO;
 using FacturacionApi.Utils;
 using Comun;
+using BusinessLogic;
 
 namespace FacturacionApi.Controllers
 {
     [RoutePrefix("facturacion")]
     public class FacturacionController : ApiController
     {
+        private ElectronicReceiptBL _ElectronicReceiptBL;
+        private ElectronicReceiptBL oElectronicReceiptBL
+        {
+            get { return (_ElectronicReceiptBL == null ? _ElectronicReceiptBL = new ElectronicReceiptBL() : _ElectronicReceiptBL); }
+        }
+
         //private const string UrlSunatProd = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
         private const string UrlSunatPrueba = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 
@@ -181,6 +188,8 @@ namespace FacturacionApi.Controllers
                     enviarDocumentoResponse.xmlPath = saveXMLPath;
                     enviarDocumentoResponse.pdfPath = pdfPath;
                 }
+
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento);
             }
             catch (Exception ex)
             {

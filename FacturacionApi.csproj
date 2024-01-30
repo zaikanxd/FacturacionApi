@@ -239,6 +239,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="BusinessLogic\BusinessLogic.csproj">
+      <Project>{98F37976-8D83-4AD8-83D2-1EB751261906}</Project>
+      <Name>BusinessLogic</Name>
+    </ProjectReference>
     <ProjectReference Include="Comun\Comun.csproj">
       <Project>{74CA5EA0-C489-40C9-9D1E-EC481D8DEFF5}</Project>
       <Name>Comun</Name>

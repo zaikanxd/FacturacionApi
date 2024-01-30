@@ -14,8 +14,6 @@ namespace FacturacionApi.Utils
         public static string tcsvfPath = System.Configuration.ConfigurationManager.AppSettings["tcsvfPath"];
         public static string certificadosPath = System.Configuration.ConfigurationManager.AppSettings["certificadosPath"];
         public static string companyLogoPath = System.Configuration.ConfigurationManager.AppSettings["companyLogoPath"];
-
-        public static string cnxBillingBD = System.Configuration.ConfigurationManager.AppSettings["cnxBillingBD"];
     }
 
     public static class PDF
@@ -150,10 +148,5 @@ namespace FacturacionApi.Utils
             "Creditos",
             "Commerce",
         };
-    }
-
-    public static class GetNameStoreProcedure
-    {
-        public const string bi_ElectronicReceipt_Insert = "bi_ElectronicReceipt_Insert";
     }
 }
