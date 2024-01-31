@@ -12,6 +12,7 @@ using System.IO;
 using FacturacionApi.Utils;
 using Comun;
 using BusinessLogic;
+using BusinessEntity.Dtos;
 
 namespace FacturacionApi.Controllers
 {
@@ -234,6 +235,124 @@ namespace FacturacionApi.Controllers
             }
 
             return comprobanteSinValorFiscalResponse;
+        }
+
+
+        [HttpPost, Route("sendXMLtoSUNAT")]
+        public async Task<EnviarDocumentoResponse> sendXMLtoSUNAT([FromBody] SendXMLRequest sendXMLRequest)
+        {
+            // 1: GENERAR XML
+            IDocumentoXml _documentoXml = new FacturaXml();
+            ISerializador _serializador = new Serializador();
+            var documentoResponse = new DocumentoResponse();
+
+            // 2: FIRMAR XML
+            ICertificador _certificador = new Certificador();
+            var firmadoResponse = new FirmadoResponse();
+
+            // 3: ENVIAR DOCUMENTO
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarDocumentoResponse = new EnviarDocumentoResponse();
+
+            try
+            {
+                string projectPath = Array.Find(Project.projects, e => e == sendXMLRequest.project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
+                string certificadoPath = AppSettings.certificadosPath + $"{sendXMLRequest.senderDocument}.pfx";
+
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == sendXMLRequest.senderDocument);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
+                firmadoResponse.TramaXmlFirmado = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + sendXMLRequest.xmlPath));
+
+                string IdDocumento = sendXMLRequest.series.ToString() + "-" + sendXMLRequest.correlative.ToString("D6");
+
+                var documentoRequest = new EnviarDocumentoRequest
+                {
+                    Ruc = sendXMLRequest.senderDocument,
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
+                    EndPointUrl = UrlSunatPrueba,
+                    IdDocumento = IdDocumento,
+                    TipoDocumento = sendXMLRequest.receiptTypeId.ToString("D2"),
+                    TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
+                };
+
+                // --
+
+                // 3: ENVIAR DOCUMENTO
+
+                var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.TipoDocumento}-{documentoRequest.IdDocumento}";
+                var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = documentoRequest.Ruc,
+                    UserName = documentoRequest.UsuarioSol,
+                    Password = documentoRequest.ClaveSol,
+                    EndPointUrl = documentoRequest.EndPointUrl
+                });
+
+                var resultado = _servicioSunatDocumentos.EnviarDocumento(new DocumentoSunat
+                {
+                    TramaXml = tramaZip,
+                    NombreArchivo = $"{nombreArchivo}.zip"
+                });
+
+                if (!resultado.Exito)
+                {
+                    enviarDocumentoResponse.Exito = false;
+                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
+                }
+                else
+                {
+                    enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
+                    // Quitamos la R y la extensión devueltas por el Servicio.
+                    enviarDocumentoResponse.NombreArchivo = nombreArchivo;
+
+                    string zipPath = projectPath + AppSettings.cePath + $"{sendXMLRequest.senderDocument}\\TramaZipCdr\\";
+                    if (!Directory.Exists(AppSettings.filePath + zipPath))
+                    {
+                        Directory.CreateDirectory(AppSettings.filePath + zipPath);
+                    }
+
+                    string saveZIPPath = zipPath + $"{IdDocumento}.zip";
+
+                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                    enviarDocumentoResponse.qrCode = sendXMLRequest.qrCode;
+                    enviarDocumentoResponse.xmlPath = sendXMLRequest.xmlPath;
+                    enviarDocumentoResponse.pdfPath = sendXMLRequest.pdfPath;
+                }
+
+                // TODO Actualizar datos de facturacion
+            }
+            catch (Exception ex)
+            {
+                enviarDocumentoResponse.MensajeError = ex.Message;
+                enviarDocumentoResponse.Pila = ex.StackTrace;
+                enviarDocumentoResponse.Exito = false;
+            }
+
+            return enviarDocumentoResponse;
         }
     }
 }
