@@ -51,5 +51,21 @@ namespace DataAccess
                 db.ExecuteNonQuery(cmd);
             }
         }
+
+        public void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse)
+        {
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_Update))
+            {
+                cmd.CommandTimeout = 0;
+
+                db.AddInParameter(cmd, "id", DbType.Int32, id);
+                db.AddInParameter(cmd, "acceptedBySunat", DbType.Boolean, pEnviarDocumentoResponse.Exito);
+                db.AddInParameter(cmd, "sunatDescription", DbType.String, pEnviarDocumentoResponse.MensajeRespuesta);
+                db.AddInParameter(cmd, "errorMessage", DbType.String, pEnviarDocumentoResponse.MensajeError);
+                db.AddInParameter(cmd, "cdrTicketNumber", DbType.String, pEnviarDocumentoResponse.NroTicketCdr);
+
+                db.ExecuteNonQuery(cmd);
+            }
+        }
     }
 }

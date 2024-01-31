@@ -2,6 +2,7 @@
 {
     public class SendXMLRequest
     {
+        public int id { get; set; }
         public string project { get; set; }
         public string senderDocument { get; set; }
         public string series { get; set; }

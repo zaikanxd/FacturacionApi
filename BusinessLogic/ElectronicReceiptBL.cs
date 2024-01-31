@@ -17,5 +17,10 @@ namespace BusinessLogic
         {
             oElectronicReceiptDA.insertElectronicReceipt(pEnviarDocumentoResponse, documento);
         }
+
+        public void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse)
+        {
+            oElectronicReceiptDA.updateElectronicReceipt(id, pEnviarDocumentoResponse);
+        }
     }
 }

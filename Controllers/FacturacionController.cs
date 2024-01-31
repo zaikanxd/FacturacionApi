@@ -343,7 +343,7 @@ namespace FacturacionApi.Controllers
                     enviarDocumentoResponse.pdfPath = sendXMLRequest.pdfPath;
                 }
 
-                // TODO Actualizar datos de facturacion
+                oElectronicReceiptBL.updateElectronicReceipt(sendXMLRequest.id, enviarDocumentoResponse);
             }
             catch (Exception ex)
             {
