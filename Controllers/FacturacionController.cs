@@ -13,6 +13,7 @@ using FacturacionApi.Utils;
 using Comun;
 using BusinessLogic;
 using BusinessEntity.Dtos;
+using System.Diagnostics;
 
 namespace FacturacionApi.Controllers
 {
@@ -237,7 +238,6 @@ namespace FacturacionApi.Controllers
             return comprobanteSinValorFiscalResponse;
         }
 
-
         [HttpPost, Route("sendXMLtoSUNAT")]
         public async Task<EnviarDocumentoResponse> sendXMLtoSUNAT([FromBody] SendXMLRequest sendXMLRequest)
         {
@@ -353,6 +353,12 @@ namespace FacturacionApi.Controllers
             }
 
             return enviarDocumentoResponse;
+        }
+
+        [HttpPost, Route("sendAllPendingXMLtoSUNAT")]
+        public void sendAllPendingXMLtoSUNAT()
+        {
+            Debug.WriteLine("Pruebita");
         }
     }
 }
