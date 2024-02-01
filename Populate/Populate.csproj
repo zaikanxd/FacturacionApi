@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D3EC6674-5450-49ED-AE61-855FD0804B81}</ProjectGuid>
+    <ProjectGuid>{E1425300-E65A-4095-9C02-81D899C1B9F8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InterfaceData</RootNamespace>
-    <AssemblyName>InterfaceData</AssemblyName>
+    <RootNamespace>Populate</RootNamespace>
+    <AssemblyName>Populate</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,17 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IElectronicReceiptDA.cs" />
+    <Compile Include="ElectronicReceiptP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessEntity\BusinessEntity.csproj">
       <Project>{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}</Project>
       <Name>BusinessEntity</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dto\Dto.csproj">
-      <Project>{60D67E87-490F-4532-95FD-01013A856895}</Project>
-      <Name>Dto</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,7 @@
-﻿using Dto.Intercambio;
+﻿using BusinessEntity;
+using Dto.Intercambio;
 using Dto.Modelos;
+using System.Collections.Generic;
 
 namespace InterfaceData
 {
@@ -8,5 +10,7 @@ namespace InterfaceData
         void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento);
 
         void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse);
+
+        List<ElectronicReceiptBE> getListPending();
     }
 }

@@ -55,6 +55,10 @@
     <Compile Include="util\util.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BusinessEntity\BusinessEntity.csproj">
+      <Project>{40F84E5F-AF41-4E6E-803E-039A2ED00AAF}</Project>
+      <Name>BusinessEntity</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dto\Dto.csproj">
       <Project>{60D67E87-490F-4532-95FD-01013A856895}</Project>
       <Name>Dto</Name>
@@ -62,6 +66,10 @@
     <ProjectReference Include="..\InterfaceData\InterfaceData.csproj">
       <Project>{D3EC6674-5450-49ED-AE61-855FD0804B81}</Project>
       <Name>InterfaceData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Populate\Populate.csproj">
+      <Project>{E1425300-E65A-4095-9C02-81D899C1B9F8}</Project>
+      <Name>Populate</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

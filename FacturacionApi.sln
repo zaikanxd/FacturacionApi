@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceData", "InterfaceD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Populate", "Populate\Populate.csproj", "{E1425300-E65A-4095-9C02-81D899C1B9F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E846FA6-9C00-46DD-8E7A-9A163D751DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1425300-E65A-4095-9C02-81D899C1B9F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1425300-E65A-4095-9C02-81D899C1B9F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1425300-E65A-4095-9C02-81D899C1B9F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1425300-E65A-4095-9C02-81D899C1B9F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

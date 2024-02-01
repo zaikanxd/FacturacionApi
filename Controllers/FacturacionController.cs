@@ -14,6 +14,8 @@ using Comun;
 using BusinessLogic;
 using BusinessEntity.Dtos;
 using System.Diagnostics;
+using System.Collections.Generic;
+using BusinessEntity;
 
 namespace FacturacionApi.Controllers
 {
@@ -358,7 +360,23 @@ namespace FacturacionApi.Controllers
         [HttpPost, Route("sendAllPendingXMLtoSUNAT")]
         public void sendAllPendingXMLtoSUNAT()
         {
-            Debug.WriteLine("Pruebita");
+            List<ElectronicReceiptBE> list = oElectronicReceiptBL.getListPending();
+            if (list.Count > 0)
+            {
+                list.ForEach(async (electronicReceipt) => {
+                    SendXMLRequest sendXMLRequest = new SendXMLRequest();
+                    sendXMLRequest.id = electronicReceipt.id;
+                    sendXMLRequest.project = electronicReceipt.project;
+                    sendXMLRequest.senderDocument = electronicReceipt.senderDocument;
+                    sendXMLRequest.series = electronicReceipt.series;
+                    sendXMLRequest.correlative = electronicReceipt.correlative;
+                    sendXMLRequest.xmlPath = electronicReceipt.xmlLink;
+                    sendXMLRequest.pdfPath = electronicReceipt.pdfLink;
+                    sendXMLRequest.qrCode = electronicReceipt.qrCode;
+                    sendXMLRequest.receiptTypeId = electronicReceipt.receiptTypeId;
+                    await sendXMLtoSUNAT(sendXMLRequest);
+                });
+            }
         }
     }
 }

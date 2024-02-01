@@ -25,7 +25,7 @@ namespace FacturacionApi
 
             HangfireAspNet.Use(GetHangfireServers);
 
-            RecurringJob.AddOrUpdate<FacturacionController>("sendAllPendingXMLtoSUNAT", x => x.sendAllPendingXMLtoSUNAT(), "*/1 * * * *");
+            RecurringJob.AddOrUpdate<FacturacionController>("sendAllPendingXMLtoSUNAT", x => x.sendAllPendingXMLtoSUNAT(), "*/50 * * * *");
         }
     }
 }

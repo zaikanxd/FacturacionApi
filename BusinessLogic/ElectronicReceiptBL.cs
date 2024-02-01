@@ -1,7 +1,9 @@
-﻿using DataAccess;
+﻿using BusinessEntity;
+using DataAccess;
 using Dto.Intercambio;
 using Dto.Modelos;
 using InterfaceData;
+using System.Collections.Generic;
 
 namespace BusinessLogic
 {
@@ -21,6 +23,11 @@ namespace BusinessLogic
         public void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse)
         {
             oElectronicReceiptDA.updateElectronicReceipt(id, pEnviarDocumentoResponse);
+        }
+
+        public List<ElectronicReceiptBE> getListPending()
+        {
+            return oElectronicReceiptDA.getListPending();
         }
     }
 }

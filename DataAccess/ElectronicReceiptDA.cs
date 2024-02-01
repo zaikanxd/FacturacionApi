@@ -5,6 +5,11 @@ using Dto.Modelos;
 using InterfaceData;
 using System.Data.Common;
 using System.Data;
+using System.Collections.Generic;
+using BusinessEntity;
+using Populate;
+using System;
+using System.Diagnostics;
 
 namespace DataAccess
 {
@@ -66,6 +71,26 @@ namespace DataAccess
 
                 db.ExecuteNonQuery(cmd);
             }
+        }
+
+        public List<ElectronicReceiptBE> getListPending()
+        {
+            List<ElectronicReceiptBE> list = new List<ElectronicReceiptBE>();
+            
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_GetAllPending))
+            {
+                cmd.CommandTimeout = 0;
+
+                using (IDataReader dr = db.ExecuteReader(cmd))
+                {
+                    while (dr.Read())
+                    {
+                        list.Add(ElectronicReceiptP.getElectronicReceiptBE(dr));
+                    }
+                }
+            }
+
+            return list;
         }
     }
 }
