@@ -8,8 +8,6 @@ using System.Data;
 using System.Collections.Generic;
 using BusinessEntity;
 using Populate;
-using System;
-using System.Diagnostics;
 
 namespace DataAccess
 {
@@ -81,6 +79,26 @@ namespace DataAccess
             {
                 cmd.CommandTimeout = 0;
 
+                using (IDataReader dr = db.ExecuteReader(cmd))
+                {
+                    while (dr.Read())
+                    {
+                        list.Add(ElectronicReceiptP.getElectronicReceiptBE(dr));
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public List<ElectronicReceiptBE> getListBy(string filter = null)
+        {
+            List<ElectronicReceiptBE> list = new List<ElectronicReceiptBE>();
+
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_GetAllBy))
+            {
+                cmd.CommandTimeout = 0;
+                db.AddInParameter(cmd, "filter", DbType.String, filter);
                 using (IDataReader dr = db.ExecuteReader(cmd))
                 {
                     while (dr.Read())

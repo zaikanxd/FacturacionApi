@@ -12,5 +12,7 @@ namespace InterfaceData
         void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse);
 
         List<ElectronicReceiptBE> getListPending();
+
+        List<ElectronicReceiptBE> getListBy(string filter = null);
     }
 }

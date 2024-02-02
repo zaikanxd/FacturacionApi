@@ -5,6 +5,7 @@
         public const string bi_ElectronicReceipt_Insert = "bi_ElectronicReceipt_Insert";
         public const string bi_ElectronicReceipt_Update = "bi_ElectronicReceipt_Update";
         public const string bi_ElectronicReceipt_GetAllPending = "bi_ElectronicReceipt_GetAllPending";
+        public const string bi_ElectronicReceipt_GetAllBy = "bi_ElectronicReceipt_GetAllBy";
     }
 
     public static class AppSettings

@@ -29,5 +29,10 @@ namespace BusinessLogic
         {
             return oElectronicReceiptDA.getListPending();
         }
+
+        public List<ElectronicReceiptBE> getListBy(string filter = null)
+        {
+            return oElectronicReceiptDA.getListBy(filter);
+        }
     }
 }

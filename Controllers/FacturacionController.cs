@@ -13,7 +13,6 @@ using FacturacionApi.Utils;
 using Comun;
 using BusinessLogic;
 using BusinessEntity.Dtos;
-using System.Diagnostics;
 using System.Collections.Generic;
 using BusinessEntity;
 
@@ -377,6 +376,12 @@ namespace FacturacionApi.Controllers
                     await sendXMLtoSUNAT(sendXMLRequest);
                 });
             }
+        }
+
+        [HttpGet, Route("listBy")]
+        public IEnumerable<ElectronicReceiptBE> getListBy(string filter = null)
+        {
+            return oElectronicReceiptBL.getListBy(filter);
         }
     }
 }
