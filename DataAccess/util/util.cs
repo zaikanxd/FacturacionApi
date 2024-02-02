@@ -6,6 +6,7 @@
         public const string bi_ElectronicReceipt_Update = "bi_ElectronicReceipt_Update";
         public const string bi_ElectronicReceipt_GetAllPending = "bi_ElectronicReceipt_GetAllPending";
         public const string bi_ElectronicReceipt_GetAllBy = "bi_ElectronicReceipt_GetAllBy";
+        public const string bi_ElectronicReceipt_GetOne = "bi_ElectronicReceipt_GetOne";
     }
 
     public static class AppSettings

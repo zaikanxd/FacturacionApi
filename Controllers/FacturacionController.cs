@@ -383,5 +383,11 @@ namespace FacturacionApi.Controllers
         {
             return oElectronicReceiptBL.getListBy(filter);
         }
+
+        [HttpGet, Route("get")]
+        public ElectronicReceiptBE get(int id)
+        {
+            return oElectronicReceiptBL.get(id);
+        }
     }
 }

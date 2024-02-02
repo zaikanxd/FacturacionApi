@@ -14,5 +14,7 @@ namespace InterfaceData
         List<ElectronicReceiptBE> getListPending();
 
         List<ElectronicReceiptBE> getListBy(string filter = null);
+
+        ElectronicReceiptBE get(int id);
     }
 }

@@ -33,5 +33,9 @@ namespace BusinessEntity
         public string userCreated { get; set; }
         public DateTime creationDate { get; set; }
         public DateTime updateDate { get; set; }
+        //
+        public string senderDocumentType { get; set; }
+        public string receiptType { get; set; }
+        public string recipientDocumentType { get; set; }
     }
 }

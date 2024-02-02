@@ -83,7 +83,7 @@ namespace DataAccess
                 {
                     while (dr.Read())
                     {
-                        list.Add(ElectronicReceiptP.getElectronicReceiptBE(dr));
+                        list.Add(ElectronicReceiptP.getElectronicReceipt(dr));
                     }
                 }
             }
@@ -103,12 +103,32 @@ namespace DataAccess
                 {
                     while (dr.Read())
                     {
-                        list.Add(ElectronicReceiptP.getElectronicReceiptBE(dr));
+                        list.Add(ElectronicReceiptP.getElectronicReceipt(dr));
                     }
                 }
             }
 
             return list;
+        }
+
+        public ElectronicReceiptBE get(int id)
+        {
+            ElectronicReceiptBE oElectronicReceiptBE = new ElectronicReceiptBE();
+
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_GetOne))
+            {
+                cmd.CommandTimeout = 0;
+                db.AddInParameter(cmd, "id", DbType.Int32, id);
+                using (IDataReader dr = db.ExecuteReader(cmd))
+                {
+                    while (dr.Read())
+                    {
+                        oElectronicReceiptBE = ElectronicReceiptP.getElectronicReceipt(dr);
+                    }
+                }
+            }
+
+            return oElectronicReceiptBE;
         }
     }
 }

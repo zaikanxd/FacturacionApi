@@ -5,7 +5,7 @@ namespace Populate
 {
     public class ElectronicReceiptP
     {
-        public static ElectronicReceiptBE getElectronicReceiptBE(IDataReader dr)
+        public static ElectronicReceiptBE getElectronicReceipt(IDataReader dr)
         {
             ElectronicReceiptBE oElectronicReceiptBE = new ElectronicReceiptBE();
 
@@ -67,6 +67,13 @@ namespace Populate
                 oElectronicReceiptBE.creationDate = dr.GetDateTime(dr.GetOrdinal("creationDate"));
             if (!dr.IsDBNull(dr.GetOrdinal("updateDate")))
                 oElectronicReceiptBE.updateDate = dr.GetDateTime(dr.GetOrdinal("updateDate"));
+
+            if (!dr.IsDBNull(dr.GetOrdinal("senderDocumentType")))
+                oElectronicReceiptBE.senderDocumentType = dr.GetString(dr.GetOrdinal("senderDocumentType"));
+            if (!dr.IsDBNull(dr.GetOrdinal("receiptType")))
+                oElectronicReceiptBE.receiptType = dr.GetString(dr.GetOrdinal("receiptType"));
+            if (!dr.IsDBNull(dr.GetOrdinal("recipientDocumentType")))
+                oElectronicReceiptBE.recipientDocumentType = dr.GetString(dr.GetOrdinal("recipientDocumentType"));
 
             return oElectronicReceiptBE;
         }

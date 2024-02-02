@@ -34,5 +34,10 @@ namespace BusinessLogic
         {
             return oElectronicReceiptDA.getListBy(filter);
         }
+
+        public ElectronicReceiptBE get(int id)
+        {
+            return oElectronicReceiptDA.get(id);
+        }
     }
 }
