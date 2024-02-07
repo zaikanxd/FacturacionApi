@@ -18,6 +18,7 @@ using BusinessEntity;
 
 namespace FacturacionApi.Controllers
 {
+    [AllowAnonymous]
     [RoutePrefix("facturacion")]
     public class FacturacionController : ApiController
     {

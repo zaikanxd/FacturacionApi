@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth.cs" />
     <Compile Include="Dtos\SendXMLRequest.cs" />
     <Compile Include="ElectronicReceiptBE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

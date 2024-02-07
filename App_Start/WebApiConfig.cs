@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using FacturacionApi.Controllers;
+using System.Web.Http;
 using System.Web.Http.Cors;
 
 namespace FacturacionApi
@@ -14,6 +15,8 @@ namespace FacturacionApi
 
             // Rutas de API web
             config.MapHttpAttributeRoutes();
+
+            config.MessageHandlers.Add(new TokenValidationHandler());
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
