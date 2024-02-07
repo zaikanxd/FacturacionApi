@@ -44,6 +44,9 @@
     <Compile Include="Auth.cs" />
     <Compile Include="Dtos\SendXMLRequest.cs" />
     <Compile Include="ElectronicReceiptBE.cs" />
+    <Compile Include="Error\CustomException.cs" />
+    <Compile Include="Error\CustomExternalException.cs" />
+    <Compile Include="Error\ErrorResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

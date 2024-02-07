@@ -1,4 +1,5 @@
 ﻿using BusinessEntity;
+using BusinessEntity.Error;
 using InterfaceData;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
@@ -34,10 +35,10 @@ namespace DataAccess
                 }
             }
 
-            /*if (errorMessage != null)
+            if (errorMessage != null)
             {
                 throw new CustomException(errorMessage);
-            }*/
+            }
 
             oAuthResponse.token = TokenGenerator.GenerateTokenJwt(pAuthRequest.username);
 

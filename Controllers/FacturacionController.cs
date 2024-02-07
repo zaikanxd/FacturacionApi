@@ -18,7 +18,6 @@ using BusinessEntity;
 
 namespace FacturacionApi.Controllers
 {
-    [AllowAnonymous]
     [RoutePrefix("facturacion")]
     public class FacturacionController : ApiController
     {
@@ -31,6 +30,7 @@ namespace FacturacionApi.Controllers
         //private const string UrlSunatProd = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
         private const string UrlSunatPrueba = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 
+        [AllowAnonymous]
         [HttpPost, Route("facturar")]
         public async Task<EnviarDocumentoResponse> facturar([FromBody] DocumentoElectronico documento)
         {
@@ -205,6 +205,7 @@ namespace FacturacionApi.Controllers
             return enviarDocumentoResponse;
         }
 
+        [AllowAnonymous]
         [HttpPost, Route("comprobanteSinValorFiscal")]
         public ComprobanteSinValorFiscalResponse comprobanteSinValorFiscal([FromBody] DocumentoElectronico documento)
         {
@@ -240,6 +241,7 @@ namespace FacturacionApi.Controllers
             return comprobanteSinValorFiscalResponse;
         }
 
+        [Authorize]
         [HttpPost, Route("sendXMLtoSUNAT")]
         public async Task<EnviarDocumentoResponse> sendXMLtoSUNAT([FromBody] SendXMLRequest sendXMLRequest)
         {
@@ -357,6 +359,7 @@ namespace FacturacionApi.Controllers
             return enviarDocumentoResponse;
         }
 
+        [AllowAnonymous]
         [HttpPost, Route("sendAllPendingXMLtoSUNAT")]
         public void sendAllPendingXMLtoSUNAT()
         {
@@ -379,12 +382,14 @@ namespace FacturacionApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet, Route("listBy")]
         public IEnumerable<ElectronicReceiptBE> getListBy(string filter = null)
         {
             return oElectronicReceiptBL.getListBy(filter);
         }
 
+        [Authorize]
         [HttpGet, Route("get")]
         public ElectronicReceiptBE get(int id)
         {

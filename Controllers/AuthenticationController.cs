@@ -1,11 +1,13 @@
 ﻿using BusinessEntity;
 using BusinessLogic;
+using FacturacionApi.Filters;
 using System.Web.Http;
 
 namespace FacturacionApi.Controllers
 {
     [AllowAnonymous]
     [RoutePrefix("authentication")]
+    [ProcessExceptionFilterAttribute]
     public class AuthenticationController : ApiController
     {
         private AuthenticationBL _AuthenticationBL;
