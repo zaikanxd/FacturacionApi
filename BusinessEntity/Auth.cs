@@ -1,4 +1,6 @@
-﻿namespace BusinessEntity
+﻿using System;
+
+namespace BusinessEntity
 {
     public class AuthRequest
     {
@@ -9,5 +11,6 @@
     public class AuthResponse
     {
         public string token { get; set; }
+        public DateTime expires { get; set; }
     }
 }

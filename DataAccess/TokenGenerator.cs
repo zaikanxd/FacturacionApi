@@ -5,14 +5,20 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DataAccess
 {
+    public class Token
+    {
+        public string jwtToken { get; set; }
+        public DateTime expires { get; set; }
+    }
+
     internal static class TokenGenerator
     {
-        public static string GenerateTokenJwt(string username)
+        public static Token GenerateTokenJwt(string username)
         {
+            Token token = new Token();
+
             // appsetting for Token JWT
             var secretKey = ConfigurationManager.AppSettings["JWT_SECRET_KEY"];
-            var audienceToken = ConfigurationManager.AppSettings["JWT_AUDIENCE_TOKEN"];
-            var issuerToken = ConfigurationManager.AppSettings["JWT_ISSUER_TOKEN"];
             var expireTime = ConfigurationManager.AppSettings["JWT_EXPIRE_MINUTES"];
 
             var securityKey = new SymmetricSecurityKey(System.Text.Encoding.Default.GetBytes(secretKey));
@@ -21,18 +27,21 @@ namespace DataAccess
             // create a claimsIdentity
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username) });
 
+            DateTime now = DateTime.UtcNow;
+            DateTime expires = now.AddMinutes(Convert.ToInt32(expireTime));
+
             // create token to the user
             var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
             var jwtSecurityToken = tokenHandler.CreateJwtSecurityToken(
-                audience: audienceToken,
-                issuer: issuerToken,
                 subject: claimsIdentity,
-                notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(expireTime)),
+                notBefore: now,
+                expires: expires,
                 signingCredentials: signingCredentials);
 
-            var jwtTokenString = tokenHandler.WriteToken(jwtSecurityToken);
-            return jwtTokenString;
+            token.jwtToken = tokenHandler.WriteToken(jwtSecurityToken);
+            token.expires = expires;
+
+            return token;
         }
     }
 }

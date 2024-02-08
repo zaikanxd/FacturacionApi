@@ -40,7 +40,9 @@ namespace DataAccess
                 throw new CustomException(errorMessage);
             }
 
-            oAuthResponse.token = TokenGenerator.GenerateTokenJwt(pAuthRequest.username);
+            Token token = TokenGenerator.GenerateTokenJwt(pAuthRequest.username);
+            oAuthResponse.token = token.jwtToken;
+            oAuthResponse.expires = token.expires;
 
             return oAuthResponse;
         }
