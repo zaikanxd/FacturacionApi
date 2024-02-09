@@ -96,6 +96,7 @@
     <Compile Include="AuthenticationDA.cs" />
     <Compile Include="ElectronicReceiptDA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportDA.cs" />
     <Compile Include="TokenGenerator.cs" />
     <Compile Include="util\util.cs" />
   </ItemGroup>

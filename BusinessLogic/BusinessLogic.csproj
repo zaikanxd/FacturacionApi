@@ -44,6 +44,7 @@
     <Compile Include="AuthenticationBL.cs" />
     <Compile Include="ElectronicReceiptBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportBL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessEntity\BusinessEntity.csproj">

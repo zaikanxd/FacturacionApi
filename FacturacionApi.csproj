@@ -236,6 +236,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\FacturacionController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
     <Compile Include="Filters\ProcessExceptionFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">

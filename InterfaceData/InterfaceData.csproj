@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="IAuthenticationDA.cs" />
     <Compile Include="IElectronicReceiptDA.cs" />
+    <Compile Include="IReportDA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
