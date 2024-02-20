@@ -30,6 +30,8 @@ namespace FacturacionApi.Controllers
         //private const string UrlSunatProd = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
         private const string UrlSunatPrueba = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 
+        private const string urlSunat = UrlSunatPrueba;
+
         [AllowAnonymous]
         [HttpPost, Route("facturar")]
         public async Task<EnviarDocumentoResponse> facturar([FromBody] DocumentoElectronico documento)
@@ -140,7 +142,7 @@ namespace FacturacionApi.Controllers
                     Ruc = documento.Emisor.NroDocumento,
                     UsuarioSol = credencial.usuarioSol,
                     ClaveSol = credencial.claveSol,
-                    EndPointUrl = UrlSunatPrueba,
+                    EndPointUrl = urlSunat,
                     IdDocumento = documento.IdDocumento,
                     TipoDocumento = documento.TipoDocumento,
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
@@ -161,18 +163,17 @@ namespace FacturacionApi.Controllers
                     EndPointUrl = documentoRequest.EndPointUrl
                 });
 
+                enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
+                enviarDocumentoResponse.xmlPath = saveXMLPath;
+                enviarDocumentoResponse.pdfPath = pdfPath;
+
                 var resultado = _servicioSunatDocumentos.EnviarDocumento(new DocumentoSunat
                 {
                     TramaXml = tramaZip,
                     NombreArchivo = $"{nombreArchivo}.zip"
                 });
 
-                if (!resultado.Exito)
-                {
-                    enviarDocumentoResponse.Exito = false;
-                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
-                }
-                else
+                if (resultado.Exito)
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
                     // Quitamos la R y la extensión devueltas por el Servicio.
@@ -187,13 +188,23 @@ namespace FacturacionApi.Controllers
                     string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
 
                     File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
-
-                    enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
-                    enviarDocumentoResponse.xmlPath = saveXMLPath;
-                    enviarDocumentoResponse.pdfPath = pdfPath;
+                } 
+                else
+                {
+                    enviarDocumentoResponse.Exito = false;
+                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
                 }
 
                 oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento);
+
+                if (resultado.MensajeError != null)
+                {
+                    if (resultado.MensajeError.Contains("0111"))
+                    {
+                        enviarDocumentoResponse.Exito = true;
+                        enviarDocumentoResponse.MensajeError = null;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -294,7 +305,7 @@ namespace FacturacionApi.Controllers
                     Ruc = sendXMLRequest.senderDocument,
                     UsuarioSol = credencial.usuarioSol,
                     ClaveSol = credencial.claveSol,
-                    EndPointUrl = UrlSunatPrueba,
+                    EndPointUrl = urlSunat,
                     IdDocumento = IdDocumento,
                     TipoDocumento = sendXMLRequest.receiptTypeId.ToString("D2"),
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
