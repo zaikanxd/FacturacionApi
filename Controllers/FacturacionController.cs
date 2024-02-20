@@ -163,10 +163,6 @@ namespace FacturacionApi.Controllers
                     EndPointUrl = documentoRequest.EndPointUrl
                 });
 
-                enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
-                enviarDocumentoResponse.xmlPath = saveXMLPath;
-                enviarDocumentoResponse.pdfPath = pdfPath;
-
                 var resultado = _servicioSunatDocumentos.EnviarDocumento(new DocumentoSunat
                 {
                     TramaXml = tramaZip,
@@ -194,6 +190,10 @@ namespace FacturacionApi.Controllers
                     enviarDocumentoResponse.Exito = false;
                     enviarDocumentoResponse.MensajeError = resultado.MensajeError;
                 }
+
+                enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
+                enviarDocumentoResponse.xmlPath = saveXMLPath;
+                enviarDocumentoResponse.pdfPath = pdfPath;
 
                 oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento);
 
