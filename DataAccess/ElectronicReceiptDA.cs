@@ -8,6 +8,7 @@ using System.Data;
 using System.Collections.Generic;
 using BusinessEntity;
 using Populate;
+using System;
 
 namespace DataAccess
 {
@@ -91,13 +92,14 @@ namespace DataAccess
             return list;
         }
 
-        public List<ElectronicReceiptBE> getListBy(string filter = null)
+        public List<ElectronicReceiptBE> getListBy(DateTime date, string filter = null)
         {
             List<ElectronicReceiptBE> list = new List<ElectronicReceiptBE>();
 
             using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_GetAllBy))
             {
                 cmd.CommandTimeout = 0;
+                db.AddInParameter(cmd, "date", DbType.Date, date);
                 db.AddInParameter(cmd, "filter", DbType.String, filter);
                 using (IDataReader dr = db.ExecuteReader(cmd))
                 {

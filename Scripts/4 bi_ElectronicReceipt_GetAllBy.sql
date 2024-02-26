@@ -7,6 +7,7 @@ GO
 
 
 CREATE PROCEDURE bi_ElectronicReceipt_GetAllBy
+@date DATE,
 @filter VARCHAR(500) = NULL
 AS
 
@@ -58,6 +59,7 @@ FROM (
 			ELSE '-'
 		END) recipientDocumentType
 	FROM ElectronicReceipt
+	WHERE issueDate = @date
 ) T
 WHERE
 project LIKE '%' + @filter + '%'

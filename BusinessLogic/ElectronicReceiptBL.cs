@@ -3,6 +3,7 @@ using DataAccess;
 using Dto.Intercambio;
 using Dto.Modelos;
 using InterfaceData;
+using System;
 using System.Collections.Generic;
 
 namespace BusinessLogic
@@ -30,9 +31,9 @@ namespace BusinessLogic
             return oElectronicReceiptDA.getListPending();
         }
 
-        public List<ElectronicReceiptBE> getListBy(string filter = null)
+        public List<ElectronicReceiptBE> getListBy(DateTime date, string filter = null)
         {
-            return oElectronicReceiptDA.getListBy(filter);
+            return oElectronicReceiptDA.getListBy(date, filter);
         }
 
         public ElectronicReceiptBE get(int id)

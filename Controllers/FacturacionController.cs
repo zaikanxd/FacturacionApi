@@ -395,9 +395,9 @@ namespace FacturacionApi.Controllers
 
         [Authorize]
         [HttpGet, Route("listBy")]
-        public IEnumerable<ElectronicReceiptBE> getListBy(string filter = null)
+        public IEnumerable<ElectronicReceiptBE> getListBy(DateTime date, string filter = null)
         {
-            return oElectronicReceiptBL.getListBy(filter);
+            return oElectronicReceiptBL.getListBy(date, filter);
         }
 
         [Authorize]

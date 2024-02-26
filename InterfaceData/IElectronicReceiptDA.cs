@@ -1,6 +1,7 @@
 ﻿using BusinessEntity;
 using Dto.Intercambio;
 using Dto.Modelos;
+using System;
 using System.Collections.Generic;
 
 namespace InterfaceData
@@ -13,7 +14,7 @@ namespace InterfaceData
 
         List<ElectronicReceiptBE> getListPending();
 
-        List<ElectronicReceiptBE> getListBy(string filter = null);
+        List<ElectronicReceiptBE> getListBy(DateTime date, string filter = null);
 
         ElectronicReceiptBE get(int id);
     }

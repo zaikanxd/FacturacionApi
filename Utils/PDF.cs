@@ -118,11 +118,13 @@ namespace FacturacionApi.Utils
     public struct CredencialEmpresa
     {
         public static readonly Credencial[] credenciales = {
+            // PRUEBAS
             new Credencial("20603099126", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("22222222222", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("88888888888", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("20607076805", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("20609800811", "MODDATOS", "MODDATOS", string.Empty),
+            // PRODUCCION
             //new Credencial("20603099126", "RM2024PE", "Gurklansi24", "gurklansi206"),
         };
     }
