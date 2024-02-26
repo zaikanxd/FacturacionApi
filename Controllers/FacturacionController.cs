@@ -113,7 +113,22 @@ namespace FacturacionApi.Controllers
                         }
                         var imagen = Image.FromStream(mem);
                         string saveQRPath = qrPath + $"{documento.IdDocumento}.png";
-                        imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+
+                        // Verificar y guardar archivos repetidos
+                        if (File.Exists(AppSettings.filePath + saveQRPath))
+                        {
+                            int i = 1;
+                            while (File.Exists(AppSettings.filePath + saveQRPath.Replace(".png", $"({i}).png")))
+                            { 
+                                i++; 
+                            }
+                            saveQRPath = saveQRPath.Replace(".png", $"({i}).png");
+                            imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                        else
+                        {
+                            imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                        }
                     }
                 }
 
@@ -124,7 +139,22 @@ namespace FacturacionApi.Controllers
                 }
 
                 string saveXMLPath = xmlPath + $"{documento.IdDocumento}.xml";
-                File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveXMLPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveXMLPath.Replace(".xml", $"({i}).xml")))
+                    {
+                        i++;
+                    }
+                    saveXMLPath = saveXMLPath.Replace(".xml", $"({i}).xml");
+                    File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                }
+                else
+                {
+                    File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                }
 
                 string logoPath = AppSettings.companyLogoPath + $"{documento.Emisor.NroDocumento}.png";
 

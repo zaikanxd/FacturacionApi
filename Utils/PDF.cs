@@ -23,6 +23,17 @@ namespace FacturacionApi.Utils
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string HTMLTempPath = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
 
+            // Verificar y guardar archivos duplicados
+            if (File.Exists(HTMLTempPath))
+            {
+                int i = 1;
+                while (File.Exists(HTMLTempPath.Replace(".html", $"({i}).html")))
+                {
+                    i++;
+                }
+                HTMLTempPath = HTMLTempPath.Replace(".html", $"({i}).html");
+            }
+
             string HTMLPlantillaPath = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
             
             string sHtml = GetStringOfFile(HTMLPlantillaPath);
@@ -33,13 +44,24 @@ namespace FacturacionApi.Utils
             File.WriteAllText(HTMLTempPath, resultHtml);
 
             string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
-
+            
             string pdfPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\PDF\\";
             if (!Directory.Exists(AppSettings.filePath + pdfPath))
             {
                 Directory.CreateDirectory(AppSettings.filePath + pdfPath);
             }
             string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
+
+            // Verificar y guardar archivos repetidos
+            if (File.Exists(AppSettings.filePath + savePDFPath))
+            {
+                int i = 1;
+                while (File.Exists(AppSettings.filePath + savePDFPath.Replace(".pdf", $"({i}).pdf")))
+                {
+                    i++;
+                }
+                savePDFPath = savePDFPath.Replace(".pdf", $"({i}).pdf");
+            }
 
             ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
             oProcessStartInfo.UseShellExecute = false;
@@ -68,6 +90,17 @@ namespace FacturacionApi.Utils
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             string HTMLTempPath = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
 
+            // Verificar y guardar archivos duplicados
+            if (File.Exists(HTMLTempPath))
+            {
+                int i = 1;
+                while (File.Exists(HTMLTempPath.Replace(".html", $"({i}).html")))
+                {
+                    i++;
+                }
+                HTMLTempPath = HTMLTempPath.Replace(".html", $"({i}).html");
+            }
+
             string HTMLPlantillaPath = path + "TICKET_SIN_VALOR_FISCAL.html";
 
             string sHtml = GetStringOfFile(HTMLPlantillaPath);
@@ -85,6 +118,17 @@ namespace FacturacionApi.Utils
                 Directory.CreateDirectory(AppSettings.filePath + pdfPath);
             }
             string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
+
+            // Verificar y guardar archivos repetidos
+            if (File.Exists(AppSettings.filePath + savePDFPath))
+            {
+                int i = 1;
+                while (File.Exists(AppSettings.filePath + savePDFPath.Replace(".pdf", $"({i}).pdf")))
+                {
+                    i++;
+                }
+                savePDFPath = savePDFPath.Replace(".pdf", $"({i}).pdf");
+            }
 
             ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
             oProcessStartInfo.UseShellExecute = false;
