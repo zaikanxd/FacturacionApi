@@ -1,5 +1,6 @@
 ﻿using BusinessEntity;
 using BusinessLogic;
+using System;
 using System.Collections.Generic;
 using System.Web.Http;
 
@@ -16,9 +17,9 @@ namespace FacturacionApi.Controllers
         }
 
         [HttpGet, Route("listBy")]
-        public IEnumerable<ElectronicReceiptBE> getListBy(string project, string senderDocument)
+        public IEnumerable<ElectronicReceiptBE> getListBy(DateTime date, string project, string senderDocument)
         {
-            return oReportBL.getListBy(project, senderDocument);
+            return oReportBL.getListBy(date, project, senderDocument);
         }
     }
 }

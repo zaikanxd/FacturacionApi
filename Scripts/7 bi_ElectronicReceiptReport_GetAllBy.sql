@@ -7,6 +7,7 @@ GO
 
 
 CREATE PROCEDURE bi_ElectronicReceiptReport_GetAllBy
+@date DATE,
 @project VARCHAR(100),
 @senderDocument VARCHAR(11)
 AS
@@ -59,3 +60,5 @@ SELECT
 FROM ElectronicReceipt
 WHERE project = @project
 AND senderDocument = @senderDocument
+AND issueDate = @date
+ORDER BY id DESC

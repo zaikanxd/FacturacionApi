@@ -1,6 +1,7 @@
 ﻿using BusinessEntity;
 using DataAccess;
 using InterfaceData;
+using System;
 using System.Collections.Generic;
 
 namespace BusinessLogic
@@ -13,9 +14,9 @@ namespace BusinessLogic
             get { return (_ReportDA == null ? _ReportDA = new ReportDA() : _ReportDA); }
         }
 
-        public List<ElectronicReceiptBE> getListBy(string project, string senderDocument)
+        public List<ElectronicReceiptBE> getListBy(DateTime date, string project, string senderDocument)
         {
-            return oReportDA.getListBy(project, senderDocument);
+            return oReportDA.getListBy(date, project, senderDocument);
         }
     }
 }
