@@ -14,10 +14,17 @@ CREATE PROCEDURE bi_ElectronicReceipt_Update
     @cdrTicketNumber VARCHAR(50) = NULL
 AS
 
+DECLARE @numberResends INT
+
+SELECT @numberResends = ISNULL(numberResends, 0) FROM ElectronicReceipt WHERE id = @id
+
+SET @numberResends = @numberResends + 1
+
 UPDATE ElectronicReceipt SET
 	acceptedBySunat = @acceptedBySunat,
 	sunatDescription = @sunatDescription,
 	errorMessage = @errorMessage,
 	cdrTicketNumber = @cdrTicketNumber,
-	updateDate = GETDATE()
+	updateDate = GETDATE(),
+	numberResends = @numberResends
 WHERE id = @id

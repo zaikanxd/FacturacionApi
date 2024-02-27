@@ -56,3 +56,4 @@ SELECT
 	END) recipientDocumentType
 FROM ElectronicReceipt 
 WHERE acceptedBySunat = 0
+AND (numberResends IS NULL OR numberResends < 6)
