@@ -156,7 +156,7 @@ namespace FacturacionApi.Controllers
                     File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
                 }
 
-                string logoPath = AppSettings.companyLogoPath + $"{documento.Emisor.NroDocumento}.png";
+                string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
 
                 if (File.Exists(AppSettings.filePath + logoPath))
                 {

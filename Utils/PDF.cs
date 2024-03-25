@@ -14,6 +14,7 @@ namespace FacturacionApi.Utils
         public static string tcsvfPath = System.Configuration.ConfigurationManager.AppSettings["tcsvfPath"];
         public static string certificadosPath = System.Configuration.ConfigurationManager.AppSettings["certificadosPath"];
         public static string companyLogoPath = System.Configuration.ConfigurationManager.AppSettings["companyLogoPath"];
+        public static string logosPath = System.Configuration.ConfigurationManager.AppSettings["logosPath"];
     }
 
     public static class PDF
