@@ -160,6 +160,16 @@ namespace FacturacionApi.Utils
         }
     }
 
+    public struct ElectronicReceipt
+    {
+        public struct ReceiptType
+        {
+            public const string boleta = "03";
+        }
+
+        public const decimal montoMaximoBoletaSimple = 700;
+    }
+    
     public struct CredencialEmpresa
     {
         public static readonly Credencial[] credenciales = {

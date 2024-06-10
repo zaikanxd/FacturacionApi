@@ -51,6 +51,17 @@ namespace FacturacionApi.Controllers
 
             try
             {
+                if (documento.TipoDocumento == ElectronicReceipt.ReceiptType.boleta && documento.Receptor.TipoDocumento == null && documento.Receptor.NroDocumento == null)
+                {
+                    if (documento.TotalVenta > ElectronicReceipt.montoMaximoBoletaSimple)
+                    {
+                        throw new Exception($"El monto de una boleta simple debe ser menor igual a {ElectronicReceipt.montoMaximoBoletaSimple}");
+                    }
+                    documento.Receptor.TipoDocumento = "0";
+                    documento.Receptor.NroDocumento = "00000000";
+                    documento.Receptor.NombreLegal = "OTROS";
+                }
+
                 string projectPath = Array.Find(Project.projects, e => e == documento.Project);
 
                 if (projectPath == null)
