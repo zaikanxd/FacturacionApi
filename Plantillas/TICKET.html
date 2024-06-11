@@ -19,41 +19,40 @@
             border-spacing: 4px;
         }
 
-            table.tbproductos thead tr th {
-                padding: 6px 4px;
-                font-size: 14px;
-                font-weight: 400;
-            }
+        table.tbproductos thead tr th {
+            padding: 6px 4px;
+            font-size: 14px;
+            font-weight: 400;
+        }
 
-            table.tbproductos tbody tr td {
-                padding: 3px 4px;
-                font-size: 14px;
-            }
+        table.tbproductos tbody tr td {
+            padding: 3px 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
     <div style="padding: 15px 0px;">
         @{
-            if (Model.Emisor.NombreComercial != "" && Model.Emisor.NombreComercial != null )
-            {
-            <p style="font-weight: bold; text-align: center; padding-bottom: 5px; font-size: 18px;">@Model.Emisor.NombreComercial</p>
-            }
+        if (Model.Emisor.NombreComercial != "" && Model.Emisor.NombreComercial != null)
+        {
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px; font-size: 18px;">
+            @Model.Emisor.NombreComercial</p>
+        }
         }
         <p style="text-align: center; padding-bottom: 5px;">@Model.Emisor.NombreLegal</p>
         <p style="text-align: center; padding-bottom: 5px;">RUC: @Model.Emisor.NroDocumento</p>
         <p style="text-align: center; padding-bottom: 10px;"> @Model.Emisor.Direccion </p>
-        @{
-        if (Model.TipoDocumento == "03")
-        {
-        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">BOLETA DE VENTA ELECTRÓNICA</p>
-        }
-        else
-        {
-        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">FACTURA ELECTRÓNICA</p>
-        }
-        }
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">@(Model.TipoDocumento == "03" ? "BOLETA DE VENTA ELECTRÓNICA" : "FACTURA ELECTRÓNICA")</p>
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
+        
+        @{
+        if (Model.StoreAddress != "" && Model.StoreAddress != null)
+        {
+        <p style="text-align: start; padding-top: 10px;">Local: @Model.StoreAddress</p>
+        }
+        }
 
         <div style="padding: 10px 0px; text-align: start">
             @{
@@ -67,18 +66,20 @@
             }
             else
             {
-            <p style="padding-bottom: 5px;">Cliente: @Model.Receptor.NombreLegal</p>
-            <p style="padding-bottom: 5px;">Doc. Identidad: @Model.Receptor.NroDocumento</p>
-            <p>Dirección: @Model.Receptor.Direccion</p>
+            <p>Cliente: @Model.Receptor.NombreLegal</p>
+            if (Model.Receptor.TipoDocumento != "0")
+            {
+            <p style="padding-top: 5px; padding-bottom: 5px;">Doc. Identidad: @Model.Receptor.NroDocumento</p>
+            <p>Dirección: @(Model.Receptor.Direccion != "" && Model.Receptor.Direccion != null ? Model.Receptor.Direccion : "-")</p>
+            }
             }
             }
         </div>
 
         <table class="tbproductos" style="width:100%">
             <thead>
-                <tr style="border-bottom: 2px dotted #E8E8E8 !important; 
-                border-top: 2px dotted #E8E8E8 !important; vertical-align: middle !important;">
-                    <th style="text-align: left; vertical-align: middle !important;"> Descripción </th>
+                <tr style="border-bottom: 2px dotted #E8E8E8; border-top: 2px dotted #E8E8E8;">
+                    <th style="text-align: left;"> Descripción </th>
                     <th style="text-align: center; width:60px">Cant.</th>
                     <th style="text-align: right; width:60px">P. Unit</th>
                     <th style="text-align: right; width:60px">Total</th>
@@ -105,8 +106,7 @@
         </table>
 
         <table class="tbproductos" style="width:100%">
-            <tbody style="border-bottom: 2px dotted #E8E8E8 !important; 
-                border-top: 2px dotted #E8E8E8 !important; vertical-align: middle !important;">
+            <tbody style="border-top: 2px dotted #E8E8E8;">
                 @{
                 if (Model.DescuentoGlobal > 0)
                 {
@@ -125,7 +125,7 @@
                 }
                 <tr>
                     <td>
-                        <p style="text-align: right;">Op. gravada</p>
+                        <p style="text-align: right;">Op. Gravada</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: center;">S/</p>
@@ -136,7 +136,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <p style="text-align: right;">Op. exonerada</p>
+                        <p style="text-align: right;">Op. Exonerada</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: center;">S/</p>
@@ -183,7 +183,13 @@
             <img src="@Model.QRFirmado" width="250" height="250" />
         </div>
 
-        <p> <b>Fecha de Emisión:</b> @Model.FechaEmision @Model.HoraEmision</p>
+        <p>Fecha de Emisión: @Model.FechaEmision @Model.HoraEmision</p>
+        @{
+        if (Model.UserFullNameCreated != "" && Model.UserFullNameCreated != null)
+        {
+        <p style="padding-top: 5px;">Cajero: @Model.UserFullNameCreated</p>
+        }
+        }
     </div>
 </body>
 

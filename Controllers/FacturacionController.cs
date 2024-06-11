@@ -59,7 +59,7 @@ namespace FacturacionApi.Controllers
                     }
                     documento.Receptor.TipoDocumento = "0";
                     documento.Receptor.NroDocumento = "00000000";
-                    documento.Receptor.NombreLegal = "OTROS";
+                    documento.Receptor.NombreLegal = "Otros";
                 }
 
                 string projectPath = Array.Find(Project.projects, e => e == documento.Project);
