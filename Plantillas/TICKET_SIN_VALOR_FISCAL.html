@@ -19,78 +19,54 @@
             border-spacing: 4px;
         }
 
-            table.tbproductos thead tr th {
-                padding: 0px 4px 10px 4px;
-                font-size: 14px;
-            }
+        table.tbproductos thead tr th {
+            padding: 6px 4px;
+            font-size: 14px;
+            font-weight: 400;
+        }
 
-            table.tbproductos tbody tr td {
-                padding: 2px 4px;
-                font-size: 14px;
-            }
+        table.tbproductos tbody tr td {
+            padding: 3px 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
     <div style="padding: 15px 0px;">
-        <p style="font-weight: bold; text-align: center;">@Model.Emisor.NombreLegal</p>
-        <p style="text-align: center"> @Model.Emisor.Direccion </p>
-        <p style="font-weight: bold; text-align: center;">CONSUMO</p>
+        <p style="text-align: center; padding-bottom: 5px;">@Model.Emisor.NombreLegal</p>
+        <p style="text-align: center; padding-bottom: 5px;">RUC: @Model.Emisor.NroDocumento</p>
+        <p style="text-align: center; padding-bottom: 10px;"> @Model.Emisor.Direccion </p>
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">@(Model.EsTicketConsumo ? "CONSUMO" : "PRE CUENTA")</p>
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
 
-        <div style="padding: 10px 0px; text-align: start">
-            @{
-            if ((Model.Receptor.NroDocumento != "" && Model.Receptor.NroDocumento != null) 
-               || (Model.Receptor.NombreLegal != "" && Model.Receptor.NombreLegal != null))
-            {
-                <p> <b>ADQUIRIENTE</b> </p>
-            }
-            }
-            @{
-            if (Model.Receptor.NroDocumento != "" && Model.Receptor.NroDocumento != null)
-            {
-                if (Model.TipoDocumento == "01")
-                {
-                <p>RUC: @Model.Receptor.NroDocumento</p>
-                }
-                else
-                {
-                <p>DNI: @Model.Receptor.NroDocumento</p>
-                }
-            }
-            }
-            @{
-            if (Model.Receptor.NombreLegal != "" && Model.Receptor.NombreLegal != null)
-            {
-                <p> @Model.Receptor.NombreLegal </p>
-            }
-            }
-            <p> <b>FECHA EMISIÓN:</b> @Model.FechaEmision </p>
-            <p> <b>FECHA DE VENC:</b> @Model.FechaVencimiento </p>
-            <p> <b>MONEDA:</b> @Model.Moneda </p>
-        </div>
-
-        <div style="padding-top: 5px; padding-bottom: 5px;">
-            <div style="border-bottom: 2px solid #E8E8E8 !important; padding: 0px;">
-            </div>
-        </div>
+        @{
+        if (Model.StoreAddress != "" && Model.StoreAddress != null)
+        {
+        <p style="text-align: start; padding-top: 10px; padding-bottom: 10px;">Local: @Model.StoreAddress</p>
+        }
+        }
 
         <table class="tbproductos" style="width:100%">
             <thead>
-                <tr>
-                    <th style="text-align: left;">[ CANT. ] DESCRIPCIÓN </th>
-                    <th style="text-align: center; width:60px">P/U</th>
-                    <th style="text-align: right; width:60px">TOTAL</th>
+                <tr style="border-bottom: 2px dotted #E8E8E8; border-top: 2px dotted #E8E8E8;">
+                    <th style="text-align: left;"> Descripción </th>
+                    <th style="text-align: center; width:60px">Cant.</th>
+                    <th style="text-align: right; width:60px">P. Unit</th>
+                    <th style="text-align: right; width:60px">Total</th>
                 </tr>
             </thead>
             <tbody>
                 @{ foreach (var item in Model.Items) {
                 <tr>
                     <td>
-                        <p style="text-align: left;"><b>[@Math.Round(@item.Cantidad)]</b> @item.Descripcion</p>
+                        <p style="text-align: left;">@item.Descripcion</p>
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
+                        <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
+                    </td>
+                    <td>
+                        <p style="text-align: right;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
                     </td>
                     <td>
                         <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
@@ -100,35 +76,30 @@
             </tbody>
         </table>
 
-        <div style="padding-top: 5px; padding-bottom: 5px;">
-            <div style="border-bottom: 2px solid #E8E8E8 !important; padding: 0px;">
-            </div>
-        </div>
-
         <table class="tbproductos" style="width:100%">
-            <tbody>
+            <tbody style="border-top: 2px dotted #E8E8E8;">
                 @{
                 if (Model.DescuentoGlobal > 0)
                 {
                 <tr>
                     <td>
-                        <p style="font-weight: bold; text-align: right;">DESCUENTO</p>
+                        <p style="text-align: right;">Descuento</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: left;">S/</p>
+                        <p style="text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: right;">@Math.Round(Model.DescuentoGlobal, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(Model.DescuentoGlobal, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 }
                 }
                 <tr>
                     <td>
-                        <p style="font-weight: bold; text-align: right;">TOTAL</p>
+                        <p style="font-weight: bold; text-align: right;">Total a Pagar</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: left;">S/</p>
+                        <p style="font-weight: bold; text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
                         <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.TotalVenta, 2).ToString("0.00")</p>
@@ -137,13 +108,17 @@
             </tbody>
         </table>
 
-        <div style="padding: 5px 0px;">
-            <div style="border-bottom: 2px solid #E8E8E8 !important; padding: 0px;"></div>
-        </div>
+        <p style="text-align: start; padding-top: 15px">Son: @Model.MontoEnLetras SOLES</p>
 
-        <p style="text-align: center; padding-top: 15px"><b>IMPORTE EN LETRAS: </b>@Model.MontoEnLetras</p>
+        <p style="text-align: start; padding-top: 15px">Fecha de Emisión: @Model.FechaEmision @Model.HoraEmision</p>
+        @{
+        if (Model.UserFullNameCreated != "" && Model.UserFullNameCreated != null)
+        {
+        <p style="padding-top: 5px;">Cajero: @Model.UserFullNameCreated</p>
+        }
+        }
 
-        <p style="text-align: center; padding-top: 15px">@Model.StoreAddress - @Model.StorePhone</p>
+        <p style="text-align: start; padding-top: 20px">Documento NO VALIDO para tramites tributarios</p>
     </div>
 </body>
 
