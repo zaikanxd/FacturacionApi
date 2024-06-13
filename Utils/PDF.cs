@@ -135,7 +135,7 @@ namespace FacturacionApi.Utils
             oProcessStartInfo.UseShellExecute = false;
             oProcessStartInfo.FileName = WKHTMLTOPDFPath;
             
-            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {80 + (documento.Items.Count * 15)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
+            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {100 + (documento.Items.Count * 15)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
 
             using (Process oProcess = Process.Start(oProcessStartInfo))
             {

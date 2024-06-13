@@ -41,9 +41,38 @@
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
 
         @{
-        if (Model.StoreAddress != "" && Model.StoreAddress != null)
+        if (Model.StoreAddress != "" && Model.StoreAddress != null && 
+            Model.EsTicketConsumo && Model.Receptor.TipoDocumento != null && Model.Receptor.TipoDocumento != "")
         {
-        <p style="text-align: start; padding-top: 10px; padding-bottom: 10px;">Local: @Model.StoreAddress</p>
+            <p style="text-align: start; padding-top: 10px;">Local: @Model.StoreAddress</p>
+        }
+        else if (Model.StoreAddress != "" && Model.StoreAddress != null)
+        {
+            <p style="text-align: start; padding: 10px 0px;">Local: @Model.StoreAddress</p>
+        }
+        }
+
+        @{
+        if (Model.EsTicketConsumo && Model.Receptor.TipoDocumento != null && Model.Receptor.TipoDocumento != "")
+        {
+        <div style="padding: 10px 0px; text-align: start">
+            @{
+            if (Model.TipoDocumento == "01")
+            {
+            <p style="padding-bottom: 5px;"> <b>Razón Social:</b> </p>
+            <p style="padding-bottom: 5px;"> @Model.Receptor.NombreLegal </p>
+            <p style="padding-bottom: 5px;">RUC: @Model.Receptor.NroDocumento</p>
+            <p style="padding-bottom: 5px;"> <b>Dirección:</b> </p>
+            <p> @Model.Receptor.Direccion </p>
+            }
+            else
+            {
+            <p>Cliente: @Model.Receptor.NombreLegal</p>
+            <p style="padding-top: 5px; padding-bottom: 5px;">Doc. Identidad: @Model.Receptor.NroDocumento</p>
+            <p>Dirección: @(Model.Receptor.Direccion != "" && Model.Receptor.Direccion != null ? Model.Receptor.Direccion : "-")</p>
+            }
+            }
+        </div>
         }
         }
 
