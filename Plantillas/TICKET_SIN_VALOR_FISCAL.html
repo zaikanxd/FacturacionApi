@@ -37,7 +37,7 @@
         <p style="text-align: center; padding-bottom: 5px;">@Model.Emisor.NombreLegal</p>
         <p style="text-align: center; padding-bottom: 5px;">RUC: @Model.Emisor.NroDocumento</p>
         <p style="text-align: center; padding-bottom: 10px;"> @Model.Emisor.Direccion </p>
-        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">@(Model.EsTicketConsumo ? "CONSUMO" : "PRE CUENTA")</p>
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">@(Model.EsTicketConsumo ? "PRE CUENTA" : "VENTA")</p>
         <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
 
         @{
@@ -105,8 +105,19 @@
             </tbody>
         </table>
 
+        <table class="tbproductos" style="width:100%;">
+            <thead style="border-top: 2px dotted #E8E8E8;">
+                <tr>
+                    <th style="text-align: left;"> Cantidad de Productos: </th>
+                    <th style="text-align: center; width:60px"> @Math.Round(@Model.CantidadTotalProductos) </th>
+                    <th style="text-align: right; width:60px"></th>
+                    <th style="text-align: right; width:60px"></th>
+                </tr>
+            </thead>
+        </table>
+
         <table class="tbproductos" style="width:100%">
-            <tbody style="border-top: 2px dotted #E8E8E8;">
+            <tbody>
                 @{
                 if (Model.DescuentoGlobal > 0)
                 {
@@ -147,7 +158,7 @@
         }
         }
 
-        <p style="text-align: start; padding-top: 20px">Documento NO VALIDO para tramites tributarios</p>
+        <p style="text-align: center; padding-top: 30px">Documento sin VALOR FISCAL</p>
     </div>
 </body>
 

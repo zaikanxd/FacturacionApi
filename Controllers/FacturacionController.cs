@@ -276,6 +276,11 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\" + ((documento.EsTicketConsumo) ? AppSettings.tcsvfPath : AppSettings.cesvfPath);
                 }
 
+                decimal cantidadTotalProductos = 0;
+                documento.Items.ForEach((e) => {
+                    cantidadTotalProductos += e.Cantidad;
+                });
+                documento.CantidadTotalProductos = cantidadTotalProductos;
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
 
                 string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento, projectPath);

@@ -129,6 +129,8 @@ namespace Dto.Modelos
 
         public string UserFullNameCreated { get; set; }
 
+        public decimal CantidadTotalProductos { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
