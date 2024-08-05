@@ -1,0 +1,3 @@
+- Considerar configurar el Correlativo y el control de facturación en la base de datos.
+- Agregar las credenciales de la empresa en el proyecto.
+- Agregar el certificado en el servidor, en la siguiente ruta FileUploadApi\archivos\archivosFacturacionApi\certificados.
