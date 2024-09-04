@@ -73,6 +73,13 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
+                decimal montoTotalDescuento = 0;
+                documento.Items.ForEach((e) => {
+                    montoTotalDescuento = montoTotalDescuento + (e.Descuento * e.Cantidad);
+                });
+                montoTotalDescuento = montoTotalDescuento + documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
+
                 // 1: GENERAR XML
 
                 var invoice = _documentoXml.Generar(documento);

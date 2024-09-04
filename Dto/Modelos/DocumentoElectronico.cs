@@ -131,6 +131,8 @@ namespace Dto.Modelos
 
         public decimal CantidadTotalProductos { get; set; }
 
+        public decimal MontoTotalDescuento { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
