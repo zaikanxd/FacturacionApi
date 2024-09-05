@@ -98,7 +98,7 @@ namespace XML
                     AllowanceTotalAmount = new PayableAmount
                     {
                         CurrencyId = documento.Moneda,
-                        Value = documento.Items.Sum(x => x.Descuento)
+                        Value = 0
                     },
                     TaxInclusiveAmount = new PayableAmount
                     {

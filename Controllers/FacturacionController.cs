@@ -15,6 +15,7 @@ using BusinessLogic;
 using BusinessEntity.Dtos;
 using System.Collections.Generic;
 using BusinessEntity;
+using System.Linq;
 
 namespace FacturacionApi.Controllers
 {
@@ -73,11 +74,8 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
-                decimal montoTotalDescuento = 0;
-                documento.Items.ForEach((e) => {
-                    montoTotalDescuento = montoTotalDescuento + (e.Descuento * e.Cantidad);
-                });
-                montoTotalDescuento = montoTotalDescuento + documento.DescuentoGlobal;
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
                 documento.MontoTotalDescuento = montoTotalDescuento;
 
                 // 1: GENERAR XML
@@ -282,6 +280,10 @@ namespace FacturacionApi.Controllers
                 {
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\" + ((documento.EsTicketConsumo) ? AppSettings.tcsvfPath : AppSettings.cesvfPath);
                 }
+
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
 
                 decimal cantidadTotalProductos = 0;
                 documento.Items.ForEach((e) => {

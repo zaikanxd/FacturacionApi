@@ -262,10 +262,10 @@
                         <p style="text-align: left;">@Math.Round(@item.PrecioUnitario, 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
+                        <p style="text-align: left;">@Math.Round(@item.PrecioUnitario * 1.18m, 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round(@item.Descuento, 2).ToString("0.00")</p>
+                        <p style="text-align: left;">@Math.Round((@item.Descuento / @item.Cantidad) * 1.18m, 2).ToString("0.00")</p>
                     </td>
                     <td>
                         <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
@@ -278,17 +278,33 @@
         <table class="tbproductos" style="width:100%">
             <tbody style="border-top: 2px dotted #E8E8E8;">
                 @{
-                if (Model.MontoTotalDescuento > 0)
+                if (Model.DescuentoGlobal > 0)
                 {
                 <tr>
                     <td>
-                        <p style="text-align: right;">Descuento</p>
+                        <p style="text-align: right;">Descuento Global</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: center;">S/</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: right;">@Math.Round(Model.MontoTotalDescuento, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(Model.DescuentoGlobal * 1.18m, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                }
+                }
+                @{
+                if (Model.MontoTotalDescuento > 0)
+                {
+                <tr>
+                    <td>
+                        <p style="text-align: right;">Total Descuento</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">S/</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(Model.MontoTotalDescuento * 1.18m, 2).ToString("0.00")</p>
                     </td>
                 </tr>
                 }
