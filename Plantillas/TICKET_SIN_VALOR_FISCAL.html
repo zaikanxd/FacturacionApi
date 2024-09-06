@@ -170,6 +170,12 @@
         </table>
 
         <p style="text-align: start; padding-top: 15px">Son: @Model.MontoEnLetras SOLES</p>
+        @{
+        if (Model.Notas != "" && Model.Notas != null)
+        {
+        <p style="text-align: start; padding-top: 5px;">Observaciones: @Model.Notas</p>
+        }
+        }
 
         <p style="text-align: start; padding-top: 15px">Fecha de Emisión: @Model.FechaEmision @Model.HoraEmision</p>
         @{
