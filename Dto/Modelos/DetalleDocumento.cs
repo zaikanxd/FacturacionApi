@@ -71,6 +71,7 @@ namespace Dto.Modelos
         public decimal ValorPreliminarReferencial { get; set; }
         public bool ViajeConRetorno { get; set; }
         public int Referencia { get; set; }
+        public string DescripcionAdicional { get; set; }
 
         public DetalleDocumento()
         {

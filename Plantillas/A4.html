@@ -236,16 +236,16 @@
                     <th style="text-align: center; width:50px">Cant.</th>
                     <th style="text-align: center; width:50px">UM</th>
                     <th style="text-align: center; width:50px">Cod</th>
-                    <th style="text-align: left;">Descripción</th>
+                    <th style="text-align: center;">Descripción</th>
                     <th style="text-align: center; width:60px">V. Unit</th>
                     <th style="text-align: center; width:60px">P. Unit</th>
                     <th style="text-align: center; width:60px">Desc.</th>
-                    <th style="text-align: right; width:60px">Total</th>
+                    <th style="text-align: center; width:60px">Total</th>
                 </tr>
             </thead>
             <tbody>
                 @{ foreach (var item in Model.Items) {
-                <tr>
+                <tr style="vertical-align: top;">
                     <td>
                         <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
                     </td>
@@ -257,15 +257,21 @@
                     </td>
                     <td>
                         <p style="text-align: left;">@item.Descripcion</p>
+                        @{
+                        if (item.DescripcionAdicional != "" && item.DescripcionAdicional != null)
+                        {
+                        <p style="text-align: left;">@item.DescripcionAdicional</p>
+                        }
+                        }
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round(@item.PrecioUnitario, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(@item.PrecioUnitario, 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round(@item.PrecioUnitario * 1.18m, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(@item.PrecioUnitario * 1.18m, 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: left;">@Math.Round((@item.Descuento / @item.Cantidad) * 1.18m, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round((@item.Descuento / @item.Cantidad) * 1.18m, 2).ToString("0.00")</p>
                     </td>
                     <td>
                         <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>

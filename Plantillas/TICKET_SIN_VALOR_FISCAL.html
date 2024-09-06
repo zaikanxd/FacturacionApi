@@ -79,18 +79,24 @@
         <table class="tbproductos" style="width:100%">
             <thead>
                 <tr style="border-bottom: 2px dotted #E8E8E8; border-top: 2px dotted #E8E8E8;">
-                    <th style="text-align: left;"> Descripción </th>
-                    <th style="text-align: center; width:60px">Cant.</th>
-                    <th style="text-align: right; width:60px">P. Unit</th>
-                    <th style="text-align: right; width:60px">Desc.</th>
-                    <th style="text-align: right; width:60px">Total</th>
+                    <th style="text-align: center;"> Descripción </th>
+                    <th style="text-align: center; width:50px">Cant.</th>
+                    <th style="text-align: center; width:60px">P. Unit</th>
+                    <th style="text-align: center; width:60px">Desc.</th>
+                    <th style="text-align: center; width:60px">Total</th>
                 </tr>
             </thead>
             <tbody>
                 @{ foreach (var item in Model.Items) {
-                <tr>
+                <tr style="vertical-align: top;">
                     <td>
                         <p style="text-align: left;">@item.Descripcion</p>
+                        @{
+                        if (item.DescripcionAdicional != "" && item.DescripcionAdicional != null)
+                        {
+                        <p style="text-align: left;">@item.DescripcionAdicional</p>
+                        }
+                        }
                     </td>
                     <td>
                         <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
