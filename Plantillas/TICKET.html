@@ -198,16 +198,32 @@
 
         <p style="text-align: start; padding-top: 15px">Son: @Model.MontoEnLetras SOLES</p>
         @{
-        if (Model.Notas != "" && Model.Notas != null)
+        if (Model.Cuentas != null)
         {
-        <p style="text-align: start; padding-top: 5px;">Observaciones: @Model.Notas</p>
+        <div style="padding-top: 10px;">
+        @{ foreach (var cuenta in Model.Cuentas) {
+        <p>
+            <b>@cuenta.Nombre</b> S/ @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
+            @(cuenta.Vuelto != null && cuenta.Vuelto > 0 ? "Vuelto: " + @Math.Round(@cuenta.Vuelto, 2).ToString("0.00") : "")
+            @(cuenta.Fecha != "" && cuenta.Fecha != null ? "- " + @cuenta.Fecha : "")
+            @(cuenta.NroOperacion != "" && cuenta.NroOperacion != null ? "Nro Ope " + @cuenta.NroOperacion : "")
+        </p>
+        } }
+        </div>
         }
         }
 
         @{
-        if (Model.TipoDocumento == "01" && !Model.Credito)
+        if (Model.Notas != "" && Model.Notas != null)
         {
-        <p style="text-align: start; padding-top: 15px"><b>Forma de pago: </b>Contado</p>
+        <p style="text-align: start; padding-top: 10px;"><b>Observaciones: </b>@Model.Notas</p>
+        }
+        }
+
+        @{
+        if (!Model.Credito)
+        {
+        <p style="text-align: start; padding-top: 10px"><b>Forma de pago: </b>Contado</p>
         }
         }
 

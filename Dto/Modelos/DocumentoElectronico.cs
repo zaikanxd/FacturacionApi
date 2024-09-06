@@ -133,6 +133,8 @@ namespace Dto.Modelos
 
         public decimal MontoTotalDescuento { get; set; }
 
+        public List<Cuenta> Cuentas { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
@@ -159,5 +161,14 @@ namespace Dto.Modelos
             HoraEmision = DateTime.Now.ToString("HH:mm:ss");
 
         }
+    }
+
+    public class Cuenta
+    {
+        public string Nombre { get; set; }
+        public decimal Pago { get; set; }
+        public decimal Vuelto { get; set; }
+        public string Fecha { get; set; }
+        public string NroOperacion { get; set; }
     }
 }

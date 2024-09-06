@@ -211,7 +211,7 @@
                         }
                         }
                         @{
-                        if (Model.TipoDocumento == "01" && !Model.Credito)
+                        if (!Model.Credito)
                         {
                         <tr>
                             <td>
@@ -366,7 +366,7 @@
         @{
         if (Model.Notas != "" && Model.Notas != null)
         {
-        <p style="text-align: start; padding-top: 5px; padding-left: 6px;">Observaciones: @Model.Notas</p>
+        <p style="text-align: start; padding-top: 5px; padding-left: 6px;"><b>Observaciones: </b>@Model.Notas</p>
         }
         }
         <img src="@Model.QRFirmado" width="250" height="250"/>
