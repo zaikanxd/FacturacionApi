@@ -147,6 +147,78 @@ namespace FacturacionApi.Utils
             return savePDFPath;
         }
 
+        public static byte[] ObtenerBytesPDFGenerado(DocumentoElectronico documento)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
+            string HTMLTempPath = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
+
+            // Verificar y guardar archivos duplicados
+            if (File.Exists(HTMLTempPath))
+            {
+                int i = 1;
+                while (File.Exists(HTMLTempPath.Replace(".html", $"({i}).html")))
+                {
+                    i++;
+                }
+                HTMLTempPath = HTMLTempPath.Replace(".html", $"({i}).html");
+            }
+
+            string HTMLPlantillaPath = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
+
+            string sHtml = GetStringOfFile(HTMLPlantillaPath);
+            string resultHtml = "";
+
+            resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
+
+            File.WriteAllText(HTMLTempPath, resultHtml);
+
+            string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+
+            string PDFTempPath = path + "PDFTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".pdf";
+
+            // Verificar y guardar archivos duplicados
+            if (File.Exists(PDFTempPath))
+            {
+                int i = 1;
+                while (File.Exists(PDFTempPath.Replace(".pdf", $"({i}).pdf")))
+                {
+                    i++;
+                }
+                PDFTempPath = PDFTempPath.Replace(".pdf", $"({i}).pdf");
+            }
+
+            ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
+            oProcessStartInfo.UseShellExecute = false;
+            oProcessStartInfo.RedirectStandardOutput = true;
+            oProcessStartInfo.FileName = WKHTMLTOPDFPath;
+
+            if (Formato.A4 == documento.formato)
+            {
+                oProcessStartInfo.Arguments = $"{HTMLTempPath}" + " " + $"{PDFTempPath}";
+            }
+            else
+            {
+                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {180 + (documento.Items.Count * 25)}mm" + " " + $"{HTMLTempPath}" + " " + $"{PDFTempPath}";
+            }
+
+            byte[] pdfBytes;
+
+            using (Process oProcess = Process.Start(oProcessStartInfo))
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    oProcess.StandardOutput.BaseStream.CopyTo(memoryStream);
+                    oProcess.WaitForExit();
+                    pdfBytes = File.ReadAllBytes(PDFTempPath);
+                }
+            }
+
+            File.Delete(PDFTempPath);
+            File.Delete(HTMLTempPath);
+
+            return pdfBytes;
+        }
+
         private static string GetStringOfFile(string pathFile)
         {
             string contenido = File.ReadAllText(pathFile);

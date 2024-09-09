@@ -307,6 +307,64 @@ namespace FacturacionApi.Controllers
             return comprobanteSinValorFiscalResponse;
         }
 
+        [AllowAnonymous]
+        [HttpPost, Route("obtenerPDF")]
+        public byte[] obtenerPDF([FromBody] DocumentoElectronico documento)
+        {
+            byte[] pdfBytes = null;
+
+            try
+            {
+                if (documento.TipoDocumento == ElectronicReceipt.ReceiptType.boleta && documento.Receptor.TipoDocumento == null && documento.Receptor.NroDocumento == null)
+                {
+                    if (documento.TotalVenta > ElectronicReceipt.montoMaximoBoletaSimple)
+                    {
+                        throw new Exception($"El monto de una boleta simple debe ser menor igual a {ElectronicReceipt.montoMaximoBoletaSimple}");
+                    }
+                    documento.Receptor.TipoDocumento = "0";
+                    documento.Receptor.NroDocumento = "00000000";
+                    documento.Receptor.NombreLegal = "Otros";
+                }
+
+
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
+
+                var serieCorrelativo = documento.IdDocumento.Split('-');
+                string ValoresParaQr =
+                   $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
+
+                string CodigoQr = QrHelper.GenerarImagenQr($"{ValoresParaQr}");
+
+                string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
+
+                if (File.Exists(AppSettings.filePath + logoPath))
+                {
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + logoPath)));
+                }
+
+                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", CodigoQr);
+
+                decimal cantidadTotalProductos = 0;
+                documento.Items.ForEach((e) => {
+                    cantidadTotalProductos += e.Cantidad;
+                });
+                documento.CantidadTotalProductos = cantidadTotalProductos;
+                documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
+
+                pdfBytes = PDF.ObtenerBytesPDFGenerado(documento);
+            }
+            catch (Exception ex)
+            {
+                /*comprobanteSinValorFiscalResponse.MensajeError = ex.Message;
+                comprobanteSinValorFiscalResponse.Pila = ex.StackTrace;
+                comprobanteSinValorFiscalResponse.Exito = false;*/
+            }
+
+            return pdfBytes;
+        }
+
         [Authorize]
         [HttpPost, Route("sendXMLtoSUNAT")]
         public async Task<EnviarDocumentoResponse> sendXMLtoSUNAT([FromBody] SendXMLRequest sendXMLRequest)
