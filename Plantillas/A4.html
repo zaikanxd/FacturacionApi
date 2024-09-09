@@ -151,7 +151,7 @@
                             </td>
                             <td>
                                 <p>:
-                                    @cuenta.Nombre S/ @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
+                                    @cuenta.Nombre @(Model.Moneda == "PEN" ? "S/" : "$") @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
                                     @(cuenta.Vuelto != null && cuenta.Vuelto > 0 ? "Vuelto: " + @Math.Round(@cuenta.Vuelto, 2).ToString("0.00") : "")
                                     @(cuenta.Fecha != "" && cuenta.Fecha != null ? "- " + @cuenta.Fecha : "")
                                     @(cuenta.NroOperacion != "" && cuenta.NroOperacion != null ? "Nro Ope " + @cuenta.NroOperacion : "")
@@ -255,7 +255,7 @@
                         <p style="text-align: right;">Descuento Global</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: center;">S/</p>
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: right;">@Math.Round(Model.DescuentoGlobal * 1.18m, 2).ToString("0.00")</p>
@@ -271,7 +271,7 @@
                         <p style="text-align: right;">Total Descuento</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: center;">S/</p>
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: right;">@Math.Round(Model.MontoTotalDescuento * 1.18m, 2).ToString("0.00")</p>
@@ -284,7 +284,7 @@
                         <p style="text-align: right;">Op. Gravada</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: center;">S/</p>
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: right;">@Math.Round(@Model.Gravadas, 2).ToString("0.00")</p>
@@ -295,7 +295,7 @@
                         <p style="text-align: right;">Op. Exonerada</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: center;">S/</p>
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: right;">@Math.Round(@Model.Exoneradas, 2).ToString("0.00")</p>
@@ -306,7 +306,7 @@
                         <p style="text-align: right;">IGV 18.00%</p>
                     </td>
                     <td style="width:60px">
-                        <p style="text-align: center;">S/</p>
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="text-align: right;">@Math.Round(@Model.TotalIgv, 2).ToString("0.00")</p>
@@ -317,7 +317,7 @@
                         <p style="font-weight: bold; text-align: right;">Total a Pagar</p>
                     </td>
                     <td style="width:60px">
-                        <p style="font-weight: bold; text-align: center;">S/</p>
+                        <p style="font-weight: bold; text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
                     </td>
                     <td style="width:60px">
                         <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.TotalVenta, 2).ToString("0.00")</p>
@@ -326,7 +326,7 @@
             </tbody>
         </table>
 
-        <p style="text-align: start; padding-top: 15px; padding-left: 6px;">Son: @Model.MontoEnLetras SOLES</p>
+        <p style="text-align: start; padding-top: 15px; padding-left: 6px;">Son: @Model.MontoEnLetras @(Model.Moneda == "PEN" ? "SOLES" : "DOLARES AMERICANOS")</p>
         @{
         if (Model.Notas != "" && Model.Notas != null)
         {
