@@ -67,11 +67,8 @@
             else
             {
             <p>Cliente: @Model.Receptor.NombreLegal</p>
-            if (Model.Receptor.TipoDocumento != "0")
-            {
             <p style="padding-top: 5px; padding-bottom: 5px;">Doc. Identidad: @Model.Receptor.NroDocumento</p>
             <p>Dirección: @(Model.Receptor.Direccion != "" && Model.Receptor.Direccion != null ? Model.Receptor.Direccion : "-")</p>
-            }
             }
             }
         </div>
@@ -220,12 +217,7 @@
         }
         }
 
-        @{
-        if (!Model.Credito)
-        {
-        <p style="text-align: start; padding-top: 10px"><b>Forma de pago: </b>Contado</p>
-        }
-        }
+        <p style="text-align: start; padding-top: 10px"><b>Forma de Pago: </b>@(Model.Credito ? "Crédito" : "Contado")</p>
 
         <div style="margin: auto; text-align: center;">
             <img src="@Model.QRFirmado" width="250" height="250" />

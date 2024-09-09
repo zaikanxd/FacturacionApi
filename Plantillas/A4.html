@@ -109,12 +109,9 @@
             <tr style="vertical-align: top;">
                 <td style="text-align: left; width: 60%;">
                     <table>
-                        @{
-                        if (Model.TipoDocumento == "01")
-                        {
                         <tr>
                             <td>
-                                <p style="font-weight: bold">Razón Social</p>
+                                <p style="font-weight: bold">@(Model.TipoDocumento == "01" ? "Razón Social" : "Cliente")</p>
                             </td>
                             <td>
                                 <p>: @Model.Receptor.NombreLegal</p>
@@ -122,36 +119,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <p style="font-weight: bold">RUC</p>
-                            </td>
-                            <td>
-                                <p>: @Model.Receptor.NroDocumento</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p style="font-weight: bold">Dirección</p>
-                            </td>
-                            <td>
-                                <p>: @Model.Receptor.Direccion</p>
-                            </td>
-                        </tr>
-                        }
-                        else
-                        {
-                        <tr>
-                            <td>
-                                <p style="font-weight: bold">Cliente</p>
-                            </td>
-                            <td>
-                                <p>: @Model.Receptor.NombreLegal</p>
-                            </td>
-                        </tr>
-                        if (Model.Receptor.TipoDocumento != "0")
-                        {
-                        <tr>
-                            <td>
-                                <p style="font-weight: bold">Doc. Identidad</p>
+                                <p style="font-weight: bold">@(Model.TipoDocumento == "01" ? "RUC" : "Doc. Identidad") </p>
                             </td>
                             <td>
                                 <p>: @Model.Receptor.NroDocumento</p>
@@ -165,15 +133,29 @@
                                 <p>: @(Model.Receptor.Direccion != "" && Model.Receptor.Direccion != null ? Model.Receptor.Direccion : "-")</p>
                             </td>
                         </tr>
-                        }
-                        else
-                        {
                         <tr>
                             <td>
-                                <p style="font-weight: bold">Fecha de Emisión</p>
+                                <p style="font-weight: bold">Forma de Pago</p>
                             </td>
                             <td>
-                                <p>: @Model.FechaEmision @Model.HoraEmision </p>
+                                <p>: @(Model.Credito ? "Crédito" : "Contado")  </p>
+                            </td>
+                        </tr>
+                        @{
+                        if (Model.Cuentas != null)
+                        {
+                        foreach (var cuenta in Model.Cuentas) {
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">Condición de Pago</p>
+                            </td>
+                            <td>
+                                <p>:
+                                    @cuenta.Nombre S/ @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
+                                    @(cuenta.Vuelto != null && cuenta.Vuelto > 0 ? "Vuelto: " + @Math.Round(@cuenta.Vuelto, 2).ToString("0.00") : "")
+                                    @(cuenta.Fecha != "" && cuenta.Fecha != null ? "- " + @cuenta.Fecha : "")
+                                    @(cuenta.NroOperacion != "" && cuenta.NroOperacion != null ? "Nro Ope " + @cuenta.NroOperacion : "")
+                                </p>
                             </td>
                         </tr>
                         }
@@ -184,9 +166,6 @@
 
                 <td style="text-align: left; width: 40%;">
                     <table>
-                        @{
-                        if (Model.Receptor.TipoDocumento != "0")
-                        {
                         <tr>
                             <td>
                                 <p style="font-weight: bold">Fecha de Emisión</p>
@@ -195,8 +174,6 @@
                                 <p>: @Model.FechaEmision @Model.HoraEmision </p>
                             </td>
                         </tr>
-                        }
-                        }
                         @{
                         if (Model.UserFullNameCreated != "" && Model.UserFullNameCreated != null)
                         {
@@ -206,19 +183,6 @@
                             </td>
                             <td>
                                 <p>: @Model.UserFullNameCreated </p>
-                            </td>
-                        </tr>
-                        }
-                        }
-                        @{
-                        if (!Model.Credito)
-                        {
-                        <tr>
-                            <td>
-                                <p style="font-weight: bold">Forma de pago</p>
-                            </td>
-                            <td>
-                                <p>: Contado </p>
                             </td>
                         </tr>
                         }
