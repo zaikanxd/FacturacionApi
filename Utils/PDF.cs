@@ -19,10 +19,13 @@ namespace FacturacionApi.Utils
 
     public static class PDF
     {
-        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath)
+        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath, bool sinValorFiscal)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
-            string HTMLTempPath = path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
+
+            string HTMLTempPath = sinValorFiscal 
+                ? path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html"
+                : path + "HTMLTemp" + documento.Emisor.NroDocumento + documento.IdDocumento + ".html";
 
             // Verificar y guardar archivos duplicados
             if (File.Exists(HTMLTempPath))
@@ -35,7 +38,9 @@ namespace FacturacionApi.Utils
                 HTMLTempPath = HTMLTempPath.Replace(".html", $"({i}).html");
             }
 
-            string HTMLPlantillaPath = path + ((Formato.A4 == documento.formato) ? "A4.html" : "TICKET.html");
+            string HTMLPlantillaPath = sinValorFiscal
+                ? path + "TICKET_SIN_VALOR_FISCAL.html"
+                : path + (Formato.A4 == documento.formato ? "A4.html" : "TICKET.html");
             
             string sHtml = GetStringOfFile(HTMLPlantillaPath);
             string resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
@@ -43,8 +48,11 @@ namespace FacturacionApi.Utils
             File.WriteAllText(HTMLTempPath, resultHtml);
 
             string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
+
+            string pdfPath = sinValorFiscal
+                ? projectPath + $"{documento.CompanyId}\\"
+                : projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\PDF\\";
             
-            string pdfPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\PDF\\";
             if (!Directory.Exists(AppSettings.filePath + pdfPath))
             {
                 Directory.CreateDirectory(AppSettings.filePath + pdfPath);
@@ -66,72 +74,15 @@ namespace FacturacionApi.Utils
             oProcessStartInfo.UseShellExecute = false;
             oProcessStartInfo.FileName = WKHTMLTOPDFPath;
 
-            if (Formato.A4 == documento.formato)
+            if (sinValorFiscal)
             {
-                oProcessStartInfo.Arguments = $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
+                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {100 + (documento.Items.Count * 25)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
             } else
             {
-                oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {180 + (documento.Items.Count * 25)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
+                oProcessStartInfo.Arguments = (Formato.A4 == documento.formato)
+                    ? $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}"
+                    : $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {180 + (documento.Items.Count * 25)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
             }
-
-            using (Process oProcess = Process.Start(oProcessStartInfo))
-            {
-                oProcess.WaitForExit();
-            }
-
-            File.Delete(HTMLTempPath);
-
-            return savePDFPath;
-        }
-
-        public static string ObtenerRutaPDFGeneradoSinValorFiscal(DocumentoElectronico documento, string projectPath)
-        {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
-            string HTMLTempPath = path + "HTMLTemp" + $"{documento.CompanyId}" + documento.IdDocumento + ".html";
-
-            // Verificar y guardar archivos duplicados
-            if (File.Exists(HTMLTempPath))
-            {
-                int i = 1;
-                while (File.Exists(HTMLTempPath.Replace(".html", $"({i}).html")))
-                {
-                    i++;
-                }
-                HTMLTempPath = HTMLTempPath.Replace(".html", $"({i}).html");
-            }
-
-            string HTMLPlantillaPath = path + "TICKET_SIN_VALOR_FISCAL.html";
-
-            string sHtml = GetStringOfFile(HTMLPlantillaPath);
-            string resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
-
-            File.WriteAllText(HTMLTempPath, resultHtml);
-
-            string WKHTMLTOPDFPath = AppDomain.CurrentDomain.BaseDirectory + "\\wkhtmltopdf\\wkhtmltopdf.exe";
-
-            string pdfPath = projectPath + $"{documento.CompanyId}\\";
-            if (!Directory.Exists(AppSettings.filePath + pdfPath))
-            {
-                Directory.CreateDirectory(AppSettings.filePath + pdfPath);
-            }
-            string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
-
-            // Verificar y guardar archivos repetidos
-            if (File.Exists(AppSettings.filePath + savePDFPath))
-            {
-                int i = 1;
-                while (File.Exists(AppSettings.filePath + savePDFPath.Replace(".pdf", $"({i}).pdf")))
-                {
-                    i++;
-                }
-                savePDFPath = savePDFPath.Replace(".pdf", $"({i}).pdf");
-            }
-
-            ProcessStartInfo oProcessStartInfo = new ProcessStartInfo();
-            oProcessStartInfo.UseShellExecute = false;
-            oProcessStartInfo.FileName = WKHTMLTOPDFPath;
-            
-            oProcessStartInfo.Arguments = $"-T 0 -B 0 --margin-left 0 --margin-right 0 --page-width 80mm --page-height {100 + (documento.Items.Count * 25)}mm" + " " + $"{HTMLTempPath}" + " " + $"{AppSettings.filePath + savePDFPath}";
 
             using (Process oProcess = Process.Start(oProcessStartInfo))
             {

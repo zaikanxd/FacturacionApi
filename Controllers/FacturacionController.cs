@@ -181,7 +181,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -292,7 +292,7 @@ namespace FacturacionApi.Controllers
                 documento.CantidadTotalProductos = cantidadTotalProductos;
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
 
-                string pdfPath = PDF.ObtenerRutaPDFGeneradoSinValorFiscal(documento, projectPath);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true);
 
                 comprobanteSinValorFiscalResponse.Exito = true;
                 comprobanteSinValorFiscalResponse.pdfPath = pdfPath;
