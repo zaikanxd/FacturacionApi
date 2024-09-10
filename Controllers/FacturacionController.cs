@@ -308,13 +308,28 @@ namespace FacturacionApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost, Route("obtenerPDF")]
-        public byte[] obtenerPDF([FromBody] DocumentoElectronico documento)
+        [HttpPost, Route("vistaPrevia")]
+        public FilePreview vistaPrevia([FromBody] FilePreviewRequest filePreviewRequest)
         {
-            byte[] pdfBytes = null;
+            FilePreview filePreview = new FilePreview();
 
-            try
+            DocumentoElectronico documento = filePreviewRequest.documento;
+
+            if (filePreviewRequest.sinValorFiscal)
             {
+                // SIN VALOR FISCAL
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
+
+                decimal cantidadTotalProductos = 0;
+                documento.Items.ForEach((e) => {
+                    cantidadTotalProductos += e.Cantidad;
+                });
+                documento.CantidadTotalProductos = cantidadTotalProductos;
+            } else
+            {
+                // FACTURA O BOLETA
                 if (documento.TipoDocumento == ElectronicReceipt.ReceiptType.boleta && documento.Receptor.TipoDocumento == null && documento.Receptor.NroDocumento == null)
                 {
                     if (documento.TotalVenta > ElectronicReceipt.montoMaximoBoletaSimple)
@@ -326,16 +341,15 @@ namespace FacturacionApi.Controllers
                     documento.Receptor.NombreLegal = "Otros";
                 }
 
-
                 decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
                 montoTotalDescuento += documento.DescuentoGlobal;
                 documento.MontoTotalDescuento = montoTotalDescuento;
 
                 var serieCorrelativo = documento.IdDocumento.Split('-');
-                string ValoresParaQr =
-                   $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
+                string valoresParaQr =
+                    $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
 
-                string CodigoQr = QrHelper.GenerarImagenQr($"{ValoresParaQr}");
+                string codigoQr = QrHelper.GenerarImagenQr($"{valoresParaQr}");
 
                 string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
 
@@ -344,25 +358,14 @@ namespace FacturacionApi.Controllers
                     documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + logoPath)));
                 }
 
-                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", CodigoQr);
-
-                decimal cantidadTotalProductos = 0;
-                documento.Items.ForEach((e) => {
-                    cantidadTotalProductos += e.Cantidad;
-                });
-                documento.CantidadTotalProductos = cantidadTotalProductos;
-                documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
-
-                pdfBytes = PDF.ObtenerBytesPDFGenerado(documento);
-            }
-            catch (Exception ex)
-            {
-                /*comprobanteSinValorFiscalResponse.MensajeError = ex.Message;
-                comprobanteSinValorFiscalResponse.Pila = ex.StackTrace;
-                comprobanteSinValorFiscalResponse.Exito = false;*/
+                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", codigoQr);
             }
 
-            return pdfBytes;
+            documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
+            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal);
+            filePreview.name = "VistaPrevia-" + documento.IdDocumento;
+
+            return filePreview;
         }
 
         [Authorize]

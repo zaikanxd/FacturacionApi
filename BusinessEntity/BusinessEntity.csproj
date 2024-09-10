@@ -42,12 +42,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth.cs" />
+    <Compile Include="Dtos\FilePreviewRequest.cs" />
     <Compile Include="Dtos\SendXMLRequest.cs" />
     <Compile Include="ElectronicReceiptBE.cs" />
     <Compile Include="Error\CustomException.cs" />
     <Compile Include="Error\CustomExternalException.cs" />
     <Compile Include="Error\ErrorResponse.cs" />
+    <Compile Include="FilePreview.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dto\Dto.csproj">
+      <Project>{60D67E87-490F-4532-95FD-01013A856895}</Project>
+      <Name>Dto</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
