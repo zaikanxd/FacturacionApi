@@ -38,7 +38,13 @@
 </head>
 
 <body>
-    <div class="contenedor">
+    <div class="contenedor" style="position: relative;">
+        @{
+        if (Model.EsVistaPrevia)
+        {
+        <div style="position: absolute; width: 100%; top: 50%; color:red; font-size: 80px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg);">VISTA PREVIA</div>
+        }
+        }
         <table style="width: 100%">
             <tr>
                 <td>

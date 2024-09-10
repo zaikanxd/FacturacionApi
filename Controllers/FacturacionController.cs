@@ -315,6 +315,8 @@ namespace FacturacionApi.Controllers
 
             DocumentoElectronico documento = filePreviewRequest.documento;
 
+            documento.EsVistaPrevia = true;
+
             if (filePreviewRequest.sinValorFiscal)
             {
                 // SIN VALOR FISCAL
