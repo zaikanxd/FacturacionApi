@@ -487,6 +487,16 @@ namespace FacturacionApi.Controllers
                     enviarResumenResponse.NroTicket = resultado.NumeroTicket;
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
+
+                    var ticketRequest = new TicketRequest
+                    {
+                        Project = comunicacionBaja.Project,
+                        NroRUC = comunicacionBaja.Emisor.NroDocumento,
+                        NroTicket = resultado.NumeroTicket,
+                        NombreArchivo = comunicacionBaja.IdDocumento
+                    };
+
+                    consultarTicket(ticketRequest);
                 }
                 else
                 {
@@ -502,6 +512,77 @@ namespace FacturacionApi.Controllers
             }
 
             return enviarResumenResponse;
+        }
+
+        [AllowAnonymous]
+        [HttpPost, Route("consultarTicket")]
+        public async Task<EnviarDocumentoResponse> consultarTicket(TicketRequest ticketRequest)
+        {
+            // 1: ENVIAR DOCUMENTO
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarDocumentoResponse = new EnviarDocumentoResponse();
+
+            // 2: GENERAR RESPUESTA
+            ISerializador _serializador = new Serializador();
+
+            try
+            {
+                string projectPath = Array.Find(Project.projects, e => e == ticketRequest.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == ticketRequest.NroRUC);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = ticketRequest.NroRUC,
+                    UserName = credencial.usuarioSol,
+                    Password = credencial.claveSol,
+                    EndPointUrl = urlSunat
+                });
+
+                var resultado = _servicioSunatDocumentos.ConsultarTicket(ticketRequest.NroTicket);
+
+                if (!resultado.Exito)
+                {
+                    enviarDocumentoResponse.Exito = false;
+                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
+                }
+                else
+                {
+                    enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
+
+                    string comunicacionBajaZipPath = projectPath + AppSettings.cePath + $"{ticketRequest.NroRUC}\\ComunicacionBajaZipCdr\\";
+                    if (!Directory.Exists(AppSettings.filePath + comunicacionBajaZipPath))
+                    {
+                        Directory.CreateDirectory(AppSettings.filePath + comunicacionBajaZipPath);
+                    }
+
+                    string saveZIPPath = comunicacionBajaZipPath + $"{ticketRequest.NombreArchivo}.zip";
+
+                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+                }
+            }
+            catch (Exception ex)
+            {
+                enviarDocumentoResponse.MensajeError = ex.Source == "DotNetZip" ? "El Ticket no existe" : ex.Message;
+                enviarDocumentoResponse.Pila = ex.StackTrace;
+                enviarDocumentoResponse.Exito = false;
+            }
+
+            return enviarDocumentoResponse;
         }
 
         [Authorize]

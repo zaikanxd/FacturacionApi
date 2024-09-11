@@ -44,6 +44,7 @@
     <Compile Include="Auth.cs" />
     <Compile Include="Dtos\FilePreviewRequest.cs" />
     <Compile Include="Dtos\SendXMLRequest.cs" />
+    <Compile Include="Dtos\TicketRequest.cs" />
     <Compile Include="ElectronicReceiptBE.cs" />
     <Compile Include="Error\CustomException.cs" />
     <Compile Include="Error\CustomExternalException.cs" />
