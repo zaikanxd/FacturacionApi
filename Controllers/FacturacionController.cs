@@ -370,6 +370,111 @@ namespace FacturacionApi.Controllers
             return filePreview;
         }
 
+        [AllowAnonymous]
+        [HttpPost, Route("comunicacionBaja")]
+        public async Task<EnviarDocumentoResponse> comunicacionBaja([FromBody] ComunicacionBaja comunicacionBaja)
+        {
+            // 1: GENERAR XML
+            IDocumentoXml _documentoXml = new ComunicacionBajaXml();
+            ISerializador _serializador = new Serializador();
+            var documentoResponse = new DocumentoResponse();
+
+            // 2: FIRMAR XML
+            ICertificador _certificador = new Certificador();
+            var firmadoResponse = new FirmadoResponse();
+
+            // 3: ENVIAR COMUNICACION DE BAJA
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarResumenResponse = new EnviarResumenResponse();
+
+            try
+            {
+                // 1: GENERAR XML
+                var voidedDocument = _documentoXml.Generar(comunicacionBaja);
+                documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(voidedDocument);
+                documentoResponse.Exito = true;
+
+                // 2: FIRMAR XML
+
+                string certificadoPath = AppSettings.certificadosPath + $"{comunicacionBaja.Emisor.NroDocumento}.pfx";
+
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == comunicacionBaja.Emisor.NroDocumento);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
+                var firmadoRequest = new FirmadoRequest
+                {
+                    TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + certificadoPath)),
+                    PasswordCertificado = credencial.passwordCertificado,
+                };
+
+                firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
+                firmadoResponse.Exito = true;
+
+                // Guardando XML de la Comunicacion de Baja
+                
+                File.WriteAllBytes("comunicacionbaja.xml", Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+
+                // 3: ENVIAR DOCUMENTO
+
+                var documentoRequest = new EnviarDocumentoRequest
+                {
+                    Ruc = comunicacionBaja.Emisor.NroDocumento,
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
+                    EndPointUrl = urlSunat,
+                    IdDocumento = comunicacionBaja.IdDocumento,
+                    TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
+                };
+
+                var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.IdDocumento}";
+                var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = documentoRequest.Ruc,
+                    UserName = documentoRequest.UsuarioSol,
+                    Password = documentoRequest.ClaveSol,
+                    EndPointUrl = documentoRequest.EndPointUrl
+                });
+
+                var resultado = _servicioSunatDocumentos.EnviarResumen(new DocumentoSunat
+                {
+                    NombreArchivo = $"{nombreArchivo}.zip",
+                    TramaXml = tramaZip
+                });
+
+                if (resultado.Exito)
+                {
+                    enviarResumenResponse.NroTicket = resultado.NumeroTicket;
+                    enviarResumenResponse.Exito = true;
+                    enviarResumenResponse.NombreArchivo = nombreArchivo;
+                }
+                else
+                {
+                    enviarResumenResponse.MensajeError = resultado.MensajeError;
+                    enviarResumenResponse.Exito = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                documentoResponse.MensajeError = ex.Message;
+                documentoResponse.Pila = ex.StackTrace;
+                documentoResponse.Exito = false;
+            }
+
+            return null;
+        }
+
         [Authorize]
         [HttpPost, Route("sendXMLtoSUNAT")]
         public async Task<EnviarDocumentoResponse> sendXMLtoSUNAT([FromBody] SendXMLRequest sendXMLRequest)

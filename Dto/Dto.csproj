@@ -50,6 +50,7 @@
     <Compile Include="Intercambio\DocumentoResponse.cs" />
     <Compile Include="Intercambio\EnviarDocumentoRequest.cs" />
     <Compile Include="Intercambio\EnviarDocumentoResponse.cs" />
+    <Compile Include="Intercambio\EnviarResumenResponse.cs" />
     <Compile Include="Intercambio\EnvioDocumentoComun.cs" />
     <Compile Include="Intercambio\FirmadoRequest.cs" />
     <Compile Include="Intercambio\FirmadoResponse.cs" />
@@ -57,13 +58,17 @@
     <Compile Include="Intercambio\RespuestaComunConArchivo.cs" />
     <Compile Include="Modelos\Anticipo.cs" />
     <Compile Include="Modelos\Compania.cs" />
+    <Compile Include="Modelos\ComunicacionBaja.cs" />
     <Compile Include="Modelos\Contribuyente.cs" />
     <Compile Include="Modelos\DatoAdicional.cs" />
     <Compile Include="Modelos\DatoCredito.cs" />
     <Compile Include="Modelos\DetalleDocumento.cs" />
     <Compile Include="Modelos\Discrepancia.cs" />
+    <Compile Include="Modelos\DocumentoBaja.cs" />
     <Compile Include="Modelos\DocumentoElectronico.cs" />
     <Compile Include="Modelos\DocumentoRelacionado.cs" />
+    <Compile Include="Modelos\DocumentoResumen.cs" />
+    <Compile Include="Modelos\DocumentoResumenDetalle.cs" />
     <Compile Include="Modelos\Leyenda.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
