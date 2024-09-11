@@ -87,7 +87,6 @@ namespace FacturacionApi.Controllers
                     $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
 
                 documentoResponse.Exito = true;
-                // --
 
                 // 2: FIRMAR XML
 
@@ -194,8 +193,6 @@ namespace FacturacionApi.Controllers
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
 
-                // --
-
                 // 3: ENVIAR DOCUMENTO
 
                 var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.TipoDocumento}-{documentoRequest.IdDocumento}";
@@ -218,7 +215,6 @@ namespace FacturacionApi.Controllers
                 if (resultado.Exito)
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
-                    // Quitamos la R y la extensión devueltas por el Servicio.
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
                     string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
@@ -372,7 +368,7 @@ namespace FacturacionApi.Controllers
 
         [AllowAnonymous]
         [HttpPost, Route("comunicacionBaja")]
-        public async Task<EnviarDocumentoResponse> comunicacionBaja([FromBody] ComunicacionBaja comunicacionBaja)
+        public async Task<EnviarResumenResponse> comunicacionBaja([FromBody] ComunicacionBaja comunicacionBaja)
         {
             // 1: GENERAR XML
             IDocumentoXml _documentoXml = new ComunicacionBajaXml();
@@ -389,9 +385,22 @@ namespace FacturacionApi.Controllers
 
             try
             {
+                string projectPath = Array.Find(Project.projects, e => e == comunicacionBaja.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
                 // 1: GENERAR XML
+
                 var voidedDocument = _documentoXml.Generar(comunicacionBaja);
                 documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(voidedDocument);
+
                 documentoResponse.Exito = true;
 
                 // 2: FIRMAR XML
@@ -420,11 +429,29 @@ namespace FacturacionApi.Controllers
                 firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
                 firmadoResponse.Exito = true;
 
-                // Guardando XML de la Comunicacion de Baja
-                
-                File.WriteAllBytes("comunicacionbaja.xml", Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                string bajaXmlPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\ComunicacionBajaXML\\";
+                if (!Directory.Exists(AppSettings.filePath + bajaXmlPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + bajaXmlPath);
+                }
 
-                // 3: ENVIAR DOCUMENTO
+                string saveBajaXMLPath = bajaXmlPath + $"{comunicacionBaja.IdDocumento}.xml";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveBajaXMLPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveBajaXMLPath.Replace(".xml", $"({i}).xml")))
+                    {
+                        i++;
+                    }
+                    saveBajaXMLPath = saveBajaXMLPath.Replace(".xml", $"({i}).xml");
+                    File.WriteAllBytes(AppSettings.filePath + saveBajaXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                }
+                else
+                {
+                    File.WriteAllBytes(AppSettings.filePath + saveBajaXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+                }
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -435,6 +462,8 @@ namespace FacturacionApi.Controllers
                     IdDocumento = comunicacionBaja.IdDocumento,
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
+
+                // 3: ENVIAR COMUNICACION DE BAJA
 
                 var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.IdDocumento}";
                 var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
@@ -467,12 +496,12 @@ namespace FacturacionApi.Controllers
             }
             catch (Exception ex)
             {
-                documentoResponse.MensajeError = ex.Message;
-                documentoResponse.Pila = ex.StackTrace;
-                documentoResponse.Exito = false;
+                enviarResumenResponse.MensajeError = ex.Message;
+                enviarResumenResponse.Pila = ex.StackTrace;
+                enviarResumenResponse.Exito = false;
             }
 
-            return null;
+            return enviarResumenResponse;
         }
 
         [Authorize]
