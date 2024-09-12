@@ -1,4 +1,5 @@
 ﻿using BusinessEntity;
+using BusinessEntity.Dtos;
 using DataAccess;
 using Dto.Intercambio;
 using Dto.Modelos;
@@ -39,6 +40,11 @@ namespace BusinessLogic
         public ElectronicReceiptBE get(int id)
         {
             return oElectronicReceiptDA.get(id);
+        }
+
+        public void cancelElectronicReceipt(CancelElectronicReceiptRequest cancelElectronicReceiptRequest)
+        {
+            oElectronicReceiptDA.cancelElectronicReceipt(cancelElectronicReceiptRequest);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BusinessEntity;
 using Populate;
 using System;
+using BusinessEntity.Dtos;
 
 namespace DataAccess
 {
@@ -133,6 +134,27 @@ namespace DataAccess
             }
 
             return oElectronicReceiptBE;
+        }
+
+        public void cancelElectronicReceipt(CancelElectronicReceiptRequest cancelElectronicReceiptRequest)
+        {
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_Cancel))
+            {
+                cmd.CommandTimeout = 0;
+
+                db.AddInParameter(cmd, "project", DbType.String, cancelElectronicReceiptRequest.project);
+                db.AddInParameter(cmd, "nroRUC", DbType.String, cancelElectronicReceiptRequest.nroRUC);
+                db.AddInParameter(cmd, "series", DbType.String, cancelElectronicReceiptRequest.series);
+                db.AddInParameter(cmd, "correlative", DbType.String, cancelElectronicReceiptRequest.correlative);
+                db.AddInParameter(cmd, "cancellationReason", DbType.String, cancelElectronicReceiptRequest.cancellationReason);
+                db.AddInParameter(cmd, "cancellationName", DbType.String, cancelElectronicReceiptRequest.cancellationName);
+                db.AddInParameter(cmd, "canceledPdfLink", DbType.String, cancelElectronicReceiptRequest.canceledPdfLink);
+                db.AddInParameter(cmd, "canceledXmlLink", DbType.String, cancelElectronicReceiptRequest.canceledXmlLink);
+                db.AddInParameter(cmd, "canceledCdrLink", DbType.String, cancelElectronicReceiptRequest.canceledCdrLink);
+                db.AddInParameter(cmd, "canceledTicketNumber", DbType.String, cancelElectronicReceiptRequest.canceledTicketNumber);
+
+                db.ExecuteNonQuery(cmd);
+            }
         }
     }
 }

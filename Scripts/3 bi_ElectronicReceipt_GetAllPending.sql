@@ -61,3 +61,4 @@ SELECT
 FROM ElectronicReceipt 
 WHERE acceptedBySunat = 0
 AND (numberResends IS NULL OR numberResends < 9)
+AND canceled = 0

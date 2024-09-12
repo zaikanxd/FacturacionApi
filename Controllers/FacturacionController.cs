@@ -486,6 +486,8 @@ namespace FacturacionApi.Controllers
 
                 if (resultado.Exito)
                 {
+                    CancelElectronicReceiptRequest cancelElectronicReceiptRequest = new CancelElectronicReceiptRequest();
+
                     enviarResumenResponse.NroTicket = resultado.NumeroTicket;
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
@@ -515,7 +517,20 @@ namespace FacturacionApi.Controllers
                         string saveZIPPath = comunicacionBajaZipPath + $"{comunicacionBaja.IdDocumento}.zip";
 
                         File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                        cancelElectronicReceiptRequest.canceledCdrLink = saveZIPPath;
                     }
+
+                    cancelElectronicReceiptRequest.project = comunicacionBaja.Project;
+                    cancelElectronicReceiptRequest.nroRUC = comunicacionBaja.Emisor.NroDocumento;
+                    cancelElectronicReceiptRequest.series = comunicacionBaja.Bajas.First().Serie;
+                    cancelElectronicReceiptRequest.correlative = comunicacionBaja.Bajas.First().Correlativo;
+                    cancelElectronicReceiptRequest.cancellationReason = comunicacionBaja.Bajas.First().MotivoBaja;
+                    cancelElectronicReceiptRequest.cancellationName = comunicacionBaja.IdDocumento;
+                    cancelElectronicReceiptRequest.canceledXmlLink = saveBajaXMLPath;
+                    cancelElectronicReceiptRequest.canceledTicketNumber = resultado.NumeroTicket;
+
+                    oElectronicReceiptBL.cancelElectronicReceipt(cancelElectronicReceiptRequest);
                 }
                 else
                 {

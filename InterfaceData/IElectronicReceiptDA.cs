@@ -1,4 +1,5 @@
 ﻿using BusinessEntity;
+using BusinessEntity.Dtos;
 using Dto.Intercambio;
 using Dto.Modelos;
 using System;
@@ -17,5 +18,7 @@ namespace InterfaceData
         List<ElectronicReceiptBE> getListBy(DateTime date, string filter = null);
 
         ElectronicReceiptBE get(int id);
+
+        void cancelElectronicReceipt(CancelElectronicReceiptRequest cancelElectronicReceiptRequest);
     }
 }
