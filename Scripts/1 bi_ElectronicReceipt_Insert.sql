@@ -32,7 +32,8 @@ CREATE PROCEDURE bi_ElectronicReceipt_Insert
 	@currency VARCHAR(50),
 	@errorMessage VARCHAR(200) = NULL,
     @cdrTicketNumber VARCHAR(50) = NULL,
-	@userCreated VARCHAR(50) = NULL
+	@userCreated VARCHAR(50) = NULL,
+	@cdrLink VARCHAR(100) = NULL
 AS
 
 INSERT INTO ElectronicReceipt (
@@ -62,7 +63,9 @@ INSERT INTO ElectronicReceipt (
 	errorMessage,
 	cdrTicketNumber,
 	userCreated,
-	creationDate
+	creationDate,
+	canceled,
+	cdrLink
 )
 VALUES(
 	@project,
@@ -91,5 +94,7 @@ VALUES(
 	@errorMessage,
 	@cdrTicketNumber,
 	@userCreated,
-	GETDATE()
+	GETDATE(),
+	0,
+	@cdrLink
 )

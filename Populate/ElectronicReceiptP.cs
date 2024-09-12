@@ -67,6 +67,14 @@ namespace Populate
                 oElectronicReceiptBE.creationDate = dr.GetDateTime(dr.GetOrdinal("creationDate"));
             if (!dr.IsDBNull(dr.GetOrdinal("updateDate")))
                 oElectronicReceiptBE.updateDate = dr.GetDateTime(dr.GetOrdinal("updateDate"));
+            if (!dr.IsDBNull(dr.GetOrdinal("cdrLink")))
+                oElectronicReceiptBE.cdrLink = dr.GetString(dr.GetOrdinal("cdrLink"));
+            if (!dr.IsDBNull(dr.GetOrdinal("canceled")))
+                oElectronicReceiptBE.canceled = dr.GetBoolean(dr.GetOrdinal("canceled"));
+            if (!dr.IsDBNull(dr.GetOrdinal("cancellationReason")))
+                oElectronicReceiptBE.cancellationReason = dr.GetString(dr.GetOrdinal("cancellationReason"));
+            if (!dr.IsDBNull(dr.GetOrdinal("cancellationName")))
+                oElectronicReceiptBE.cancellationName = dr.GetString(dr.GetOrdinal("cancellationName"));
 
             if (!dr.IsDBNull(dr.GetOrdinal("senderDocumentType")))
                 oElectronicReceiptBE.senderDocumentType = dr.GetString(dr.GetOrdinal("senderDocumentType"));

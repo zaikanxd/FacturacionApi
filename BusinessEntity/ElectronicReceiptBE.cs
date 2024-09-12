@@ -33,6 +33,10 @@ namespace BusinessEntity
         public string userCreated { get; set; }
         public DateTime creationDate { get; set; }
         public DateTime updateDate { get; set; }
+        public string cdrLink { get; set; }
+        public bool canceled { get; set; }
+        public string cancellationReason { get; set; }
+        public string cancellationName { get; set; }
         //
         public string senderDocumentType { get; set; }
         public string receiptType { get; set; }

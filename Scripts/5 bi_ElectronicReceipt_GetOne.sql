@@ -41,6 +41,10 @@ SELECT
 	userCreated,
 	creationDate,
 	updateDate,
+	cdrLink,
+	canceled,
+	cancellationReason,
+	cancellationName,
 	(CASE
 		WHEN senderDocumentTypeId = 6 THEN 'RUC'
 		WHEN senderDocumentTypeId = 1 THEN 'DNI'

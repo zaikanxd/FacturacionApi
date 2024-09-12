@@ -1,0 +1,55 @@
+CREATE DATABASE Billing
+
+USE Billing
+
+CREATE TABLE ElectronicReceipt (
+ id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ project VARCHAR(100) NOT NULL,
+ format VARCHAR(20) NOT NULL,
+ senderDocumentTypeId INT NOT NULL,
+ senderDocument VARCHAR(11) NOT NULL,
+ senderName VARCHAR(100) NOT NULL,
+ series VARCHAR(10) NOT NULL,
+ correlative INT NOT NULL,
+ receiptTypeId INT NOT NULL,
+ recipientDocumentTypeId INT NOT NULL,
+ recipientDocument VARCHAR(11) NOT NULL,
+ recipientName VARCHAR(100) NOT NULL,
+ discount DECIMAL(14,2) NULL,
+ subtotal DECIMAL(14,2) NOT NULL,
+ totalIGV DECIMAL(14,2) NOT NULL,
+ total DECIMAL(14,2) NOT NULL,
+ acceptedBySunat BIT NOT NULL,
+ sunatDescription VARCHAR(200) NULL,
+ qrCode VARCHAR(200) NOT NULL,
+ pdfLink VARCHAR(100) NOT NULL,
+ xmlLink VARCHAR(100) NOT NULL,
+ issueDate DATETIME NOT NULL,
+ issueTime VARCHAR(20) NOT NULL,
+ currency VARCHAR(50),
+ errorMessage VARCHAR(200) NULL,
+ cdrTicketNumber VARCHAR(50) NULL,
+ userCreated VARCHAR(50) NULL,
+ creationDate DATETIME NOT NULL,
+ updateDate DATETIME NULL,
+ numberResends INT NULL,
+ ---
+ cdrLink VARCHAR(100) NULL,
+ canceled BIT NOT NULL,
+ cancellationReason VARCHAR(200) NULL,
+ cancellationName VARCHAR(20) NULL,
+)
+
+CREATE TABLE [User] (
+ id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ username VARCHAR(50) NOT NULL,
+ password VARCHAR(200) NOT NULL,
+ status BIT NOT NULL,
+ names VARCHAR(100) NULL,
+ lastName VARCHAR(100) NULL,
+ motherLastName VARCHAR(100) NULL,
+ userCreated VARCHAR(50) NOT NULL,
+ creationDate DATETIME NOT NULL,
+ userUpdated VARCHAR(50) NULL,
+ updateDate DATETIME NULL,
+)

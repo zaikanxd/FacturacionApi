@@ -226,6 +226,8 @@ namespace FacturacionApi.Controllers
                     string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
 
                     File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                    enviarDocumentoResponse.cdrPath = saveZIPPath;
                 } 
                 else
                 {
@@ -400,7 +402,6 @@ namespace FacturacionApi.Controllers
 
                 var voidedDocument = _documentoXml.Generar(comunicacionBaja);
                 documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(voidedDocument);
-
                 documentoResponse.Exito = true;
 
                 // 2: FIRMAR XML
@@ -430,6 +431,7 @@ namespace FacturacionApi.Controllers
                 firmadoResponse.Exito = true;
 
                 string bajaXmlPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\ComunicacionBajaXML\\";
+
                 if (!Directory.Exists(AppSettings.filePath + bajaXmlPath))
                 {
                     Directory.CreateDirectory(AppSettings.filePath + bajaXmlPath);
@@ -488,15 +490,32 @@ namespace FacturacionApi.Controllers
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
 
-                    var ticketRequest = new TicketRequest
+                    _servicioSunatDocumentos.Inicializar(new ParametrosConexion
                     {
-                        Project = comunicacionBaja.Project,
-                        NroRUC = comunicacionBaja.Emisor.NroDocumento,
-                        NroTicket = resultado.NumeroTicket,
-                        NombreArchivo = comunicacionBaja.IdDocumento
-                    };
+                        Ruc = comunicacionBaja.Emisor.NroDocumento,
+                        UserName = credencial.usuarioSol,
+                        Password = credencial.claveSol,
+                        EndPointUrl = urlSunat
+                    });
 
-                    consultarTicket(ticketRequest);
+                    var resultadoTicket = _servicioSunatDocumentos.ConsultarTicket(resultado.NumeroTicket);
+
+                    if (resultadoTicket.Exito)
+                    {
+                        var enviarDocumentoResponse = new EnviarDocumentoResponse();
+                        enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultadoTicket.ConstanciaDeRecepcion);
+
+                        string comunicacionBajaZipPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\ComunicacionBajaZipCdr\\";
+
+                        if (!Directory.Exists(AppSettings.filePath + comunicacionBajaZipPath))
+                        {
+                            Directory.CreateDirectory(AppSettings.filePath + comunicacionBajaZipPath);
+                        }
+
+                        string saveZIPPath = comunicacionBajaZipPath + $"{comunicacionBaja.IdDocumento}.zip";
+
+                        File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+                    }
                 }
                 else
                 {
@@ -514,8 +533,6 @@ namespace FacturacionApi.Controllers
             return enviarResumenResponse;
         }
 
-        [AllowAnonymous]
-        [HttpPost, Route("consultarTicket")]
         public async Task<EnviarDocumentoResponse> consultarTicket(TicketRequest ticketRequest)
         {
             // 1: ENVIAR DOCUMENTO
@@ -563,16 +580,6 @@ namespace FacturacionApi.Controllers
                 else
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
-
-                    string comunicacionBajaZipPath = projectPath + AppSettings.cePath + $"{ticketRequest.NroRUC}\\ComunicacionBajaZipCdr\\";
-                    if (!Directory.Exists(AppSettings.filePath + comunicacionBajaZipPath))
-                    {
-                        Directory.CreateDirectory(AppSettings.filePath + comunicacionBajaZipPath);
-                    }
-
-                    string saveZIPPath = comunicacionBajaZipPath + $"{ticketRequest.NombreArchivo}.zip";
-
-                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
                 }
             }
             catch (Exception ex)
@@ -644,8 +651,6 @@ namespace FacturacionApi.Controllers
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
 
-                // --
-
                 // 3: ENVIAR DOCUMENTO
 
                 var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.TipoDocumento}-{documentoRequest.IdDocumento}";
@@ -673,10 +678,10 @@ namespace FacturacionApi.Controllers
                 else
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
-                    // Quitamos la R y la extensión devueltas por el Servicio.
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
                     string zipPath = projectPath + AppSettings.cePath + $"{sendXMLRequest.senderDocument}\\TramaZipCdr\\";
+
                     if (!Directory.Exists(AppSettings.filePath + zipPath))
                     {
                         Directory.CreateDirectory(AppSettings.filePath + zipPath);
@@ -689,6 +694,7 @@ namespace FacturacionApi.Controllers
                     enviarDocumentoResponse.qrCode = sendXMLRequest.qrCode;
                     enviarDocumentoResponse.xmlPath = sendXMLRequest.xmlPath;
                     enviarDocumentoResponse.pdfPath = sendXMLRequest.pdfPath;
+                    enviarDocumentoResponse.cdrPath = saveZIPPath;
                 }
 
                 oElectronicReceiptBL.updateElectronicReceipt(sendXMLRequest.id, enviarDocumentoResponse);

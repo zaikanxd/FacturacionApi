@@ -11,7 +11,8 @@ CREATE PROCEDURE bi_ElectronicReceipt_Update
 	@acceptedBySunat BIT,
 	@sunatDescription VARCHAR(200) = NULL,
 	@errorMessage VARCHAR(200) = NULL,
-    @cdrTicketNumber VARCHAR(50) = NULL
+    @cdrTicketNumber VARCHAR(50) = NULL,
+	@cdrLink VARCHAR(100) = NULL
 AS
 
 DECLARE @numberResends INT
@@ -26,5 +27,6 @@ UPDATE ElectronicReceipt SET
 	errorMessage = @errorMessage,
 	cdrTicketNumber = @cdrTicketNumber,
 	updateDate = GETDATE(),
-	numberResends = @numberResends
+	numberResends = @numberResends,
+	cdrLink = @cdrLink
 WHERE id = @id

@@ -51,6 +51,7 @@ namespace DataAccess
                 db.AddInParameter(cmd, "errorMessage", DbType.String, pEnviarDocumentoResponse.MensajeError);
                 db.AddInParameter(cmd, "cdrTicketNumber", DbType.String, pEnviarDocumentoResponse.NroTicketCdr);
                 db.AddInParameter(cmd, "userCreated", DbType.String, documento.UserCreated);
+                db.AddInParameter(cmd, "cdrLink", DbType.String, pEnviarDocumentoResponse.cdrPath);
 
                 db.ExecuteNonQuery(cmd);
             }
@@ -67,6 +68,7 @@ namespace DataAccess
                 db.AddInParameter(cmd, "sunatDescription", DbType.String, pEnviarDocumentoResponse.MensajeRespuesta);
                 db.AddInParameter(cmd, "errorMessage", DbType.String, pEnviarDocumentoResponse.MensajeError);
                 db.AddInParameter(cmd, "cdrTicketNumber", DbType.String, pEnviarDocumentoResponse.NroTicketCdr);
+                db.AddInParameter(cmd, "cdrLink", DbType.String, pEnviarDocumentoResponse.cdrPath);
 
                 db.ExecuteNonQuery(cmd);
             }

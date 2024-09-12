@@ -15,5 +15,7 @@
         public string pdfPath { get; set; }
 
         public string xmlPath { get; set; }
+
+        public string cdrPath { get; set; }
     }
 }
