@@ -415,7 +415,7 @@ namespace FacturacionApi.Controllers
 
         [AllowAnonymous]
         [HttpPost, Route("comunicacionBaja")]
-        public async Task<EnviarResumenResponse> comunicacionBaja([FromBody] ComunicacionBaja comunicacionBaja)
+        public async Task<EnviarResumenResponse> comunicacionBaja([FromBody] CancelElectronicDocumentRequest cancelElectronicDocumentRequest)
         {
             // 1: GENERAR XML
             IDocumentoXml _documentoXml = new ComunicacionBajaXml();
@@ -432,7 +432,7 @@ namespace FacturacionApi.Controllers
 
             try
             {
-                string projectPath = Array.Find(Project.projects, e => e == comunicacionBaja.Project);
+                string projectPath = Array.Find(Project.projects, e => e == cancelElectronicDocumentRequest.project);
 
                 if (projectPath == null)
                 {
@@ -445,20 +445,30 @@ namespace FacturacionApi.Controllers
 
                 // 1: GENERAR XML
 
-                var voidedDocument = _documentoXml.Generar(comunicacionBaja);
+                var voidedDocument = _documentoXml.Generar(new ComunicacionBaja
+                {
+                    IdDocumento = cancelElectronicDocumentRequest.idDocumento,
+                    FechaEmision = cancelElectronicDocumentRequest.fechaEmision,
+                    FechaReferencia = cancelElectronicDocumentRequest.fechaReferencia,
+                    Emisor = cancelElectronicDocumentRequest.emisor,
+                    Bajas = new List<DocumentoBaja>()
+                    {
+                        cancelElectronicDocumentRequest.documentoBaja
+                    }
+                });
                 documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(voidedDocument);
                 documentoResponse.Exito = true;
 
                 // 2: FIRMAR XML
 
-                string certificadoPath = AppSettings.certificadosPath + $"{comunicacionBaja.Emisor.NroDocumento}.pfx";
+                string certificadoPath = AppSettings.certificadosPath + $"{cancelElectronicDocumentRequest.emisor.NroDocumento}.pfx";
 
                 if (!File.Exists(AppSettings.filePath + certificadoPath))
                 {
                     throw new Exception("La empresa no cuenta con certificado");
                 }
 
-                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == comunicacionBaja.Emisor.NroDocumento);
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == cancelElectronicDocumentRequest.emisor.NroDocumento);
 
                 if (credencial == null)
                 {
@@ -475,14 +485,14 @@ namespace FacturacionApi.Controllers
                 firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
                 firmadoResponse.Exito = true;
 
-                string bajaXmlPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\ComunicacionBajaXML\\";
+                string bajaXmlPath = projectPath + AppSettings.cePath + $"{cancelElectronicDocumentRequest.emisor.NroDocumento}\\ComunicacionBajaXML\\";
 
                 if (!Directory.Exists(AppSettings.filePath + bajaXmlPath))
                 {
                     Directory.CreateDirectory(AppSettings.filePath + bajaXmlPath);
                 }
 
-                string saveBajaXMLPath = bajaXmlPath + $"{comunicacionBaja.IdDocumento}.xml";
+                string saveBajaXMLPath = bajaXmlPath + $"{cancelElectronicDocumentRequest.idDocumento}.xml";
 
                 // Verificar y guardar archivos repetidos
                 if (File.Exists(AppSettings.filePath + saveBajaXMLPath))
@@ -499,11 +509,11 @@ namespace FacturacionApi.Controllers
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
-                    Ruc = comunicacionBaja.Emisor.NroDocumento,
+                    Ruc = cancelElectronicDocumentRequest.emisor.NroDocumento,
                     UsuarioSol = credencial.usuarioSol,
                     ClaveSol = credencial.claveSol,
                     EndPointUrl = urlSunat,
-                    IdDocumento = comunicacionBaja.IdDocumento,
+                    IdDocumento = cancelElectronicDocumentRequest.idDocumento,
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
 
@@ -533,10 +543,11 @@ namespace FacturacionApi.Controllers
                     enviarResumenResponse.NroTicket = resultado.NumeroTicket;
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
+                    enviarResumenResponse.xmlPath = saveBajaXMLPath;
 
                     _servicioSunatDocumentos.Inicializar(new ParametrosConexion
                     {
-                        Ruc = comunicacionBaja.Emisor.NroDocumento,
+                        Ruc = cancelElectronicDocumentRequest.emisor.NroDocumento,
                         UserName = credencial.usuarioSol,
                         Password = credencial.claveSol,
                         EndPointUrl = urlSunat
@@ -549,28 +560,29 @@ namespace FacturacionApi.Controllers
                         var enviarDocumentoResponse = new EnviarDocumentoResponse();
                         enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultadoTicket.ConstanciaDeRecepcion);
 
-                        string comunicacionBajaZipPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\ComunicacionBajaZipCdr\\";
+                        string comunicacionBajaZipPath = projectPath + AppSettings.cePath + $"{cancelElectronicDocumentRequest.emisor.NroDocumento}\\ComunicacionBajaZipCdr\\";
 
                         if (!Directory.Exists(AppSettings.filePath + comunicacionBajaZipPath))
                         {
                             Directory.CreateDirectory(AppSettings.filePath + comunicacionBajaZipPath);
                         }
 
-                        string saveZIPPath = comunicacionBajaZipPath + $"{comunicacionBaja.IdDocumento}.zip";
+                        string saveZIPPath = comunicacionBajaZipPath + $"{cancelElectronicDocumentRequest.idDocumento}.zip";
 
                         File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
 
                         cancelElectronicReceiptRequest.canceledCdrLink = saveZIPPath;
+                        enviarResumenResponse.cdrPath = saveZIPPath;
                     }
 
                     string jsonLink = oElectronicReceiptBL.getJsonLink(new JsonLinkRequest
                     {
-                        project = comunicacionBaja.Project,
-                        senderDocumentTypeId = int.Parse(comunicacionBaja.Emisor.TipoDocumento),
-                        senderDocument = comunicacionBaja.Emisor.NroDocumento,
-                        series = comunicacionBaja.Bajas.First().Serie,
-                        correlative = int.Parse(comunicacionBaja.Bajas.First().Correlativo),
-                        issueDate = comunicacionBaja.FechaEmision,
+                        project = cancelElectronicDocumentRequest.project,
+                        senderDocumentTypeId = int.Parse(cancelElectronicDocumentRequest.emisor.TipoDocumento),
+                        senderDocument = cancelElectronicDocumentRequest.emisor.NroDocumento,
+                        series = cancelElectronicDocumentRequest.documentoBaja.Serie,
+                        correlative = int.Parse(cancelElectronicDocumentRequest.documentoBaja.Correlativo),
+                        issueDate = cancelElectronicDocumentRequest.fechaEmision,
                     });
 
                     if (jsonLink != null)
@@ -581,15 +593,18 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        cancelElectronicReceiptRequest.canceledPdfLink = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+
+                        cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
+                        enviarResumenResponse.pdfPath = pdfPath;
                     }
 
-                    cancelElectronicReceiptRequest.project = comunicacionBaja.Project;
-                    cancelElectronicReceiptRequest.nroRUC = comunicacionBaja.Emisor.NroDocumento;
-                    cancelElectronicReceiptRequest.series = comunicacionBaja.Bajas.First().Serie;
-                    cancelElectronicReceiptRequest.correlative = comunicacionBaja.Bajas.First().Correlativo;
-                    cancelElectronicReceiptRequest.cancellationReason = comunicacionBaja.Bajas.First().MotivoBaja;
-                    cancelElectronicReceiptRequest.cancellationName = comunicacionBaja.IdDocumento;
+                    cancelElectronicReceiptRequest.project = cancelElectronicDocumentRequest.project;
+                    cancelElectronicReceiptRequest.nroRUC = cancelElectronicDocumentRequest.emisor.NroDocumento;
+                    cancelElectronicReceiptRequest.series = cancelElectronicDocumentRequest.documentoBaja.Serie;
+                    cancelElectronicReceiptRequest.correlative = cancelElectronicDocumentRequest.documentoBaja.Correlativo;
+                    cancelElectronicReceiptRequest.cancellationReason = cancelElectronicDocumentRequest.documentoBaja.MotivoBaja;
+                    cancelElectronicReceiptRequest.cancellationName = cancelElectronicDocumentRequest.idDocumento;
                     cancelElectronicReceiptRequest.canceledXmlLink = saveBajaXMLPath;
                     cancelElectronicReceiptRequest.canceledTicketNumber = resultado.NumeroTicket;
 
@@ -622,7 +637,7 @@ namespace FacturacionApi.Controllers
 
             try
             {
-                string projectPath = Array.Find(Project.projects, e => e == ticketRequest.Project);
+                string projectPath = Array.Find(Project.projects, e => e == ticketRequest.project);
 
                 if (projectPath == null)
                 {
@@ -633,7 +648,7 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
-                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == ticketRequest.NroRUC);
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == ticketRequest.nroRUC);
 
                 if (credencial == null)
                 {
@@ -642,13 +657,13 @@ namespace FacturacionApi.Controllers
 
                 _servicioSunatDocumentos.Inicializar(new ParametrosConexion
                 {
-                    Ruc = ticketRequest.NroRUC,
+                    Ruc = ticketRequest.nroRUC,
                     UserName = credencial.usuarioSol,
                     Password = credencial.claveSol,
                     EndPointUrl = urlSunat
                 });
 
-                var resultado = _servicioSunatDocumentos.ConsultarTicket(ticketRequest.NroTicket);
+                var resultado = _servicioSunatDocumentos.ConsultarTicket(ticketRequest.nroTicket);
 
                 if (!resultado.Exito)
                 {

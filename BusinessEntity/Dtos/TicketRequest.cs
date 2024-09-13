@@ -2,9 +2,9 @@
 {
     public class TicketRequest
     {
-        public string Project { get; set; }
-        public string NroRUC { get; set; }
-        public string NroTicket { get; set; }
-        public string NombreArchivo { get; set; }
+        public string project { get; set; }
+        public string nroRUC { get; set; }
+        public string nroTicket { get; set; }
+        public string nombreArchivo { get; set; }
     }
 }

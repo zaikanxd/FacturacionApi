@@ -7,7 +7,5 @@ namespace Dto.Modelos
     {
         [JsonProperty(Required = Required.Always)]
         public List<DocumentoBaja> Bajas { get; set; }
-
-        public string Project { get; set; }
     }
 }
