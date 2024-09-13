@@ -563,12 +563,25 @@ namespace FacturacionApi.Controllers
                         cancelElectronicReceiptRequest.canceledCdrLink = saveZIPPath;
                     }
 
+                    string jsonPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\JSON\\";
+
+                    jsonPath = jsonPath + "FFF3-0000001.json";
+
+                    string jsonString = File.ReadAllText(AppSettings.filePath + jsonPath);
+
+                    DocumentoElectronico documento = JsonConvert.DeserializeObject<DocumentoElectronico>(jsonString);
+
+                    documento.EstaAnulado = true;
+
+                    string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+
                     cancelElectronicReceiptRequest.project = comunicacionBaja.Project;
                     cancelElectronicReceiptRequest.nroRUC = comunicacionBaja.Emisor.NroDocumento;
                     cancelElectronicReceiptRequest.series = comunicacionBaja.Bajas.First().Serie;
                     cancelElectronicReceiptRequest.correlative = comunicacionBaja.Bajas.First().Correlativo;
                     cancelElectronicReceiptRequest.cancellationReason = comunicacionBaja.Bajas.First().MotivoBaja;
                     cancelElectronicReceiptRequest.cancellationName = comunicacionBaja.IdDocumento;
+                    cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                     cancelElectronicReceiptRequest.canceledXmlLink = saveBajaXMLPath;
                     cancelElectronicReceiptRequest.canceledTicketNumber = resultado.NumeroTicket;
 

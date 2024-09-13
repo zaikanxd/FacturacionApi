@@ -57,7 +57,7 @@ namespace FacturacionApi.Utils
             {
                 Directory.CreateDirectory(AppSettings.filePath + pdfPath);
             }
-            string savePDFPath = pdfPath + $"{documento.IdDocumento}.pdf";
+            string savePDFPath = pdfPath + (documento.EstaAnulado ? $"ANULADO-{documento.IdDocumento}.pdf" : $"{documento.IdDocumento}.pdf");
 
             // Verificar y guardar archivos repetidos
             if (File.Exists(AppSettings.filePath + savePDFPath))

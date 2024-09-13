@@ -137,6 +137,8 @@ namespace Dto.Modelos
 
         public bool EsVistaPrevia { get; set; }
 
+        public bool EstaAnulado { get; set; }
+
         public DocumentoElectronico()
         {
             Emisor = new Compania
@@ -162,6 +164,7 @@ namespace Dto.Modelos
             FechaEmision = DateTime.Today.ToString("yyyy-MM-dd");
             HoraEmision = DateTime.Now.ToString("HH:mm:ss");
             EsVistaPrevia = false;
+            EstaAnulado = false;
         }
     }
 

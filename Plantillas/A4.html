@@ -40,6 +40,12 @@
 <body>
     <div class="contenedor" style="position: relative;">
         @{
+        if (Model.EstaAnulado)
+        {
+        <div style="position: absolute; width: 100%; top: 50%; color:red; font-size: 80px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg);">ANULADO</div>
+        }
+        }
+        @{
         if (Model.EsVistaPrevia)
         {
         <div style="position: absolute; width: 100%; top: 50%; color:red; font-size: 80px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg);">VISTA PREVIA</div>
