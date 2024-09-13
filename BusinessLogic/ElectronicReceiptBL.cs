@@ -46,5 +46,10 @@ namespace BusinessLogic
         {
             oElectronicReceiptDA.cancelElectronicReceipt(cancelElectronicReceiptRequest);
         }
+
+        public string getJsonLink(JsonLinkRequest jsonLinkRequest)
+        {
+            return oElectronicReceiptDA.getJsonLink(jsonLinkRequest);
+        }
     }
 }

@@ -157,5 +157,28 @@ namespace DataAccess
                 db.ExecuteNonQuery(cmd);
             }
         }
+
+        public string getJsonLink(JsonLinkRequest jsonLinkRequest)
+        {
+            string jsonLink = null;
+
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_GetJsonLink))
+            {
+                cmd.CommandTimeout = 0;
+                db.AddInParameter(cmd, "project", DbType.String, jsonLinkRequest.project);
+                db.AddInParameter(cmd, "senderDocumentTypeId", DbType.Int32, jsonLinkRequest.senderDocumentTypeId);
+                db.AddInParameter(cmd, "senderDocument", DbType.String, jsonLinkRequest.senderDocument);
+                db.AddInParameter(cmd, "series", DbType.String, jsonLinkRequest.series);
+                db.AddInParameter(cmd, "correlative", DbType.Int32, jsonLinkRequest.correlative);
+                db.AddInParameter(cmd, "issueDate", DbType.DateTime, jsonLinkRequest.issueDate);
+                db.AddOutParameter(cmd, "jsonLink", DbType.String, 100);
+                db.ExecuteNonQuery(cmd);
+
+                if (db.GetParameterValue(cmd, "jsonLink") != DBNull.Value)
+                    jsonLink = Convert.ToString(db.GetParameterValue(cmd, "jsonLink"));
+            }
+
+            return jsonLink;
+        }
     }
 }

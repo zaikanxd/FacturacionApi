@@ -563,17 +563,26 @@ namespace FacturacionApi.Controllers
                         cancelElectronicReceiptRequest.canceledCdrLink = saveZIPPath;
                     }
 
-                    string jsonPath = projectPath + AppSettings.cePath + $"{comunicacionBaja.Emisor.NroDocumento}\\JSON\\";
+                    string jsonLink = oElectronicReceiptBL.getJsonLink(new JsonLinkRequest
+                    {
+                        project = comunicacionBaja.Project,
+                        senderDocumentTypeId = int.Parse(comunicacionBaja.Emisor.TipoDocumento),
+                        senderDocument = comunicacionBaja.Emisor.NroDocumento,
+                        series = comunicacionBaja.Bajas.First().Serie,
+                        correlative = int.Parse(comunicacionBaja.Bajas.First().Correlativo),
+                        issueDate = comunicacionBaja.FechaEmision,
+                    });
 
-                    jsonPath = jsonPath + "FFF3-0000001.json";
+                    if (jsonLink != null)
+                    {
+                        string jsonString = File.ReadAllText(AppSettings.filePath + jsonLink);
 
-                    string jsonString = File.ReadAllText(AppSettings.filePath + jsonPath);
+                        DocumentoElectronico documento = JsonConvert.DeserializeObject<DocumentoElectronico>(jsonString);
 
-                    DocumentoElectronico documento = JsonConvert.DeserializeObject<DocumentoElectronico>(jsonString);
+                        documento.EstaAnulado = true;
 
-                    documento.EstaAnulado = true;
-
-                    string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                        cancelElectronicReceiptRequest.canceledPdfLink = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                    }
 
                     cancelElectronicReceiptRequest.project = comunicacionBaja.Project;
                     cancelElectronicReceiptRequest.nroRUC = comunicacionBaja.Emisor.NroDocumento;
@@ -581,7 +590,6 @@ namespace FacturacionApi.Controllers
                     cancelElectronicReceiptRequest.correlative = comunicacionBaja.Bajas.First().Correlativo;
                     cancelElectronicReceiptRequest.cancellationReason = comunicacionBaja.Bajas.First().MotivoBaja;
                     cancelElectronicReceiptRequest.cancellationName = comunicacionBaja.IdDocumento;
-                    cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                     cancelElectronicReceiptRequest.canceledXmlLink = saveBajaXMLPath;
                     cancelElectronicReceiptRequest.canceledTicketNumber = resultado.NumeroTicket;
 

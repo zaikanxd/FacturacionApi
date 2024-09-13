@@ -13,6 +13,7 @@ namespace DataAccess.Util
         public const string bi_User_Login = "bi_User_Login";
         public const string bi_ElectronicReceiptReport_GetAllBy = "bi_ElectronicReceiptReport_GetAllBy";
         public const string bi_ElectronicReceipt_Cancel = "bi_ElectronicReceipt_Cancel";
+        public const string bi_GetJsonLink = "bi_GetJsonLink";
     }
 
     public static class AppSettings

@@ -20,5 +20,7 @@ namespace InterfaceData
         ElectronicReceiptBE get(int id);
 
         void cancelElectronicReceipt(CancelElectronicReceiptRequest cancelElectronicReceiptRequest);
+
+        string getJsonLink(JsonLinkRequest jsonLinkRequest);
     }
 }
