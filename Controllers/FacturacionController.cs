@@ -16,6 +16,7 @@ using BusinessEntity.Dtos;
 using System.Collections.Generic;
 using BusinessEntity;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace FacturacionApi.Controllers
 {
@@ -69,7 +70,7 @@ namespace FacturacionApi.Controllers
                 {
                     throw new Exception("No existe una carpeta para el proyecto");
                 } 
-                else 
+                else
                 {
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
@@ -138,16 +139,14 @@ namespace FacturacionApi.Controllers
                                 i++; 
                             }
                             saveQRPath = saveQRPath.Replace(".png", $"({i}).png");
-                            imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
                         }
-                        else
-                        {
-                            imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
-                        }
+
+                        imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
                     }
                 }
 
                 string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+
                 if (!Directory.Exists(AppSettings.filePath + xmlPath))
                 {
                     Directory.CreateDirectory(AppSettings.filePath + xmlPath);
@@ -164,12 +163,9 @@ namespace FacturacionApi.Controllers
                         i++;
                     }
                     saveXMLPath = saveXMLPath.Replace(".xml", $"({i}).xml");
-                    File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
                 }
-                else
-                {
-                    File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
-                }
+                
+                File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
 
                 string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
 
@@ -218,6 +214,7 @@ namespace FacturacionApi.Controllers
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
                     string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+
                     if (!Directory.Exists(AppSettings.filePath + zipPath))
                     {
                         Directory.CreateDirectory(AppSettings.filePath + zipPath);
@@ -239,7 +236,31 @@ namespace FacturacionApi.Controllers
                 enviarDocumentoResponse.xmlPath = saveXMLPath;
                 enviarDocumentoResponse.pdfPath = pdfPath;
 
-                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento);
+                // Guardar JSON
+
+                string jsonPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\JSON\\";
+
+                if (!Directory.Exists(AppSettings.filePath + jsonPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + jsonPath);
+                }
+
+                string saveJSONPath = jsonPath + $"{documento.IdDocumento}.json";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveJSONPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveJSONPath.Replace(".json", $"({i}).json")))
+                    {
+                        i++;
+                    }
+                    saveJSONPath = saveJSONPath.Replace(".json", $"({i}).json");
+                }
+                
+                File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
+
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
 
                 if (resultado.MensajeError != null)
                 {
@@ -289,6 +310,30 @@ namespace FacturacionApi.Controllers
                 });
                 documento.CantidadTotalProductos = cantidadTotalProductos;
                 documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
+
+                // Guardar JSON
+
+                string jsonPath = projectPath + $"{documento.CompanyId}\\";
+
+                if (!Directory.Exists(AppSettings.filePath + jsonPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + jsonPath);
+                }
+
+                string saveJSONPath = jsonPath + $"{documento.IdDocumento}.json";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveJSONPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveJSONPath.Replace(".json", $"({i}).json")))
+                    {
+                        i++;
+                    }
+                    saveJSONPath = saveJSONPath.Replace(".json", $"({i}).json");
+                }
+
+                File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
                 string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true);
 
@@ -448,12 +493,9 @@ namespace FacturacionApi.Controllers
                         i++;
                     }
                     saveBajaXMLPath = saveBajaXMLPath.Replace(".xml", $"({i}).xml");
-                    File.WriteAllBytes(AppSettings.filePath + saveBajaXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
                 }
-                else
-                {
-                    File.WriteAllBytes(AppSettings.filePath + saveBajaXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
-                }
+
+                File.WriteAllBytes(AppSettings.filePath + saveBajaXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {

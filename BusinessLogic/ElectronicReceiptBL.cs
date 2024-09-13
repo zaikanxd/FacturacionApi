@@ -17,9 +17,9 @@ namespace BusinessLogic
             get { return (_ElectronicReceiptDA == null ? _ElectronicReceiptDA = new ElectronicReceiptDA() : _ElectronicReceiptDA); }
         }
 
-        public void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento)
+        public void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento, string jsonPath)
         {
-            oElectronicReceiptDA.insertElectronicReceipt(pEnviarDocumentoResponse, documento);
+            oElectronicReceiptDA.insertElectronicReceipt(pEnviarDocumentoResponse, documento, jsonPath);
         }
 
         public void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse)

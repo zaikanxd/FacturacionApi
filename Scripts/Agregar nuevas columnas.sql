@@ -8,11 +8,11 @@ cancellationName VARCHAR(20) NULL,
 canceledPdfLink VARCHAR(100) NULL,
 canceledXmlLink VARCHAR(100) NULL,
 canceledCdrLink VARCHAR(100) NULL,
-canceledTicketNumber VARCHAR(50) NULL
+canceledTicketNumber VARCHAR(50) NULL,
+jsonLink VARCHAR(100) NULL
 
 UPDATE ElectronicReceipt SET
 canceled = 0
 
 ALTER TABLE ElectronicReceipt
 ALTER COLUMN canceled BIT NOT NULL
-
