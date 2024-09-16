@@ -7,5 +7,10 @@ namespace Dto.Modelos
         [JsonProperty(Order = 5)]
         [JsonRequired]
         public string CodigoAnexo { get; set; }
+
+        public Compania()
+        {
+            CodigoAnexo = "0000";
+        }
     }
 }
