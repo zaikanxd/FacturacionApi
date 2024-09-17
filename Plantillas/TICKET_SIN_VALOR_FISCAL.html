@@ -114,10 +114,10 @@
                         <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
                     </td>
                     <td>
-                        <p style="text-align: right;">@Math.Round(@item.PrecioReferencial, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(@item.PrecioReferencial + (@item.Descuento / @item.Cantidad), 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: right;">@Math.Round(@item.Descuento, 2).ToString("0.00")</p>
+                        <p style="text-align: right;">@Math.Round(@item.Descuento / @item.Cantidad, 2).ToString("0.00")</p>
                     </td>
                     <td>
                         <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
