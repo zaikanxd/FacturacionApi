@@ -33,11 +33,15 @@ CREATE TABLE ElectronicReceipt (
  creationDate DATETIME NOT NULL,
  updateDate DATETIME NULL,
  numberResends INT NULL,
- ---
  cdrLink VARCHAR(100) NULL,
  canceled BIT NOT NULL,
  cancellationReason VARCHAR(200) NULL,
  cancellationName VARCHAR(20) NULL,
+ canceledPdfLink VARCHAR(100) NULL,
+ canceledXmlLink VARCHAR(100) NULL,
+ canceledCdrLink VARCHAR(100) NULL,
+ canceledTicketNumber VARCHAR(50) NULL,
+ jsonLink VARCHAR(100) NULL
 )
 
 CREATE TABLE [User] (
