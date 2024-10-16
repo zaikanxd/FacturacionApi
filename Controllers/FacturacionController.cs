@@ -639,7 +639,7 @@ namespace FacturacionApi.Controllers
             ICertificador _certificador = new Certificador();
             var firmadoResponse = new FirmadoResponse();
 
-            // 3: ENVIAR RESUMEN
+            // 3: ENVIAR RESUMEN DIARIO
             IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
             var enviarResumenResponse = new EnviarResumenResponse();
 
@@ -698,13 +698,27 @@ namespace FacturacionApi.Controllers
                 firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
                 firmadoResponse.Exito = true;
 
-                if (!string.IsNullOrEmpty(firmadoRequest.ValoresQr))
-                    firmadoResponse.CodigoQr = QrHelper.GenerarImagenQr($"{firmadoRequest.ValoresQr}{firmadoResponse.ResumenFirma}");
+                string resumenDiarioXmlPath = projectPath + AppSettings.cePath + $"{dailySummaryRequest.emisor.NroDocumento}\\ResumenDiarioXML\\";
 
-                if (!firmadoResponse.Exito)
+                if (!Directory.Exists(AppSettings.filePath + resumenDiarioXmlPath))
                 {
-                    throw new InvalidOperationException(firmadoResponse.MensajeError);
+                    Directory.CreateDirectory(AppSettings.filePath + resumenDiarioXmlPath);
                 }
+
+                string saveResumenDiarioXMLPath = resumenDiarioXmlPath + $"{dailySummaryRequest.idDocumento}.xml";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveResumenDiarioXMLPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveResumenDiarioXMLPath.Replace(".xml", $"({i}).xml")))
+                    {
+                        i++;
+                    }
+                    saveResumenDiarioXMLPath = saveResumenDiarioXMLPath.Replace(".xml", $"({i}).xml");
+                }
+
+                File.WriteAllBytes(AppSettings.filePath + saveResumenDiarioXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -716,7 +730,7 @@ namespace FacturacionApi.Controllers
                     TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
 
-                // 3: ENVIAR RESUMEN
+                // 3: ENVIAR RESUMEN DIARIO
 
                 var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.IdDocumento}";
                 var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
@@ -737,11 +751,77 @@ namespace FacturacionApi.Controllers
 
                 if (resultado.Exito)
                 {
+                    CancelElectronicReceiptRequest cancelElectronicReceiptRequest = new CancelElectronicReceiptRequest();
+
                     enviarResumenResponse.NroTicket = resultado.NumeroTicket;
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
+                    enviarResumenResponse.xmlPath = saveResumenDiarioXMLPath;
+
+                    _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                    {
+                        Ruc = dailySummaryRequest.emisor.NroDocumento,
+                        UserName = credencial.usuarioSol,
+                        Password = credencial.claveSol,
+                        EndPointUrl = urlSunat
+                    });
 
                     var resultadoTicket = _servicioSunatDocumentos.ConsultarTicket(resultado.NumeroTicket);
+
+                    if (resultadoTicket.Exito)
+                    {
+                        var enviarDocumentoResponse = new EnviarDocumentoResponse();
+                        enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultadoTicket.ConstanciaDeRecepcion);
+
+                        string resumenDiarioZipPath = projectPath + AppSettings.cePath + $"{dailySummaryRequest.emisor.NroDocumento}\\ResumenDiarioZipCdr\\";
+
+                        if (!Directory.Exists(AppSettings.filePath + resumenDiarioZipPath))
+                        {
+                            Directory.CreateDirectory(AppSettings.filePath + resumenDiarioZipPath);
+                        }
+
+                        string saveZIPPath = resumenDiarioZipPath + $"{dailySummaryRequest.idDocumento}.zip";
+
+                        File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                        cancelElectronicReceiptRequest.canceledCdrLink = saveZIPPath;
+                        enviarResumenResponse.cdrPath = saveZIPPath;
+                    }
+
+                    string jsonLink = oElectronicReceiptBL.getJsonLink(new JsonLinkRequest
+                    {
+                        project = dailySummaryRequest.project,
+                        senderDocumentTypeId = int.Parse(dailySummaryRequest.emisor.TipoDocumento),
+                        senderDocument = dailySummaryRequest.emisor.NroDocumento,
+                        series = dailySummaryRequest.resumen.Serie,
+                        correlative = int.Parse(dailySummaryRequest.resumen.Correlativo),
+                        issueDate = dailySummaryRequest.fechaEmision,
+                    });
+
+                    if (jsonLink != null)
+                    {
+                        string jsonString = File.ReadAllText(AppSettings.filePath + jsonLink);
+
+                        DocumentoElectronico documento = JsonConvert.DeserializeObject<DocumentoElectronico>(jsonString);
+
+                        documento.EstaAnulado = true;
+
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+
+                        cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
+                        enviarResumenResponse.pdfPath = pdfPath;
+                    }
+
+                    cancelElectronicReceiptRequest.project = dailySummaryRequest.project;
+                    cancelElectronicReceiptRequest.nroRUC = dailySummaryRequest.emisor.NroDocumento;
+                    cancelElectronicReceiptRequest.series = dailySummaryRequest.resumen.Serie;
+                    cancelElectronicReceiptRequest.correlative = dailySummaryRequest.resumen.Correlativo;
+                    cancelElectronicReceiptRequest.cancellationReason = dailySummaryRequest.resumen.MotivoBaja;
+                    cancelElectronicReceiptRequest.cancellationName = dailySummaryRequest.idDocumento;
+                    cancelElectronicReceiptRequest.canceledXmlLink = saveResumenDiarioXMLPath;
+                    cancelElectronicReceiptRequest.canceledTicketNumber = resultado.NumeroTicket;
+
+                    oElectronicReceiptBL.cancelElectronicReceipt(cancelElectronicReceiptRequest);
                 }
                 else
                 {
@@ -751,9 +831,9 @@ namespace FacturacionApi.Controllers
             }
             catch (Exception ex)
             {
-                enviarResumenResponse.Exito = false;
                 enviarResumenResponse.MensajeError = ex.Message;
                 enviarResumenResponse.Pila = ex.StackTrace;
+                enviarResumenResponse.Exito = false;
             }
 
             return enviarResumenResponse;

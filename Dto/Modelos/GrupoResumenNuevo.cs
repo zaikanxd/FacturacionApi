@@ -19,5 +19,9 @@ namespace Dto.Modelos
         public string DocumentoRelacionado { get; set; }
 
         public string TipoDocumentoRelacionado { get; set; }
+
+        public string Correlativo { get; set; }
+
+        public string MotivoBaja { get; set; }
     }
 }
