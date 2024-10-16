@@ -628,7 +628,7 @@ namespace FacturacionApi.Controllers
 
         [AllowAnonymous]
         [HttpPost, Route("resumenDiario")]
-        public async Task<EnviarResumenResponse> resumenDiario([FromBody] CancelElectronicDocumentRequest cancelElectronicDocumentRequest)
+        public async Task<EnviarResumenResponse> resumenDiario([FromBody] DailySummaryRequest dailySummaryRequest)
         {
             // 1: GENERAR XML
             IDocumentoXml _documentoXml = new ResumenDiarioNuevoXml();
@@ -639,68 +639,65 @@ namespace FacturacionApi.Controllers
             ICertificador _certificador = new Certificador();
             var firmadoResponse = new FirmadoResponse();
 
-            // 3: ENVIAR DOCUMENTO
+            // 3: ENVIAR RESUMEN
             IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
             var enviarResumenResponse = new EnviarResumenResponse();
 
             try
             {
-                var documentoResumenDiario = new ResumenDiarioNuevo
+                string projectPath = Array.Find(Project.projects, e => e == dailySummaryRequest.project);
+
+                if (projectPath == null)
                 {
-                    IdDocumento = $"RC-{DateTime.Today:yyyyMMdd}-001",
-                    //FechaEmision = DateTime.Today.ToString(FormatoFecha),
-                    //FechaReferencia = DateTime.Today.AddDays(-1).ToString(FormatoFecha),
-                    //Emisor = CrearEmisor(),
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
+                // 1: GENERAR XML
+
+                var summary = _documentoXml.Generar(new ResumenDiarioNuevo
+                {
+                    IdDocumento = dailySummaryRequest.idDocumento,
+                    FechaEmision = dailySummaryRequest.fechaEmision,
+                    FechaReferencia = dailySummaryRequest.fechaReferencia,
+                    Emisor = dailySummaryRequest.emisor,
                     Resumenes = new List<GrupoResumenNuevo>()
-                };
-
-                documentoResumenDiario.Resumenes.Add(new GrupoResumenNuevo
-                {
-                    Id = 1,
-                    TipoDocumento = "03",
-                    IdDocumento = "BB14-33386",
-                    NroDocumentoReceptor = "41614074",
-                    TipoDocumentoReceptor = "1",
-                    CodigoEstadoItem = 1, // 1 - Agregar. 2 - Modificar. 3 - Eliminar
-                    Moneda = "PEN",
-                    TotalVenta = 190.9m,
-                    TotalIgv = 29.12m,
-                    TotalImpuestoBolsas = 6.50m,
-                    Gravadas = 161.78m,
+                    {
+                        dailySummaryRequest.resumen
+                    }
                 });
-
-                // Para los casos de envio de boletas anuladas, se debe primero informar las boletas creadas (1) y luego en un segundo resumen se envian las anuladas. De lo contrario se presentará el error 'El documento indicado no existe no puede ser modificado/eliminado'
-                documentoResumenDiario.Resumenes.Add(new GrupoResumenNuevo
-                {
-                    Id = 2,
-                    TipoDocumento = "03",
-                    IdDocumento = "BB30-33384",
-                    NroDocumentoReceptor = "08506678",
-                    TipoDocumentoReceptor = "1",
-                    CodigoEstadoItem = 1, // 1 - Agregar. 2 - Modificar. 3 - Eliminar
-                    Moneda = "USD",
-                    TotalVenta = 9580m,
-                    TotalIgv = 1411.36m,
-                    Gravadas = 8168.64m,
-                });
-
-                var summary = _documentoXml.Generar(documentoResumenDiario);
                 documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(summary);
                 documentoResponse.Exito = true;
 
-                if (!documentoResponse.Exito)
-                    throw new InvalidOperationException(documentoResponse.MensajeError);
+                // 2: FIRMAR XML
 
-                // Firmado del Documento.
+                string certificadoPath = AppSettings.certificadosPath + $"{dailySummaryRequest.emisor.NroDocumento}.pfx";
+
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == dailySummaryRequest.emisor.NroDocumento);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
                 var firmadoRequest = new FirmadoRequest
                 {
                     TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
-                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes("Certificado.pfx")),
-                    PasswordCertificado = string.Empty,
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + certificadoPath)),
+                    PasswordCertificado = credencial.passwordCertificado,
                 };
 
                 firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
                 firmadoResponse.Exito = true;
+
                 if (!string.IsNullOrEmpty(firmadoRequest.ValoresQr))
                     firmadoResponse.CodigoQr = QrHelper.GenerarImagenQr($"{firmadoRequest.ValoresQr}{firmadoResponse.ResumenFirma}");
 
@@ -709,26 +706,27 @@ namespace FacturacionApi.Controllers
                     throw new InvalidOperationException(firmadoResponse.MensajeError);
                 }
 
-                var enviarDocumentoRequest = new EnviarDocumentoRequest
+                var documentoRequest = new EnviarDocumentoRequest
                 {
-                    Ruc = documentoResumenDiario.Emisor.NroDocumento,
-                    UsuarioSol = "MODDATOS",
-                    ClaveSol = "MODDATOS",
-                    //EndPointUrl = UrlSunat,
-                    IdDocumento = documentoResumenDiario.IdDocumento,
-                    //TramaXmlFirmado = responseFirma.TramaXmlFirmado
+                    Ruc = dailySummaryRequest.emisor.NroDocumento,
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
+                    EndPointUrl = urlSunat,
+                    IdDocumento = dailySummaryRequest.idDocumento,
+                    TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
                 };
 
-                var nombreArchivo = $"{enviarDocumentoRequest.Ruc}-{enviarDocumentoRequest.IdDocumento}";
+                // 3: ENVIAR RESUMEN
 
-                var tramaZip = await _serializador.GenerarZip(enviarDocumentoRequest.TramaXmlFirmado, nombreArchivo);
+                var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.IdDocumento}";
+                var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
 
                 _servicioSunatDocumentos.Inicializar(new ParametrosConexion
                 {
-                    Ruc = enviarDocumentoRequest.Ruc,
-                    UserName = enviarDocumentoRequest.UsuarioSol,
-                    Password = enviarDocumentoRequest.ClaveSol,
-                    EndPointUrl = enviarDocumentoRequest.EndPointUrl
+                    Ruc = documentoRequest.Ruc,
+                    UserName = documentoRequest.UsuarioSol,
+                    Password = documentoRequest.ClaveSol,
+                    EndPointUrl = documentoRequest.EndPointUrl
                 });
 
                 var resultado = _servicioSunatDocumentos.EnviarResumen(new DocumentoSunat
@@ -742,21 +740,14 @@ namespace FacturacionApi.Controllers
                     enviarResumenResponse.NroTicket = resultado.NumeroTicket;
                     enviarResumenResponse.Exito = true;
                     enviarResumenResponse.NombreArchivo = nombreArchivo;
+
+                    var resultadoTicket = _servicioSunatDocumentos.ConsultarTicket(resultado.NumeroTicket);
                 }
                 else
                 {
                     enviarResumenResponse.MensajeError = resultado.MensajeError;
                     enviarResumenResponse.Exito = false;
                 }
-
-                if (!enviarResumenResponse.Exito)
-                {
-                    throw new InvalidOperationException(enviarResumenResponse.MensajeError);
-                }
-
-                Console.WriteLine("Nro de Ticket: {0}", enviarResumenResponse.NroTicket);
-
-                var resultadoTicket = _servicioSunatDocumentos.ConsultarTicket(resultado.NumeroTicket);
             }
             catch (Exception ex)
             {

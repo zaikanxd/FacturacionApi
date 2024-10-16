@@ -44,6 +44,7 @@
     <Compile Include="Auth.cs" />
     <Compile Include="Dtos\CancelElectronicDocumentRequest.cs" />
     <Compile Include="Dtos\CancelElectronicReceiptRequest.cs" />
+    <Compile Include="Dtos\DailySummaryRequest.cs" />
     <Compile Include="Dtos\FilePreviewRequest.cs" />
     <Compile Include="Dtos\JsonLinkRequest.cs" />
     <Compile Include="Dtos\SendXMLRequest.cs" />
