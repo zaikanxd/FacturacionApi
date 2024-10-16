@@ -95,6 +95,7 @@
     <Compile Include="CommonExtensionComponents\UBLExtensions.cs" />
     <Compile Include="EstandarUbl\InfoCredits.cs" />
     <Compile Include="EstandarUbl\Invoice.cs" />
+    <Compile Include="EstandarUbl\SummaryDocuments.cs" />
     <Compile Include="EstandarUbl\VoidedDocuments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SunatAggregateComponents\AdditionalInformation.cs" />

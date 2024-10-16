@@ -70,7 +70,10 @@
     <Compile Include="Modelos\DocumentoRelacionado.cs" />
     <Compile Include="Modelos\DocumentoResumen.cs" />
     <Compile Include="Modelos\DocumentoResumenDetalle.cs" />
+    <Compile Include="Modelos\GrupoResumen.cs" />
+    <Compile Include="Modelos\GrupoResumenNuevo.cs" />
     <Compile Include="Modelos\Leyenda.cs" />
+    <Compile Include="Modelos\ResumenDiarioNuevo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

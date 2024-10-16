@@ -626,6 +626,148 @@ namespace FacturacionApi.Controllers
             return enviarResumenResponse;
         }
 
+        [AllowAnonymous]
+        [HttpPost, Route("resumenDiario")]
+        public async Task<EnviarResumenResponse> resumenDiario([FromBody] CancelElectronicDocumentRequest cancelElectronicDocumentRequest)
+        {
+            // 1: GENERAR XML
+            IDocumentoXml _documentoXml = new ResumenDiarioNuevoXml();
+            ISerializador _serializador = new Serializador();
+            var documentoResponse = new DocumentoResponse();
+
+            // 2: FIRMAR XML
+            ICertificador _certificador = new Certificador();
+            var firmadoResponse = new FirmadoResponse();
+
+            // 3: ENVIAR DOCUMENTO
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarResumenResponse = new EnviarResumenResponse();
+
+            try
+            {
+                var documentoResumenDiario = new ResumenDiarioNuevo
+                {
+                    IdDocumento = $"RC-{DateTime.Today:yyyyMMdd}-001",
+                    //FechaEmision = DateTime.Today.ToString(FormatoFecha),
+                    //FechaReferencia = DateTime.Today.AddDays(-1).ToString(FormatoFecha),
+                    //Emisor = CrearEmisor(),
+                    Resumenes = new List<GrupoResumenNuevo>()
+                };
+
+                documentoResumenDiario.Resumenes.Add(new GrupoResumenNuevo
+                {
+                    Id = 1,
+                    TipoDocumento = "03",
+                    IdDocumento = "BB14-33386",
+                    NroDocumentoReceptor = "41614074",
+                    TipoDocumentoReceptor = "1",
+                    CodigoEstadoItem = 1, // 1 - Agregar. 2 - Modificar. 3 - Eliminar
+                    Moneda = "PEN",
+                    TotalVenta = 190.9m,
+                    TotalIgv = 29.12m,
+                    TotalImpuestoBolsas = 6.50m,
+                    Gravadas = 161.78m,
+                });
+
+                // Para los casos de envio de boletas anuladas, se debe primero informar las boletas creadas (1) y luego en un segundo resumen se envian las anuladas. De lo contrario se presentará el error 'El documento indicado no existe no puede ser modificado/eliminado'
+                documentoResumenDiario.Resumenes.Add(new GrupoResumenNuevo
+                {
+                    Id = 2,
+                    TipoDocumento = "03",
+                    IdDocumento = "BB30-33384",
+                    NroDocumentoReceptor = "08506678",
+                    TipoDocumentoReceptor = "1",
+                    CodigoEstadoItem = 1, // 1 - Agregar. 2 - Modificar. 3 - Eliminar
+                    Moneda = "USD",
+                    TotalVenta = 9580m,
+                    TotalIgv = 1411.36m,
+                    Gravadas = 8168.64m,
+                });
+
+                var summary = _documentoXml.Generar(documentoResumenDiario);
+                documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(summary);
+                documentoResponse.Exito = true;
+
+                if (!documentoResponse.Exito)
+                    throw new InvalidOperationException(documentoResponse.MensajeError);
+
+                // Firmado del Documento.
+                var firmadoRequest = new FirmadoRequest
+                {
+                    TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes("Certificado.pfx")),
+                    PasswordCertificado = string.Empty,
+                };
+
+                firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
+                firmadoResponse.Exito = true;
+                if (!string.IsNullOrEmpty(firmadoRequest.ValoresQr))
+                    firmadoResponse.CodigoQr = QrHelper.GenerarImagenQr($"{firmadoRequest.ValoresQr}{firmadoResponse.ResumenFirma}");
+
+                if (!firmadoResponse.Exito)
+                {
+                    throw new InvalidOperationException(firmadoResponse.MensajeError);
+                }
+
+                var enviarDocumentoRequest = new EnviarDocumentoRequest
+                {
+                    Ruc = documentoResumenDiario.Emisor.NroDocumento,
+                    UsuarioSol = "MODDATOS",
+                    ClaveSol = "MODDATOS",
+                    //EndPointUrl = UrlSunat,
+                    IdDocumento = documentoResumenDiario.IdDocumento,
+                    //TramaXmlFirmado = responseFirma.TramaXmlFirmado
+                };
+
+                var nombreArchivo = $"{enviarDocumentoRequest.Ruc}-{enviarDocumentoRequest.IdDocumento}";
+
+                var tramaZip = await _serializador.GenerarZip(enviarDocumentoRequest.TramaXmlFirmado, nombreArchivo);
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = enviarDocumentoRequest.Ruc,
+                    UserName = enviarDocumentoRequest.UsuarioSol,
+                    Password = enviarDocumentoRequest.ClaveSol,
+                    EndPointUrl = enviarDocumentoRequest.EndPointUrl
+                });
+
+                var resultado = _servicioSunatDocumentos.EnviarResumen(new DocumentoSunat
+                {
+                    NombreArchivo = $"{nombreArchivo}.zip",
+                    TramaXml = tramaZip
+                });
+
+                if (resultado.Exito)
+                {
+                    enviarResumenResponse.NroTicket = resultado.NumeroTicket;
+                    enviarResumenResponse.Exito = true;
+                    enviarResumenResponse.NombreArchivo = nombreArchivo;
+                }
+                else
+                {
+                    enviarResumenResponse.MensajeError = resultado.MensajeError;
+                    enviarResumenResponse.Exito = false;
+                }
+
+                if (!enviarResumenResponse.Exito)
+                {
+                    throw new InvalidOperationException(enviarResumenResponse.MensajeError);
+                }
+
+                Console.WriteLine("Nro de Ticket: {0}", enviarResumenResponse.NroTicket);
+
+                var resultadoTicket = _servicioSunatDocumentos.ConsultarTicket(resultado.NumeroTicket);
+            }
+            catch (Exception ex)
+            {
+                enviarResumenResponse.Exito = false;
+                enviarResumenResponse.MensajeError = ex.Message;
+                enviarResumenResponse.Pila = ex.StackTrace;
+            }
+
+            return enviarResumenResponse;
+        }
+        
         public async Task<EnviarDocumentoResponse> consultarTicket(TicketRequest ticketRequest)
         {
             // 1: ENVIAR DOCUMENTO
