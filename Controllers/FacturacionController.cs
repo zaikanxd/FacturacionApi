@@ -602,7 +602,7 @@ namespace FacturacionApi.Controllers
                     cancelElectronicReceiptRequest.project = cancelElectronicDocumentRequest.project;
                     cancelElectronicReceiptRequest.nroRUC = cancelElectronicDocumentRequest.emisor.NroDocumento;
                     cancelElectronicReceiptRequest.series = cancelElectronicDocumentRequest.documentoBaja.Serie;
-                    cancelElectronicReceiptRequest.correlative = cancelElectronicDocumentRequest.documentoBaja.Correlativo;
+                    cancelElectronicReceiptRequest.correlative = int.Parse(cancelElectronicDocumentRequest.documentoBaja.Correlativo);
                     cancelElectronicReceiptRequest.cancellationReason = cancelElectronicDocumentRequest.documentoBaja.MotivoBaja;
                     cancelElectronicReceiptRequest.cancellationName = cancelElectronicDocumentRequest.idDocumento;
                     cancelElectronicReceiptRequest.canceledXmlLink = saveBajaXMLPath;
@@ -788,13 +788,15 @@ namespace FacturacionApi.Controllers
                         enviarResumenResponse.cdrPath = saveZIPPath;
                     }
 
+                    var serieCorrelativo = dailySummaryRequest.resumen.IdDocumento.Split('-');
+
                     string jsonLink = oElectronicReceiptBL.getJsonLink(new JsonLinkRequest
                     {
                         project = dailySummaryRequest.project,
                         senderDocumentTypeId = int.Parse(dailySummaryRequest.emisor.TipoDocumento),
                         senderDocument = dailySummaryRequest.emisor.NroDocumento,
-                        series = dailySummaryRequest.resumen.Serie,
-                        correlative = int.Parse(dailySummaryRequest.resumen.Correlativo),
+                        series = serieCorrelativo[0],
+                        correlative = int.Parse(serieCorrelativo[1]),
                         issueDate = dailySummaryRequest.fechaEmision,
                     });
 
@@ -814,8 +816,8 @@ namespace FacturacionApi.Controllers
 
                     cancelElectronicReceiptRequest.project = dailySummaryRequest.project;
                     cancelElectronicReceiptRequest.nroRUC = dailySummaryRequest.emisor.NroDocumento;
-                    cancelElectronicReceiptRequest.series = dailySummaryRequest.resumen.Serie;
-                    cancelElectronicReceiptRequest.correlative = dailySummaryRequest.resumen.Correlativo;
+                    cancelElectronicReceiptRequest.series = serieCorrelativo[0];
+                    cancelElectronicReceiptRequest.correlative = int.Parse(serieCorrelativo[1]);
                     cancelElectronicReceiptRequest.cancellationReason = dailySummaryRequest.resumen.MotivoBaja;
                     cancelElectronicReceiptRequest.cancellationName = dailySummaryRequest.idDocumento;
                     cancelElectronicReceiptRequest.canceledXmlLink = saveResumenDiarioXMLPath;

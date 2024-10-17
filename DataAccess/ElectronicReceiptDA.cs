@@ -146,7 +146,7 @@ namespace DataAccess
                 db.AddInParameter(cmd, "project", DbType.String, cancelElectronicReceiptRequest.project);
                 db.AddInParameter(cmd, "nroRUC", DbType.String, cancelElectronicReceiptRequest.nroRUC);
                 db.AddInParameter(cmd, "series", DbType.String, cancelElectronicReceiptRequest.series);
-                db.AddInParameter(cmd, "correlative", DbType.String, cancelElectronicReceiptRequest.correlative);
+                db.AddInParameter(cmd, "correlative", DbType.Int32, cancelElectronicReceiptRequest.correlative);
                 db.AddInParameter(cmd, "cancellationReason", DbType.String, cancelElectronicReceiptRequest.cancellationReason);
                 db.AddInParameter(cmd, "cancellationName", DbType.String, cancelElectronicReceiptRequest.cancellationName);
                 db.AddInParameter(cmd, "canceledPdfLink", DbType.String, cancelElectronicReceiptRequest.canceledPdfLink);
