@@ -582,7 +582,7 @@ namespace FacturacionApi.Controllers
                         senderDocument = cancelElectronicDocumentRequest.emisor.NroDocumento,
                         series = cancelElectronicDocumentRequest.documentoBaja.Serie,
                         correlative = int.Parse(cancelElectronicDocumentRequest.documentoBaja.Correlativo),
-                        issueDate = cancelElectronicDocumentRequest.fechaEmision,
+                        issueDate = cancelElectronicDocumentRequest.fechaReferencia,
                     });
 
                     if (jsonLink != null)
@@ -797,7 +797,7 @@ namespace FacturacionApi.Controllers
                         senderDocument = dailySummaryRequest.emisor.NroDocumento,
                         series = serieCorrelativo[0],
                         correlative = int.Parse(serieCorrelativo[1]),
-                        issueDate = dailySummaryRequest.fechaEmision,
+                        issueDate = dailySummaryRequest.fechaReferencia,
                     });
 
                     if (jsonLink != null)
