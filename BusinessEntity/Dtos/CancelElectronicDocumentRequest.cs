@@ -6,9 +6,9 @@ namespace BusinessEntity.Dtos
     {
         public string project { get; set; }
         public string idDocumento { get; set; }
-        // Fecha de emision del documento a dar de baja
+        // Fecha de la comunicación de baja
         public string fechaEmision { get; set; }
-        // Fecha que se da de baja
+        // Fecha emisión del comprobante
         public string fechaReferencia { get; set; }
         public Contribuyente emisor { get; set; }
         public DocumentoBaja documentoBaja { get; set; }
