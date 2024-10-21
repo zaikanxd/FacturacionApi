@@ -180,5 +180,23 @@ namespace DataAccess
 
             return jsonLink;
         }
+
+        public void updateCanceledCdrLink(UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest)
+        {
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_Cancel))
+            {
+                cmd.CommandTimeout = 0;
+
+                db.AddInParameter(cmd, "project", DbType.String, updateCanceledCdrLinkRequest.project);
+                db.AddInParameter(cmd, "nroRUC", DbType.String, updateCanceledCdrLinkRequest.nroRUC);
+                db.AddInParameter(cmd, "series", DbType.String, updateCanceledCdrLinkRequest.series);
+                db.AddInParameter(cmd, "correlative", DbType.Int32, updateCanceledCdrLinkRequest.correlative);
+                db.AddInParameter(cmd, "cancellationName", DbType.String, updateCanceledCdrLinkRequest.cancellationName);
+                db.AddInParameter(cmd, "canceledCdrLink", DbType.String, updateCanceledCdrLinkRequest.canceledCdrLink);
+                db.AddInParameter(cmd, "canceledTicketNumber", DbType.String, updateCanceledCdrLinkRequest.canceledTicketNumber);
+
+                db.ExecuteNonQuery(cmd);
+            }
+        }
     }
 }
