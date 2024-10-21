@@ -183,7 +183,7 @@ namespace DataAccess
 
         public void updateCanceledCdrLink(UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest)
         {
-            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_Cancel))
+            using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_UpdateCanceledCdrLink))
             {
                 cmd.CommandTimeout = 0;
 

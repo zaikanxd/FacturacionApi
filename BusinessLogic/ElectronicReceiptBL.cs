@@ -51,5 +51,10 @@ namespace BusinessLogic
         {
             return oElectronicReceiptDA.getJsonLink(jsonLinkRequest);
         }
+
+        public void updateCanceledCdrLink(UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest)
+        {
+            oElectronicReceiptDA.updateCanceledCdrLink(updateCanceledCdrLinkRequest);
+        }
     }
 }

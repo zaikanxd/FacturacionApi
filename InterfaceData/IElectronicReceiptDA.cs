@@ -22,5 +22,7 @@ namespace InterfaceData
         void cancelElectronicReceipt(CancelElectronicReceiptRequest cancelElectronicReceiptRequest);
 
         string getJsonLink(JsonLinkRequest jsonLinkRequest);
+
+        void updateCanceledCdrLink(UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest);
     }
 }
