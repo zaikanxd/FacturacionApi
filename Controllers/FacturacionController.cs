@@ -1090,5 +1090,280 @@ namespace FacturacionApi.Controllers
         {
             return oElectronicReceiptBL.get(id);
         }
+
+        [AllowAnonymous]
+        [HttpPost, Route("notaCredito")]
+        public async Task<EnviarDocumentoResponse> notaCredito([FromBody] DocumentoElectronico documento)
+        {
+            // 1: GENERAR XML
+            IDocumentoXml _documentoXml = new NotaCreditoXml();
+            ISerializador _serializador = new Serializador();
+            var documentoResponse = new DocumentoResponse();
+
+            // 2: FIRMAR XML
+            ICertificador _certificador = new Certificador();
+            var firmadoResponse = new FirmadoResponse();
+
+            // 3: ENVIAR DOCUMENTO
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarDocumentoResponse = new EnviarDocumentoResponse();
+
+            try
+            {
+                Console.WriteLine("Ejemplo Nota de Crédito de Factura (FC01-00000178)");
+                var documento = new DocumentoElectronico
+                {
+                    Emisor = CrearEmisor(),
+                    Receptor = new Compania
+                    {
+                        NroDocumento = "20335955065",
+                        TipoDocumento = "6",
+                        NombreLegal = "MEDIA NETWORKS LATIN AMERICA S.A.C.",
+                        CodigoAnexo = ""
+                    },
+                    IdDocumento = "FC01-00000178",
+                    FechaEmision = DateTime.Today.AddDays(-5).ToString(FormatoFecha),
+                    HoraEmision = DateTime.Now.ToString("HH:mm:ss"),
+                    FechaVencimiento = "2021-12-29",
+                    MontoEnLetras = string.Empty,
+                    Moneda = "PEN",
+                    TipoDocumento = "07",
+                    TotalIgv = 11.25m,
+                    TotalVenta = 73.75m,
+                    Gravadas = 62.50m,
+                    Items = new List<DetalleDocumento>
+                    {
+                        new DetalleDocumento
+                        {
+                            Id = 1,
+                            Cantidad = 2,
+                            PrecioReferencial = 23.60m,
+                            PrecioUnitario = 20m,
+                            BaseImponible = 40m,
+                            TipoPrecio = "01",
+                            CodigoItem = "1234234",
+                            Descripcion = "Item 1",
+                            UnidadMedida = "ZZ",
+                            Impuesto = 7.20m, // 
+                            TipoImpuesto = "10", // Gravada
+                            TotalVenta = 40m,
+                        },
+                        new DetalleDocumento
+                        {
+                            Id = 2,
+                            Cantidad = 5,
+                            PrecioReferencial = 5.31m,
+                            PrecioUnitario = 4.5m,
+                            BaseImponible = 22.50m,
+                            TipoPrecio = "01",
+                            CodigoItem = "AER345667",
+                            Descripcion = "Item 2",
+                            UnidadMedida = "ZZ",
+                            Impuesto = 4.05m,
+                            TipoImpuesto = "10", // Gravada
+                            TotalVenta = 22.50m,
+                        }
+                    },
+                    Discrepancias = new List<Discrepancia>
+                    {
+                        new Discrepancia
+                        {
+                            NroReferencia = "FM01-00001318",
+                            Tipo = "01",
+                            Descripcion = "CANCELACION TOTAL"
+                        }
+                    },
+                    //Relacionados = new List<DocumentoRelacionado>
+                    //{
+                    //    new DocumentoRelacionado
+                    //    {
+                    //        NroDocumento = "FF11-001",
+                    //        TipoDocumento = "01"
+                    //    }
+                    //}
+                };
+
+                string projectPath = Array.Find(Project.projects, e => e == documento.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
+
+                // 1: GENERAR XML
+
+                var notaCredito = _documentoXml.Generar(documento);
+                documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(notaCredito);
+                var serieCorrelativo = documento.IdDocumento.Split('-');
+                documentoResponse.ValoresParaQr =
+                    $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
+                
+                documentoResponse.Exito = true;
+
+
+                // 2: FIRMAR XML
+
+                string certificadoPath = AppSettings.certificadosPath + $"{documento.Emisor.NroDocumento}.pfx";
+
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == documento.Emisor.NroDocumento);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
+                var firmadoRequest = new FirmadoRequest
+                {
+                    TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + certificadoPath)),
+                    PasswordCertificado = credencial.passwordCertificado,
+                    ValoresQr = documentoResponse.ValoresParaQr
+                };
+
+                firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
+                firmadoResponse.Exito = true;
+                if (!string.IsNullOrEmpty(firmadoRequest.ValoresQr))
+                    firmadoResponse.CodigoQr = QrHelper.GenerarImagenQr($"{firmadoRequest.ValoresQr}{firmadoResponse.ResumenFirma}");
+
+                if (!string.IsNullOrEmpty(firmadoResponse.CodigoQr))
+                {
+                    using (var mem = new MemoryStream(Convert.FromBase64String(firmadoResponse.CodigoQr)))
+                    {
+                        string qrPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\QR\\";
+                        if (!Directory.Exists(AppSettings.filePath + qrPath))
+                        {
+                            Directory.CreateDirectory(AppSettings.filePath + qrPath);
+                        }
+                        var imagen = Image.FromStream(mem);
+                        string saveQRPath = qrPath + $"{documento.IdDocumento}.png";
+
+                        // Verificar y guardar archivos repetidos
+                        if (File.Exists(AppSettings.filePath + saveQRPath))
+                        {
+                            int i = 1;
+                            while (File.Exists(AppSettings.filePath + saveQRPath.Replace(".png", $"({i}).png")))
+                            {
+                                i++;
+                            }
+                            saveQRPath = saveQRPath.Replace(".png", $"({i}).png");
+                        }
+
+                        imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+
+
+                string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+
+                if (!Directory.Exists(AppSettings.filePath + xmlPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + xmlPath);
+                }
+
+                string saveXMLPath = xmlPath + $"{documento.IdDocumento}.xml";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveXMLPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveXMLPath.Replace(".xml", $"({i}).xml")))
+                    {
+                        i++;
+                    }
+                    saveXMLPath = saveXMLPath.Replace(".xml", $"({i}).xml");
+                }
+
+                File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+
+
+                string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
+
+                if (File.Exists(AppSettings.filePath + logoPath))
+                {
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + logoPath)));
+                }
+
+                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
+
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+
+                var documentoRequest = new EnviarDocumentoRequest
+                {
+                    Ruc = documento.Emisor.NroDocumento,
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
+                    EndPointUrl = urlSunat,
+                    IdDocumento = documento.IdDocumento,
+                    TipoDocumento = documento.TipoDocumento,
+                    TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
+                };
+
+                // 3: ENVIAR DOCUMENTO
+
+                var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.TipoDocumento}-{documentoRequest.IdDocumento}";
+                var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = documentoRequest.Ruc,
+                    UserName = documentoRequest.UsuarioSol,
+                    Password = documentoRequest.ClaveSol,
+                    EndPointUrl = documentoRequest.EndPointUrl
+                });
+
+                var resultado = _servicioSunatDocumentos.EnviarDocumento(new DocumentoSunat
+                {
+                    TramaXml = tramaZip,
+                    NombreArchivo = $"{nombreArchivo}.zip"
+                });
+
+
+                if (resultado.Exito)
+                {
+                    enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
+                    enviarDocumentoResponse.NombreArchivo = nombreArchivo;
+
+                    string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+
+                    if (!Directory.Exists(AppSettings.filePath + zipPath))
+                    {
+                        Directory.CreateDirectory(AppSettings.filePath + zipPath);
+                    }
+
+                    string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
+
+                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                    enviarDocumentoResponse.cdrPath = saveZIPPath;
+                }
+                else
+                {
+                    enviarDocumentoResponse.Exito = false;
+                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
+                }
+
+                enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
+                enviarDocumentoResponse.xmlPath = saveXMLPath;
+                enviarDocumentoResponse.pdfPath = pdfPath;
+            }
+            catch (Exception ex)
+            {
+                enviarDocumentoResponse.MensajeError = ex.Message;
+                enviarDocumentoResponse.Pila = ex.StackTrace;
+                enviarDocumentoResponse.Exito = false;
+            }
+
+            return null;
+        }
     }
 }

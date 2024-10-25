@@ -58,6 +58,7 @@
     <Compile Include="CommonAggregateComponents\Despatch.cs" />
     <Compile Include="CommonAggregateComponents\DespatchAddress.cs" />
     <Compile Include="CommonAggregateComponents\DigitalSignatureAttachment.cs" />
+    <Compile Include="CommonAggregateComponents\DiscrepancyResponse.cs" />
     <Compile Include="CommonAggregateComponents\ExternalReference.cs" />
     <Compile Include="CommonAggregateComponents\InvoiceDocumentReference.cs" />
     <Compile Include="CommonAggregateComponents\InvoiceLine.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="CommonExtensionComponents\ExtensionContent.cs" />
     <Compile Include="CommonExtensionComponents\UBLExtension.cs" />
     <Compile Include="CommonExtensionComponents\UBLExtensions.cs" />
+    <Compile Include="EstandarUbl\CreditNote.cs" />
     <Compile Include="EstandarUbl\InfoCredits.cs" />
     <Compile Include="EstandarUbl\Invoice.cs" />
     <Compile Include="EstandarUbl\SummaryDocuments.cs" />
