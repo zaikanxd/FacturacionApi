@@ -1110,79 +1110,6 @@ namespace FacturacionApi.Controllers
 
             try
             {
-                Console.WriteLine("Ejemplo Nota de Crédito de Factura (FC01-00000178)");
-                var documento = new DocumentoElectronico
-                {
-                    Emisor = CrearEmisor(),
-                    Receptor = new Compania
-                    {
-                        NroDocumento = "20335955065",
-                        TipoDocumento = "6",
-                        NombreLegal = "MEDIA NETWORKS LATIN AMERICA S.A.C.",
-                        CodigoAnexo = ""
-                    },
-                    IdDocumento = "FC01-00000178",
-                    FechaEmision = DateTime.Today.AddDays(-5).ToString(FormatoFecha),
-                    HoraEmision = DateTime.Now.ToString("HH:mm:ss"),
-                    FechaVencimiento = "2021-12-29",
-                    MontoEnLetras = string.Empty,
-                    Moneda = "PEN",
-                    TipoDocumento = "07",
-                    TotalIgv = 11.25m,
-                    TotalVenta = 73.75m,
-                    Gravadas = 62.50m,
-                    Items = new List<DetalleDocumento>
-                    {
-                        new DetalleDocumento
-                        {
-                            Id = 1,
-                            Cantidad = 2,
-                            PrecioReferencial = 23.60m,
-                            PrecioUnitario = 20m,
-                            BaseImponible = 40m,
-                            TipoPrecio = "01",
-                            CodigoItem = "1234234",
-                            Descripcion = "Item 1",
-                            UnidadMedida = "ZZ",
-                            Impuesto = 7.20m, // 
-                            TipoImpuesto = "10", // Gravada
-                            TotalVenta = 40m,
-                        },
-                        new DetalleDocumento
-                        {
-                            Id = 2,
-                            Cantidad = 5,
-                            PrecioReferencial = 5.31m,
-                            PrecioUnitario = 4.5m,
-                            BaseImponible = 22.50m,
-                            TipoPrecio = "01",
-                            CodigoItem = "AER345667",
-                            Descripcion = "Item 2",
-                            UnidadMedida = "ZZ",
-                            Impuesto = 4.05m,
-                            TipoImpuesto = "10", // Gravada
-                            TotalVenta = 22.50m,
-                        }
-                    },
-                    Discrepancias = new List<Discrepancia>
-                    {
-                        new Discrepancia
-                        {
-                            NroReferencia = "FM01-00001318",
-                            Tipo = "01",
-                            Descripcion = "CANCELACION TOTAL"
-                        }
-                    },
-                    //Relacionados = new List<DocumentoRelacionado>
-                    //{
-                    //    new DocumentoRelacionado
-                    //    {
-                    //        NroDocumento = "FF11-001",
-                    //        TipoDocumento = "01"
-                    //    }
-                    //}
-                };
-
                 string projectPath = Array.Find(Project.projects, e => e == documento.Project);
 
                 if (projectPath == null)
@@ -1194,6 +1121,9 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
 
                 // 1: GENERAR XML
 
@@ -1204,7 +1134,6 @@ namespace FacturacionApi.Controllers
                     $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
                 
                 documentoResponse.Exito = true;
-
 
                 // 2: FIRMAR XML
 
@@ -1262,8 +1191,7 @@ namespace FacturacionApi.Controllers
                     }
                 }
 
-
-                string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\FacturaXML\\";
+                string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\NotaCreditoXML\\";
 
                 if (!Directory.Exists(AppSettings.filePath + xmlPath))
                 {
@@ -1284,7 +1212,6 @@ namespace FacturacionApi.Controllers
                 }
 
                 File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
-
 
                 string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
 
@@ -1327,13 +1254,12 @@ namespace FacturacionApi.Controllers
                     NombreArchivo = $"{nombreArchivo}.zip"
                 });
 
-
                 if (resultado.Exito)
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
                     enviarDocumentoResponse.NombreArchivo = nombreArchivo;
 
-                    string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\TramaZipCdr\\";
+                    string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\NotaCreditoZipCdr\\";
 
                     if (!Directory.Exists(AppSettings.filePath + zipPath))
                     {
@@ -1355,6 +1281,30 @@ namespace FacturacionApi.Controllers
                 enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
                 enviarDocumentoResponse.xmlPath = saveXMLPath;
                 enviarDocumentoResponse.pdfPath = pdfPath;
+
+                // Guardar JSON
+
+                string jsonPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\JSON\\";
+
+                if (!Directory.Exists(AppSettings.filePath + jsonPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + jsonPath);
+                }
+
+                string saveJSONPath = jsonPath + $"{documento.IdDocumento}.json";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveJSONPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveJSONPath.Replace(".json", $"({i}).json")))
+                    {
+                        i++;
+                    }
+                    saveJSONPath = saveJSONPath.Replace(".json", $"({i}).json");
+                }
+
+                File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -1363,7 +1313,7 @@ namespace FacturacionApi.Controllers
                 enviarDocumentoResponse.Exito = false;
             }
 
-            return null;
+            return enviarDocumentoResponse;
         }
     }
 }
