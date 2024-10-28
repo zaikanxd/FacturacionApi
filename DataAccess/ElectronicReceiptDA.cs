@@ -54,7 +54,13 @@ namespace DataAccess
                 db.AddInParameter(cmd, "userCreated", DbType.String, documento.UserCreated);
                 db.AddInParameter(cmd, "cdrLink", DbType.String, pEnviarDocumentoResponse.cdrPath);
                 db.AddInParameter(cmd, "jsonLink", DbType.String, jsonPath);
-
+                db.AddInParameter(cmd, "observation", DbType.String, documento.Notas);
+                if (documento.Discrepancias != null && documento.Discrepancias.Count > 0)
+                {
+                    db.AddInParameter(cmd, "discrepancyRefNumber", DbType.String, documento.Discrepancias[0].NroReferencia);
+                    db.AddInParameter(cmd, "discrepancyType", DbType.Int32, int.Parse(documento.Discrepancias[0].Tipo));
+                    db.AddInParameter(cmd, "discrepancyDescription", DbType.String, documento.Discrepancias[0].Descripcion);
+                }
                 db.ExecuteNonQuery(cmd);
             }
         }

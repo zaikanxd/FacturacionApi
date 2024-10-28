@@ -45,6 +45,10 @@ SELECT
 	canceled,
 	cancellationReason,
 	cancellationName,
+	observation,
+	discrepancyRefNumber,
+	discrepancyType,
+	discrepancyDescription,
 	(CASE
 		WHEN senderDocumentTypeId = 6 THEN 'RUC'
 		WHEN senderDocumentTypeId = 1 THEN 'DNI'
@@ -53,6 +57,7 @@ SELECT
 	(CASE
 		WHEN receiptTypeId = 3 THEN 'BOLETA'
 		WHEN receiptTypeId = 1 THEN 'FACTURA'
+		WHEN receiptTypeId = 7 THEN 'NOTA DE CRÉDITO'
 		ELSE '-'
 	END) receiptType,
 	(CASE

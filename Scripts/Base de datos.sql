@@ -41,7 +41,11 @@ CREATE TABLE ElectronicReceipt (
  canceledXmlLink VARCHAR(100) NULL,
  canceledCdrLink VARCHAR(100) NULL,
  canceledTicketNumber VARCHAR(50) NULL,
- jsonLink VARCHAR(100) NULL
+ jsonLink VARCHAR(100) NULL,
+ observation VARCHAR(100) NULL,
+ discrepancyRefNumber VARCHAR(50) NULL,
+ discrepancyType INT NOT NULL,
+ discrepancyDescription VARCHAR(200) NULL
 )
 
 CREATE TABLE [User] (
