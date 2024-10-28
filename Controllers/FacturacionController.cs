@@ -176,7 +176,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -335,7 +335,7 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true, false);
 
                 comprobanteSinValorFiscalResponse.Exito = true;
                 comprobanteSinValorFiscalResponse.pdfPath = pdfPath;
@@ -408,7 +408,7 @@ namespace FacturacionApi.Controllers
             }
 
             documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
-            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal);
+            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, false);
             filePreview.name = "VistaPrevia-" + documento.IdDocumento;
 
             return filePreview;
@@ -594,7 +594,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -809,7 +809,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -1222,7 +1222,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, true);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {

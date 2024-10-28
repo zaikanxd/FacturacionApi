@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        p {
+            margin: 0px;
+            font-size: 14px;
+        }
+
+        table.tbproductos {
+            border-collapse: collapse;
+            border-spacing: 4px;
+        }
+
+        table.tbproductos thead tr th {
+            padding: 6px 4px;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        table.tbproductos tbody tr td {
+            padding: 3px 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="padding: 15px 0px; position: relative;">
+        @{
+        if (Model.EstaAnulado)
+        {
+        <div style="position: absolute; width: 100%; top: 50%; color:red; font-size: 50px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg);">ANULADO</div>
+        }
+        }
+        @{
+        if (Model.EsVistaPrevia)
+        {
+        <div style="position: absolute; width: 100%; top: 50%; color:red; font-size: 50px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg);">VISTA PREVIA</div>
+        }
+        }
+        @{
+        if (Model.Emisor.NombreComercial != "" && Model.Emisor.NombreComercial != null)
+        {
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px; font-size: 18px;">
+            @Model.Emisor.NombreComercial</p>
+        }
+        }
+        <p style="text-align: center; padding-bottom: 5px;">@Model.Emisor.NombreLegal</p>
+        <p style="text-align: center; padding-bottom: 5px;">RUC: @Model.Emisor.NroDocumento</p>
+        <p style="text-align: center; padding-bottom: 10px;"> @Model.Emisor.Direccion </p>
+        <p style="font-weight: bold; text-align: center; padding-bottom: 5px;">NOTA DE CRÉDITO ELECTRÓNICA</p>
+        <p style="font-weight: bold; text-align: center;">@Model.IdDocumento</p>
+        
+        @{
+        if (Model.StoreAddress != "" && Model.StoreAddress != null)
+        {
+        <p style="text-align: start; padding-top: 10px;">Local: @Model.StoreAddress</p>
+        }
+        }
+
+        <div style="padding: 10px 0px; text-align: start">
+            @{
+            if (Model.Receptor.TipoDocumento == "6")
+            {
+            <p style="padding-bottom: 5px;"> <b>Razón Social:</b> </p>
+            <p style="padding-bottom: 5px;"> @Model.Receptor.NombreLegal </p>
+            <p style="padding-bottom: 5px;">RUC: @Model.Receptor.NroDocumento</p>
+            <p style="padding-bottom: 5px;"> <b>Dirección:</b> </p>
+            <p> @Model.Receptor.Direccion </p>
+            }
+            else
+            {
+            <p>Cliente: @Model.Receptor.NombreLegal</p>
+            <p style="padding-top: 5px; padding-bottom: 5px;">Doc. Identidad: @Model.Receptor.NroDocumento</p>
+            <p>Dirección: @(Model.Receptor.Direccion != "" && Model.Receptor.Direccion != null ? Model.Receptor.Direccion : "-")</p>
+            }
+            }
+            <p style="text-align: start; padding-top: 5px;">Tipo Nota: (@Model.Discrepancias[0].Tipo) @Model.Discrepancias[0].Descripcion</p>
+            <p style="text-align: start; padding-top: 5px;">Doc. Referencia: @Model.Discrepancias[0].NroReferencia</p>
+            @{
+            if (Model.Notas != "" && Model.Notas != null)
+            {
+            <p style="text-align: start; padding-top: 5px;">Motivo Nota: @Model.Notas</p>
+            }
+            }
+        </div>
+
+        <table class="tbproductos" style="width:100%">
+            <thead>
+                <tr style="border-bottom: 2px dotted #E8E8E8; border-top: 2px dotted #E8E8E8;">
+                    <th style="text-align: center;"> Descripción </th>
+                    <th style="text-align: center; width:50px">Cant.</th>
+                    <th style="text-align: center; width:60px">P. Unit</th>
+                    <th style="text-align: center; width:60px">Desc.</th>
+                    <th style="text-align: center; width:60px">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ foreach (var item in Model.Items) {
+                <tr style="vertical-align: top;">
+                    <td>
+                        <p style="text-align: left;">@item.Descripcion</p>
+                        @{
+                        if (item.DescripcionAdicional != "" && item.DescripcionAdicional != null)
+                        {
+                        <p style="text-align: left;">@item.DescripcionAdicional</p>
+                        }
+                        }
+                    </td>
+                    <td>
+                        <p style="text-align: center;">@Math.Round(@item.Cantidad)</p>
+                    </td>
+                    <td>
+                        <p style="text-align: right;">@Math.Round(@item.PrecioUnitario * 1.18m, 2).ToString("0.00")</p>
+                    </td>
+                    <td>
+                        <p style="text-align: right;">@Math.Round((@item.Descuento / @item.Cantidad) * 1.18m, 2).ToString("0.00")</p>
+                    </td>
+                    <td>
+                        <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                } }
+            </tbody>
+        </table>
+
+        <table class="tbproductos" style="width:100%">
+            <tbody style="border-top: 2px dotted #E8E8E8;">
+                @{
+                if (Model.DescuentoGlobal > 0)
+                {
+                <tr>
+                    <td>
+                        <p style="text-align: right;">Descuento Global</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(Model.DescuentoGlobal * 1.18m, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                }
+                }
+                @{
+                if (Model.MontoTotalDescuento > 0)
+                {
+                <tr>
+                    <td>
+                        <p style="text-align: right;">Total Descuento</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(Model.MontoTotalDescuento * 1.18m, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                }
+                }
+                <tr>
+                    <td>
+                        <p style="text-align: right;">Op. Gravada</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(@Model.Gravadas, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="text-align: right;">Op. Exonerada</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(@Model.Exoneradas, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="text-align: right;">IGV 18.00%</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="text-align: right;">@Math.Round(@Model.TotalIgv, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-weight: bold; text-align: right;">Total a Pagar</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
+                    </td>
+                    <td style="width:60px">
+                        <p style="font-weight: bold; text-align: right;">@Math.Round(@Model.TotalVenta, 2).ToString("0.00")</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="text-align: start; padding-top: 15px">Son: @Model.MontoEnLetras @(Model.Moneda == "PEN" ? "SOLES" : "DOLARES AMERICANOS")</p>
+        @{
+        if (Model.Cuentas != null)
+        {
+        <div style="padding-top: 10px;">
+        @{ foreach (var cuenta in Model.Cuentas) {
+        <p>
+            <b>@cuenta.Nombre</b> @(Model.Moneda == "PEN" ? "S/" : "$") @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
+            @(cuenta.Vuelto != null && cuenta.Vuelto > 0 ? "Vuelto: " + @Math.Round(@cuenta.Vuelto, 2).ToString("0.00") : "")
+            @(cuenta.Fecha != "" && cuenta.Fecha != null ? "- " + @cuenta.Fecha : "")
+            @(cuenta.NroOperacion != "" && cuenta.NroOperacion != null ? "Nro Ope " + @cuenta.NroOperacion : "")
+        </p>
+        } }
+        </div>
+        }
+        }
+
+        <div style="margin: auto; text-align: center;">
+            <img src="@Model.QRFirmado" width="250" height="250" />
+        </div>
+
+        <p>Fecha de Emisión: @Model.FechaEmision @Model.HoraEmision</p>
+        @{
+        if (Model.UserFullNameCreated != "" && Model.UserFullNameCreated != null)
+        {
+        <p style="padding-top: 5px;">Cajero: @Model.UserFullNameCreated</p>
+        }
+        }
+    </div>
+</body>
+
+</html>

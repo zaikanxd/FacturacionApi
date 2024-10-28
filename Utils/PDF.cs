@@ -19,7 +19,7 @@ namespace FacturacionApi.Utils
 
     public static class PDF
     {
-        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath, bool sinValorFiscal)
+        public static string ObtenerRutaPDFGenerado(DocumentoElectronico documento, string projectPath, bool sinValorFiscal, bool esNotaCredito)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
 
@@ -40,7 +40,7 @@ namespace FacturacionApi.Utils
 
             string HTMLPlantillaPath = sinValorFiscal
                 ? path + "TICKET_SIN_VALOR_FISCAL.html"
-                : path + (Formato.A4 == documento.formato ? "A4.html" : "TICKET.html");
+                : path + (esNotaCredito ? "NOTA_CREDITO_" : "") + (Formato.A4 == documento.formato ? "A4.html" : "TICKET.html");
             
             string sHtml = GetStringOfFile(HTMLPlantillaPath);
             string resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
@@ -94,7 +94,7 @@ namespace FacturacionApi.Utils
             return savePDFPath;
         }
 
-        public static byte[] ObtenerBytesPDFGenerado(DocumentoElectronico documento, bool sinValorFiscal)
+        public static byte[] ObtenerBytesPDFGenerado(DocumentoElectronico documento, bool sinValorFiscal, bool esNotaCredito)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Plantillas\\";
             
@@ -115,7 +115,7 @@ namespace FacturacionApi.Utils
 
             string HTMLPlantillaPath = sinValorFiscal
                 ? path + "TICKET_SIN_VALOR_FISCAL.html"
-                : path + (Formato.A4 == documento.formato ? "A4.html" : "TICKET.html");
+                : path + (esNotaCredito ? "NOTA_CREDITO_" : "") + (Formato.A4 == documento.formato ? "A4.html" : "TICKET.html");
 
             string sHtml = GetStringOfFile(HTMLPlantillaPath);
             string resultHtml = RazorEngine.Razor.Parse(sHtml, documento);
