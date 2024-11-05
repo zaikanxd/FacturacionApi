@@ -363,10 +363,6 @@ namespace FacturacionApi.Controllers
             if (filePreviewRequest.sinValorFiscal)
             {
                 // SIN VALOR FISCAL
-                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
-                montoTotalDescuento += documento.DescuentoGlobal;
-                documento.MontoTotalDescuento = montoTotalDescuento;
-
                 decimal cantidadTotalProductos = 0;
                 documento.Items.ForEach((e) => {
                     cantidadTotalProductos += e.Cantidad;
@@ -387,10 +383,6 @@ namespace FacturacionApi.Controllers
                     documento.Receptor.NombreLegal = "Otros";
                 }
 
-                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
-                montoTotalDescuento += documento.DescuentoGlobal;
-                documento.MontoTotalDescuento = montoTotalDescuento;
-
                 var serieCorrelativo = documento.IdDocumento.Split('-');
                 string valoresParaQr =
                     $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
@@ -407,8 +399,12 @@ namespace FacturacionApi.Controllers
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", codigoQr);
             }
 
+            decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+            montoTotalDescuento += documento.DescuentoGlobal;
+            documento.MontoTotalDescuento = montoTotalDescuento;
+
             documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
-            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, false);
+            filePreview.bytes = (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito) ? PDF.ObtenerBytesPDFGenerado(documento, false, true) : PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, false);
             filePreview.name = "VistaPrevia-" + documento.IdDocumento;
 
             return filePreview;

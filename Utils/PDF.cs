@@ -186,6 +186,8 @@ namespace FacturacionApi.Utils
         public struct ReceiptType
         {
             public const string boleta = "03";
+            public const string factura = "01";
+            public const string notaCredito = "07";
         }
 
         public const decimal montoMaximoBoletaSimple = 700;
