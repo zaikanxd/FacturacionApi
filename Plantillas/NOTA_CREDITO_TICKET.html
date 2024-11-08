@@ -99,7 +99,6 @@
                     <th style="text-align: center;"> Descripción </th>
                     <th style="text-align: center; width:50px">Cant.</th>
                     <th style="text-align: center; width:60px">P. Unit</th>
-                    <th style="text-align: center; width:60px">Desc.</th>
                     <th style="text-align: center; width:60px">Total</th>
                 </tr>
             </thead>
@@ -122,9 +121,6 @@
                         <p style="text-align: right;">@Math.Round(@item.PrecioUnitario * 1.18m, 2).ToString("0.00")</p>
                     </td>
                     <td>
-                        <p style="text-align: right;">@Math.Round((@item.Descuento / @item.Cantidad) * 1.18m, 2).ToString("0.00")</p>
-                    </td>
-                    <td>
                         <p style="text-align: right;">@Math.Round(@item.Cantidad * @item.PrecioReferencial, 2).ToString("0.00")</p>
                     </td>
                 </tr>
@@ -134,38 +130,6 @@
 
         <table class="tbproductos" style="width:100%">
             <tbody style="border-top: 2px dotted #E8E8E8;">
-                @{
-                if (Model.DescuentoGlobal > 0)
-                {
-                <tr>
-                    <td>
-                        <p style="text-align: right;">Descuento Global</p>
-                    </td>
-                    <td style="width:60px">
-                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
-                    </td>
-                    <td style="width:60px">
-                        <p style="text-align: right;">@Math.Round(Model.DescuentoGlobal * 1.18m, 2).ToString("0.00")</p>
-                    </td>
-                </tr>
-                }
-                }
-                @{
-                if (Model.MontoTotalDescuento > 0)
-                {
-                <tr>
-                    <td>
-                        <p style="text-align: right;">Total Descuento</p>
-                    </td>
-                    <td style="width:60px">
-                        <p style="text-align: center;">@(Model.Moneda == "PEN" ? "S/" : "$")</p>
-                    </td>
-                    <td style="width:60px">
-                        <p style="text-align: right;">@Math.Round(Model.MontoTotalDescuento * 1.18m, 2).ToString("0.00")</p>
-                    </td>
-                </tr>
-                }
-                }
                 <tr>
                     <td>
                         <p style="text-align: right;">Op. Gravada</p>
