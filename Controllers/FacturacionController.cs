@@ -404,7 +404,7 @@ namespace FacturacionApi.Controllers
             documento.MontoTotalDescuento = montoTotalDescuento;
 
             documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
-            filePreview.bytes = (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito) ? PDF.ObtenerBytesPDFGenerado(documento, false, true) : PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, false);
+            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
             filePreview.name = "VistaPrevia-" + documento.IdDocumento;
 
             return filePreview;
@@ -590,7 +590,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -805,7 +805,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -888,45 +888,51 @@ namespace FacturacionApi.Controllers
                 {
                     enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
 
-                    string zipPath = null;
+                    string zipPath;
+                    string basePath = projectPath + AppSettings.cePath + $"{cancellationTicketRequest.nroRUC}\\";
 
-                    if (cancellationTicketRequest.receiptTypeId == 1) // FACTURA
+                    switch (cancellationTicketRequest.receiptTypeId)
                     {
-                        zipPath = projectPath + AppSettings.cePath + $"{cancellationTicketRequest.nroRUC}\\ComunicacionBajaZipCdr\\";
+                        case 1: // FACTURA
+                            zipPath = basePath + "ComunicacionBajaZipCdr\\";
+                            break;
+
+                        case 3: // BOLETA
+                            zipPath = basePath + "ResumenDiarioZipCdr\\";
+                            break;
+
+                        default:
+                            zipPath = cancellationTicketRequest.series.StartsWith("F")
+                                ? basePath + "ComunicacionBajaZipCdr\\"
+                                : basePath + "ResumenDiarioZipCdr\\";
+                            break;
                     }
-                    else if (cancellationTicketRequest.receiptTypeId == 3) // BOLETA
+
+                    if (!Directory.Exists(AppSettings.filePath + zipPath))
                     {
-                        zipPath = projectPath + AppSettings.cePath + $"{cancellationTicketRequest.nroRUC}\\ResumenDiarioZipCdr\\";
+                        Directory.CreateDirectory(AppSettings.filePath + zipPath);
                     }
 
-                    if (zipPath != null)
+                    string saveZIPPath = zipPath + $"{cancellationTicketRequest.idDocumento}.zip";
+
+                    if (!Directory.Exists(AppSettings.filePath + saveZIPPath))
                     {
-                        if (!Directory.Exists(AppSettings.filePath + zipPath))
-                        {
-                            Directory.CreateDirectory(AppSettings.filePath + zipPath);
-                        }
+                        File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
 
-                        string saveZIPPath = zipPath + $"{cancellationTicketRequest.idDocumento}.zip";
+                        UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest = new UpdateCanceledCdrLinkRequest();
 
-                        if (!Directory.Exists(AppSettings.filePath + saveZIPPath))
-                        {
-                            File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+                        updateCanceledCdrLinkRequest.project = cancellationTicketRequest.project;
+                        updateCanceledCdrLinkRequest.nroRUC = cancellationTicketRequest.nroRUC;
+                        updateCanceledCdrLinkRequest.series = cancellationTicketRequest.series;
+                        updateCanceledCdrLinkRequest.correlative = cancellationTicketRequest.correlative;
+                        updateCanceledCdrLinkRequest.cancellationName = cancellationTicketRequest.idDocumento;
+                        updateCanceledCdrLinkRequest.canceledCdrLink = saveZIPPath;
+                        updateCanceledCdrLinkRequest.canceledTicketNumber = cancellationTicketRequest.nroTicket;
 
-                            UpdateCanceledCdrLinkRequest updateCanceledCdrLinkRequest = new UpdateCanceledCdrLinkRequest();
-
-                            updateCanceledCdrLinkRequest.project = cancellationTicketRequest.project;
-                            updateCanceledCdrLinkRequest.nroRUC = cancellationTicketRequest.nroRUC;
-                            updateCanceledCdrLinkRequest.series = cancellationTicketRequest.series;
-                            updateCanceledCdrLinkRequest.correlative = cancellationTicketRequest.correlative;
-                            updateCanceledCdrLinkRequest.cancellationName = cancellationTicketRequest.idDocumento;
-                            updateCanceledCdrLinkRequest.canceledCdrLink = saveZIPPath;
-                            updateCanceledCdrLinkRequest.canceledTicketNumber = cancellationTicketRequest.nroTicket;
-
-                            oElectronicReceiptBL.updateCanceledCdrLink(updateCanceledCdrLinkRequest);
-                        }
-
-                        enviarDocumentoResponse.cdrPath = saveZIPPath;
+                        oElectronicReceiptBL.updateCanceledCdrLink(updateCanceledCdrLinkRequest);
                     }
+
+                    enviarDocumentoResponse.cdrPath = saveZIPPath;
                 }
             }
             catch (Exception ex)
