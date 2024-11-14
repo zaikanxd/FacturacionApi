@@ -176,7 +176,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, false);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -335,7 +335,7 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true, false);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, true);
 
                 comprobanteSinValorFiscalResponse.Exito = true;
                 comprobanteSinValorFiscalResponse.pdfPath = pdfPath;
@@ -404,7 +404,7 @@ namespace FacturacionApi.Controllers
             documento.MontoTotalDescuento = montoTotalDescuento;
 
             documento.MontoEnLetras = Conversion.Enletras(documento.TotalVenta);
-            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
+            filePreview.bytes = PDF.ObtenerBytesPDFGenerado(documento, filePreviewRequest.sinValorFiscal);
             filePreview.name = "VistaPrevia-" + documento.IdDocumento;
 
             return filePreview;
@@ -590,7 +590,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -805,7 +805,7 @@ namespace FacturacionApi.Controllers
 
                         documento.EstaAnulado = true;
 
-                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, (documento.TipoDocumento == ElectronicReceipt.ReceiptType.notaCredito));
+                        string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                         cancelElectronicReceiptRequest.canceledPdfLink = pdfPath;
                         enviarResumenResponse.pdfPath = pdfPath;
@@ -1220,7 +1220,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, true);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -1452,8 +1452,7 @@ namespace FacturacionApi.Controllers
 
                 documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
 
-                // TODO: PDF PARA NOTA DE DEBITO
-                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, true);
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false);
 
                 var documentoRequest = new EnviarDocumentoRequest
                 {
@@ -1537,7 +1536,7 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+                // oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
 
                 if (resultado.MensajeError != null)
                 {
