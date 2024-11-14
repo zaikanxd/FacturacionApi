@@ -46,6 +46,7 @@
     <Compile Include="FacturaXml.cs" />
     <Compile Include="IDocumentoXml.cs" />
     <Compile Include="NotaCreditoXml.cs" />
+    <Compile Include="NotaDebitoXml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResumenDiarioNuevoXml.cs" />
   </ItemGroup>

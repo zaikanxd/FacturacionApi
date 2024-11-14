@@ -1324,5 +1324,238 @@ namespace FacturacionApi.Controllers
 
             return enviarDocumentoResponse;
         }
+
+        [AllowAnonymous]
+        [HttpPost, Route("notaDebito")]
+        public async Task<EnviarDocumentoResponse> notaDebito([FromBody] DocumentoElectronico documento)
+        {
+            // 1: GENERAR XML
+            IDocumentoXml _documentoXml = new NotaDebitoXml();
+            ISerializador _serializador = new Serializador();
+            var documentoResponse = new DocumentoResponse();
+
+            // 2: FIRMAR XML
+            ICertificador _certificador = new Certificador();
+            var firmadoResponse = new FirmadoResponse();
+
+            // 3: ENVIAR DOCUMENTO
+            IServicioSunatDocumentos _servicioSunatDocumentos = new ServicioSunatDocumentos();
+            var enviarDocumentoResponse = new EnviarDocumentoResponse();
+
+            try
+            {
+                string projectPath = Array.Find(Project.projects, e => e == documento.Project);
+
+                if (projectPath == null)
+                {
+                    throw new Exception("No existe una carpeta para el proyecto");
+                }
+                else
+                {
+                    projectPath = AppSettings.projectsPath + $"{projectPath}\\";
+                }
+
+                // 1: GENERAR XML
+
+                var notaDebito = _documentoXml.Generar(documento);
+                documentoResponse.TramaXmlSinFirma = await _serializador.GenerarXml(notaDebito);
+                var serieCorrelativo = documento.IdDocumento.Split('-');
+                documentoResponse.ValoresParaQr =
+                    $"{documento.Emisor.NroDocumento}|{documento.TipoDocumento}|{serieCorrelativo[0]}|{serieCorrelativo[1]}|{documento.TotalIgv:N2}|{documento.TotalVenta:N2}|{Convert.ToDateTime(documento.FechaEmision):yyyy-MM-dd}|{documento.Receptor.TipoDocumento}|{documento.Receptor.NroDocumento}|";
+                
+                documentoResponse.Exito = true;
+
+                // 2: FIRMAR XML
+
+                string certificadoPath = AppSettings.certificadosPath + $"{documento.Emisor.NroDocumento}.pfx";
+
+                if (!File.Exists(AppSettings.filePath + certificadoPath))
+                {
+                    throw new Exception("La empresa no cuenta con certificado");
+                }
+
+                Credencial credencial = Array.Find(CredencialEmpresa.credenciales, e => e.ruc == documento.Emisor.NroDocumento);
+
+                if (credencial == null)
+                {
+                    throw new Exception("La empresa no cuenta con las credenciales SOL");
+                }
+
+                var firmadoRequest = new FirmadoRequest
+                {
+                    TramaXmlSinFirma = documentoResponse.TramaXmlSinFirma,
+                    CertificadoDigital = Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + certificadoPath)),
+                    PasswordCertificado = credencial.passwordCertificado,
+                    ValoresQr = documentoResponse.ValoresParaQr
+                };
+
+                firmadoResponse = await _certificador.FirmarXml(firmadoRequest);
+                firmadoResponse.Exito = true;
+                if (!string.IsNullOrEmpty(firmadoRequest.ValoresQr))
+                    firmadoResponse.CodigoQr = QrHelper.GenerarImagenQr($"{firmadoRequest.ValoresQr}{firmadoResponse.ResumenFirma}");
+
+                if (!string.IsNullOrEmpty(firmadoResponse.CodigoQr))
+                {
+                    using (var mem = new MemoryStream(Convert.FromBase64String(firmadoResponse.CodigoQr)))
+                    {
+                        string qrPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\QR\\";
+                        if (!Directory.Exists(AppSettings.filePath + qrPath))
+                        {
+                            Directory.CreateDirectory(AppSettings.filePath + qrPath);
+                        }
+                        var imagen = Image.FromStream(mem);
+                        string saveQRPath = qrPath + $"{documento.IdDocumento}.png";
+
+                        // Verificar y guardar archivos repetidos
+                        if (File.Exists(AppSettings.filePath + saveQRPath))
+                        {
+                            int i = 1;
+                            while (File.Exists(AppSettings.filePath + saveQRPath.Replace(".png", $"({i}).png")))
+                            {
+                                i++;
+                            }
+                            saveQRPath = saveQRPath.Replace(".png", $"({i}).png");
+                        }
+
+                        imagen.Save(AppSettings.filePath + saveQRPath, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+
+                string xmlPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\NotaDebitoXML\\";
+
+                if (!Directory.Exists(AppSettings.filePath + xmlPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + xmlPath);
+                }
+
+                string saveXMLPath = xmlPath + $"{documento.IdDocumento}.xml";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveXMLPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveXMLPath.Replace(".xml", $"({i}).xml")))
+                    {
+                        i++;
+                    }
+                    saveXMLPath = saveXMLPath.Replace(".xml", $"({i}).xml");
+                }
+
+                File.WriteAllBytes(AppSettings.filePath + saveXMLPath, Convert.FromBase64String(firmadoResponse.TramaXmlFirmado));
+
+                string logoPath = AppSettings.logosPath + $"{documento.Emisor.NroDocumento}.png";
+
+                if (File.Exists(AppSettings.filePath + logoPath))
+                {
+                    documento.Logo = String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(File.ReadAllBytes(AppSettings.filePath + logoPath)));
+                }
+
+                documento.QRFirmado = String.Format("data:image/gif;base64,{0}", firmadoResponse.CodigoQr);
+
+                // TODO: PDF PARA NOTA DE DEBITO
+                string pdfPath = PDF.ObtenerRutaPDFGenerado(documento, projectPath, false, true);
+
+                var documentoRequest = new EnviarDocumentoRequest
+                {
+                    Ruc = documento.Emisor.NroDocumento,
+                    UsuarioSol = credencial.usuarioSol,
+                    ClaveSol = credencial.claveSol,
+                    EndPointUrl = urlSunat,
+                    IdDocumento = documento.IdDocumento,
+                    TipoDocumento = documento.TipoDocumento,
+                    TramaXmlFirmado = firmadoResponse.TramaXmlFirmado
+                };
+
+                // 3: ENVIAR DOCUMENTO
+
+                var nombreArchivo = $"{documentoRequest.Ruc}-{documentoRequest.TipoDocumento}-{documentoRequest.IdDocumento}";
+                var tramaZip = await _serializador.GenerarZip(documentoRequest.TramaXmlFirmado, nombreArchivo);
+
+                _servicioSunatDocumentos.Inicializar(new ParametrosConexion
+                {
+                    Ruc = documentoRequest.Ruc,
+                    UserName = documentoRequest.UsuarioSol,
+                    Password = documentoRequest.ClaveSol,
+                    EndPointUrl = documentoRequest.EndPointUrl
+                });
+
+                var resultado = _servicioSunatDocumentos.EnviarDocumento(new DocumentoSunat
+                {
+                    TramaXml = tramaZip,
+                    NombreArchivo = $"{nombreArchivo}.zip"
+                });
+
+                if (resultado.Exito)
+                {
+                    enviarDocumentoResponse = await _serializador.GenerarDocumentoRespuesta(resultado.ConstanciaDeRecepcion);
+                    enviarDocumentoResponse.NombreArchivo = nombreArchivo;
+
+                    string zipPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\NotaDebitoZipCdr\\";
+
+                    if (!Directory.Exists(AppSettings.filePath + zipPath))
+                    {
+                        Directory.CreateDirectory(AppSettings.filePath + zipPath);
+                    }
+
+                    string saveZIPPath = zipPath + $"{documento.IdDocumento}.zip";
+
+                    File.WriteAllBytes(AppSettings.filePath + saveZIPPath, Convert.FromBase64String(enviarDocumentoResponse.TramaZipCdr));
+
+                    enviarDocumentoResponse.cdrPath = saveZIPPath;
+                }
+                else
+                {
+                    enviarDocumentoResponse.Exito = false;
+                    enviarDocumentoResponse.MensajeError = resultado.MensajeError;
+                }
+
+                enviarDocumentoResponse.qrCode = documentoResponse.ValoresParaQr;
+                enviarDocumentoResponse.xmlPath = saveXMLPath;
+                enviarDocumentoResponse.pdfPath = pdfPath;
+
+                // Guardar JSON
+
+                string jsonPath = projectPath + AppSettings.cePath + $"{documento.Emisor.NroDocumento}\\JSON\\";
+
+                if (!Directory.Exists(AppSettings.filePath + jsonPath))
+                {
+                    Directory.CreateDirectory(AppSettings.filePath + jsonPath);
+                }
+
+                string saveJSONPath = jsonPath + $"{documento.IdDocumento}.json";
+
+                // Verificar y guardar archivos repetidos
+                if (File.Exists(AppSettings.filePath + saveJSONPath))
+                {
+                    int i = 1;
+                    while (File.Exists(AppSettings.filePath + saveJSONPath.Replace(".json", $"({i}).json")))
+                    {
+                        i++;
+                    }
+                    saveJSONPath = saveJSONPath.Replace(".json", $"({i}).json");
+                }
+
+                File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
+
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+
+                if (resultado.MensajeError != null)
+                {
+                    if (resultado.MensajeError.Contains("0111"))
+                    {
+                        enviarDocumentoResponse.Exito = true;
+                        enviarDocumentoResponse.MensajeError = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                enviarDocumentoResponse.MensajeError = ex.Message;
+                enviarDocumentoResponse.Pila = ex.StackTrace;
+                enviarDocumentoResponse.Exito = false;
+            }
+
+            return enviarDocumentoResponse;
+        }
     }
 }

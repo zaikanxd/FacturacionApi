@@ -95,6 +95,7 @@
     <Compile Include="CommonExtensionComponents\UBLExtension.cs" />
     <Compile Include="CommonExtensionComponents\UBLExtensions.cs" />
     <Compile Include="EstandarUbl\CreditNote.cs" />
+    <Compile Include="EstandarUbl\DebitNote.cs" />
     <Compile Include="EstandarUbl\InfoCredits.cs" />
     <Compile Include="EstandarUbl\Invoice.cs" />
     <Compile Include="EstandarUbl\SummaryDocuments.cs" />
