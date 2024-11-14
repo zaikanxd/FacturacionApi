@@ -1536,7 +1536,7 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                // oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
 
                 if (resultado.MensajeError != null)
                 {
