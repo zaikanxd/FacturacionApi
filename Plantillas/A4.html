@@ -159,13 +159,13 @@
                         foreach (var cuenta in Model.Cuentas) {
                         <tr>
                             <td>
-                                <p style="font-weight: bold">Condición de Pago</p>
+                                <p style="font-weight: bold">Medio de Pago</p>
                             </td>
                             <td>
                                 <p>:
                                     @cuenta.Nombre @(Model.Moneda == "PEN" ? "S/" : "$") @Math.Round(@cuenta.Pago, 2).ToString("0.00") 
                                     @(cuenta.Vuelto != null && cuenta.Vuelto > 0 ? "Vuelto: " + @Math.Round(@cuenta.Vuelto, 2).ToString("0.00") : "")
-                                    @(cuenta.Fecha != "" && cuenta.Fecha != null ? "- " + @cuenta.Fecha : "")
+                                    @(cuenta.Fecha != "" && cuenta.Fecha != null && cuenta.Nombre != "EFECTIVO" ? "- " + @cuenta.Fecha : "")
                                     @(cuenta.NroOperacion != "" && cuenta.NroOperacion != null ? "Nro Ope " + @cuenta.NroOperacion : "")
                                 </p>
                             </td>
