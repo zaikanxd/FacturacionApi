@@ -48,23 +48,25 @@ FROM (
 		cancellationReason,
 		cancellationName,
 		observation,
+		creditNoteType,
+		debitNoteType,
         discrepancyRefNumber,
-        discrepancyType,
         discrepancyDescription,
 		(CASE
-			WHEN senderDocumentTypeId = 6 THEN 'RUC'
 			WHEN senderDocumentTypeId = 1 THEN 'DNI'
+			WHEN senderDocumentTypeId = 6 THEN 'RUC'
 			ELSE '-'
 		END) senderDocumentType,
 		(CASE
-			WHEN receiptTypeId = 3 THEN 'BOLETA'
 			WHEN receiptTypeId = 1 THEN 'FACTURA'
+			WHEN receiptTypeId = 3 THEN 'BOLETA'
 			WHEN receiptTypeId = 7 THEN 'NOTA DE CRÉDITO'
+			WHEN receiptTypeId = 8 THEN 'NOTA DE DÉBITO'
 			ELSE '-'
 		END) receiptType,
 		(CASE
-			WHEN recipientDocumentTypeId = 6 THEN 'RUC'
 			WHEN recipientDocumentTypeId = 1 THEN 'DNI'
+			WHEN recipientDocumentTypeId = 6 THEN 'RUC'
 			ELSE '-'
 		END) recipientDocumentType
 	FROM ElectronicReceipt
@@ -77,14 +79,7 @@ OR senderDocument LIKE '%' + @filter + '%'
 OR senderName LIKE '%' + @filter + '%'
 OR recipientDocument LIKE '%' + @filter + '%'
 OR recipientName LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, discount) LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, subtotal) LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, totalIGV) LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, total) LIKE '%' + @filter + '%'
 OR sunatDescription LIKE '%' + @filter + '%'
 OR cdrTicketNumber LIKE '%' + @filter + '%'
-OR userCreated LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, creationDate) LIKE '%' + @filter + '%'
-OR CONVERT(VARCHAR, updateDate) LIKE '%' + @filter + '%'
 OR @filter IS NULL
 ORDER BY id DESC

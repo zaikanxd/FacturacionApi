@@ -47,23 +47,25 @@ SELECT
 	cancellationReason,
 	cancellationName,
 	observation,
+	creditNoteType,
+	debitNoteType,
 	discrepancyRefNumber,
-	discrepancyType,
 	discrepancyDescription,
 	(CASE
-		WHEN senderDocumentTypeId = 6 THEN 'RUC'
 		WHEN senderDocumentTypeId = 1 THEN 'DNI'
+		WHEN senderDocumentTypeId = 6 THEN 'RUC'
 		ELSE '-'
 	END) senderDocumentType,
 	(CASE
-		WHEN receiptTypeId = 3 THEN 'BOLETA'
 		WHEN receiptTypeId = 1 THEN 'FACTURA'
+		WHEN receiptTypeId = 3 THEN 'BOLETA'
 		WHEN receiptTypeId = 7 THEN 'NOTA DE CRÉDITO'
+		WHEN receiptTypeId = 8 THEN 'NOTA DE DÉBITO'
 		ELSE '-'
 	END) receiptType,
 	(CASE
-		WHEN recipientDocumentTypeId = 6 THEN 'RUC'
 		WHEN recipientDocumentTypeId = 1 THEN 'DNI'
+		WHEN recipientDocumentTypeId = 6 THEN 'RUC'
 		ELSE '-'
 	END) recipientDocumentType
 FROM ElectronicReceipt

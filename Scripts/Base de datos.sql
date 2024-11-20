@@ -43,8 +43,9 @@ CREATE TABLE ElectronicReceipt (
  canceledTicketNumber VARCHAR(50) NULL,
  jsonLink VARCHAR(100) NULL,
  observation VARCHAR(100) NULL,
+ creditNoteType INT NULL,
+ debitNoteType INT NULL,
  discrepancyRefNumber VARCHAR(50) NULL,
- discrepancyType INT NOT NULL,
  discrepancyDescription VARCHAR(200) NULL
 )
 

@@ -77,10 +77,12 @@ namespace Populate
                 oElectronicReceiptBE.cancellationName = dr.GetString(dr.GetOrdinal("cancellationName"));
             if (!dr.IsDBNull(dr.GetOrdinal("observation")))
                 oElectronicReceiptBE.observation = dr.GetString(dr.GetOrdinal("observation"));
+            if (!dr.IsDBNull(dr.GetOrdinal("creditNoteType")))
+                oElectronicReceiptBE.creditNoteType = dr.GetInt32(dr.GetOrdinal("creditNoteType"));
+            if (!dr.IsDBNull(dr.GetOrdinal("debitNoteType")))
+                oElectronicReceiptBE.debitNoteType = dr.GetInt32(dr.GetOrdinal("debitNoteType"));
             if (!dr.IsDBNull(dr.GetOrdinal("discrepancyRefNumber")))
                 oElectronicReceiptBE.discrepancyRefNumber = dr.GetString(dr.GetOrdinal("discrepancyRefNumber"));
-            if (!dr.IsDBNull(dr.GetOrdinal("discrepancyType")))
-                oElectronicReceiptBE.discrepancyType = dr.GetInt32(dr.GetOrdinal("discrepancyType"));
             if (!dr.IsDBNull(dr.GetOrdinal("discrepancyDescription")))
                 oElectronicReceiptBE.discrepancyDescription = dr.GetString(dr.GetOrdinal("discrepancyDescription"));
 

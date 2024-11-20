@@ -38,8 +38,9 @@ namespace BusinessEntity
         public string cancellationReason { get; set; }
         public string cancellationName { get; set; }
         public string observation { get; set; }
+        public int creditNoteType { get; set; }
+        public int debitNoteType { get; set; }
         public string discrepancyRefNumber { get; set; }
-        public int discrepancyType { get; set; }
         public string discrepancyDescription { get; set; }
         //
         public string senderDocumentType { get; set; }

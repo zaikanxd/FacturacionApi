@@ -36,8 +36,8 @@ CREATE PROCEDURE bi_ElectronicReceipt_Insert
 	@cdrLink VARCHAR(100) = NULL,
 	@jsonLink VARCHAR(100) = NULL,
 	@observation VARCHAR(100) = NULL,
-	@discrepancyRefNumber VARCHAR(50) = NULL,
 	@discrepancyType INT = NULL,
+	@discrepancyRefNumber VARCHAR(50) = NULL,
 	@discrepancyDescription VARCHAR(200) = NULL
 AS
 
@@ -73,8 +73,9 @@ INSERT INTO ElectronicReceipt (
 	cdrLink,
 	jsonLink,
 	observation,
+	creditNoteType,
+	debitNoteType,
 	discrepancyRefNumber,
-	discrepancyType,
 	discrepancyDescription
 )
 VALUES(
@@ -109,7 +110,8 @@ VALUES(
 	@cdrLink,
 	@jsonLink,
 	@observation,
+	IIF(@receiptTypeId = 7, @discrepancyType, NULL),
+	IIF(@receiptTypeId = 8, @discrepancyType, NULL),
 	@discrepancyRefNumber,
-	@discrepancyType,
 	@discrepancyDescription
 )
