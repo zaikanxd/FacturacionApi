@@ -251,6 +251,8 @@
     <Content Include="Plantillas\A4.html" />
     <Content Include="Plantillas\NOTA_CREDITO_A4.html" />
     <Content Include="Plantillas\NOTA_CREDITO_TICKET.html" />
+    <Content Include="Plantillas\NOTA_DEBITO_A4.html" />
+    <Content Include="Plantillas\NOTA_DEBITO_TICKET.html" />
     <Content Include="Plantillas\TICKET.html" />
     <Content Include="Plantillas\TICKET_SIN_VALOR_FISCAL.html" />
     <Content Include="Web.config" />
