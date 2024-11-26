@@ -1123,6 +1123,10 @@ namespace FacturacionApi.Controllers
                     projectPath = AppSettings.projectsPath + $"{projectPath}\\";
                 }
 
+                decimal montoTotalDescuento = documento.Items.Sum(e => e.Descuento);
+                montoTotalDescuento += documento.DescuentoGlobal;
+                documento.MontoTotalDescuento = montoTotalDescuento;
+
                 // 1: GENERAR XML
 
                 var notaCredito = _documentoXml.Generar(documento);
