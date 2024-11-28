@@ -38,8 +38,11 @@ CREATE PROCEDURE bi_ElectronicReceipt_Insert
 	@observation VARCHAR(100) = NULL,
 	@discrepancyType INT = NULL,
 	@discrepancyRefNumber VARCHAR(50) = NULL,
-	@discrepancyDescription VARCHAR(200) = NULL
+	@discrepancyDescription VARCHAR(200) = NULL,
+	@electronicReceiptDet ElectronicReceiptDet READONLY
 AS
+
+DECLARE @electronicReceiptId INT
 
 INSERT INTO ElectronicReceipt (
 	project,
@@ -115,3 +118,30 @@ VALUES(
 	@discrepancyRefNumber,
 	@discrepancyDescription
 )
+
+SET @electronicReceiptId = @@IDENTITY
+
+INSERT INTO ElectronicReceiptDet (
+	electronicReceiptId,
+	description, 
+	additionalDescription,
+	productCode,
+	quantity,
+	unitSunatCode,
+	unitPrice,
+	discount,
+	igv,
+	total
+)
+SELECT
+	@electronicReceiptId,
+	erd.description, 
+	erd.additionalDescription,
+	erd.productCode,
+	erd.quantity,
+	erd.unitSunatCode,
+	erd.unitPrice,
+	erd.discount,
+	erd.igv,
+	erd.total
+FROM @electronicReceiptDet erd

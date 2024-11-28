@@ -24,6 +24,30 @@ namespace DataAccess
             {
                 cmd.CommandTimeout = 0;
 
+                DataTable dt = new DataTable();
+                dt.Columns.Add("description", typeof(string));
+                dt.Columns.Add("additionalDescription", typeof(string));
+                dt.Columns.Add("productCode", typeof(string));
+                dt.Columns.Add("quantity", typeof(int));
+                dt.Columns.Add("unitSunatCode", typeof(string));
+                dt.Columns.Add("unitPrice", typeof(decimal));
+                dt.Columns.Add("discount", typeof(decimal));
+                dt.Columns.Add("igv", typeof(decimal));
+                dt.Columns.Add("total", typeof(decimal));
+
+                foreach (var det in documento.Items)
+                {
+                    decimal unitPrice = Math.Round(det.PrecioUnitario * 1.18m, 2);
+                    decimal discount = Math.Round((det.Descuento / det.Cantidad) * 1.18m, 2);
+                    dt.Rows.Add(det.Descripcion, det.DescripcionAdicional, det.CodigoItem, det.Cantidad, det.UnidadMedida, unitPrice, discount, det.Impuesto, det.PrecioReferencial * det.Cantidad);
+                }
+
+                var parameter = cmd.CreateParameter();
+                parameter.ParameterName = "@electronicReceiptDet";
+                parameter.Value = dt;
+
+                cmd.Parameters.Add(parameter);
+
                 var serieCorrelativo = documento.IdDocumento.Split('-');
 
                 db.AddInParameter(cmd, "project", DbType.String, documento.Project);
