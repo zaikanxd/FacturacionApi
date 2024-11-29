@@ -22,3 +22,15 @@ total DECIMAL(14, 2) NOT NULL
 )
 
 CREATE TYPE ElectronicReceiptDet AS TABLE(description VARCHAR(100), additionalDescription VARCHAR(100) NULL, productCode VARCHAR(50) NULL, quantity INT, unitSunatCode VARCHAR(10), unitPrice DECIMAL(14, 2), discount DECIMAL(14, 2), igv DECIMAL(14, 2), total DECIMAL(14, 2))
+
+CREATE TABLE ReceiptPaymentDet (
+ id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ electronicReceiptId INT REFERENCES ElectronicReceipt(id) NOT NULL,
+ accountType VARCHAR(50) NOT NULL,
+ payment DECIMAL(14, 2) NOT NULL,
+ change DECIMAL(14, 2) NOT NULL,
+ date DATE NOT NULL,
+ operationNum VARCHAR(50) NULL
+)
+
+CREATE TYPE ReceiptPaymentDet AS TABLE(accountType VARCHAR(50), payment DECIMAL(14, 2), change DECIMAL(14, 2), date DATE, operationNum VARCHAR(50) NULL)

@@ -48,6 +48,24 @@ namespace DataAccess
 
                 cmd.Parameters.Add(parameter);
 
+                DataTable dt2 = new DataTable();
+                dt2.Columns.Add("accountType", typeof(string));
+                dt2.Columns.Add("payment", typeof(decimal));
+                dt2.Columns.Add("change", typeof(decimal));
+                dt2.Columns.Add("date", typeof(DateTime));
+                dt2.Columns.Add("operationNum", typeof(string));
+
+                foreach (var det in documento.Cuentas)
+                {
+                    dt2.Rows.Add(det.Nombre, det.Pago, det.Vuelto, det.Fecha, det.NroOperacion);
+                }
+
+                var parameter2 = cmd.CreateParameter();
+                parameter2.ParameterName = "@receiptPaymentDet";
+                parameter2.Value = dt2;
+
+                cmd.Parameters.Add(parameter2);
+
                 var serieCorrelativo = documento.IdDocumento.Split('-');
 
                 db.AddInParameter(cmd, "project", DbType.String, documento.Project);

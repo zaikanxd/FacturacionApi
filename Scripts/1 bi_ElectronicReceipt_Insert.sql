@@ -39,7 +39,8 @@ CREATE PROCEDURE bi_ElectronicReceipt_Insert
 	@discrepancyType INT = NULL,
 	@discrepancyRefNumber VARCHAR(50) = NULL,
 	@discrepancyDescription VARCHAR(200) = NULL,
-	@electronicReceiptDet ElectronicReceiptDet READONLY
+	@electronicReceiptDet ElectronicReceiptDet READONLY,
+	@receiptPaymentDet ReceiptPaymentDet READONLY
 AS
 
 DECLARE @electronicReceiptId INT
@@ -145,3 +146,20 @@ SELECT
 	erd.igv,
 	erd.total
 FROM @electronicReceiptDet erd
+
+INSERT INTO ReceiptPaymentDet (
+	electronicReceiptId,
+	accountType,
+	payment,
+	change,
+	date,
+	operationNum
+)
+SELECT
+	@electronicReceiptId,
+	rpd.accountType,
+	rpd.payment,
+	rpd.change,
+	rpd.date,
+	rpd.operationNum
+FROM @receiptPaymentDet rpd
