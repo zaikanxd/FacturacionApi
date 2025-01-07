@@ -163,6 +163,7 @@ namespace Dto.Modelos
             TasaImpuesto = 0.18m;
             FechaEmision = DateTime.Today.ToString("yyyy-MM-dd");
             HoraEmision = DateTime.Now.ToString("HH:mm:ss");
+            Cuentas = new List<Cuenta>();
             EsVistaPrevia = false;
             EstaAnulado = false;
         }

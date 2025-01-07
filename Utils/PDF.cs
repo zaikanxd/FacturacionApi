@@ -242,11 +242,13 @@ namespace FacturacionApi.Utils
             new Credencial("20607157082", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("20612812145", "MODDATOS", "MODDATOS", string.Empty),
             new Credencial("21667899876", "MODDATOS", "MODDATOS", string.Empty),
+            new Credencial("20613482211", "MODDATOS", "MODDATOS", string.Empty),
             // PRODUCCION
             /*new Credencial("20603099126", "RM2024PE", "Gurklansi24", "gurklansi206"),
             new Credencial("20607076805", "HA2024PE", "Hreadfaxy24", "hreadfaxy206"),
             new Credencial("20607157082", "LL2024PE", "Tescressi24", "tescressi206"),
             new Credencial("20612812145", "JR2024PE", "Nsennerpu24", "nsennerpu206"),
+            new Credencial("20613482211", "MP2025PE", "Roboggrut25", "roboggrut206"),
             */
         };
     }
