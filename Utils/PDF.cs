@@ -249,7 +249,7 @@ namespace FacturacionApi.Utils
             new Credencial("20607157082", "LL2024PE", "Tescressi24", "tescressi206"),
             new Credencial("20612812145", "JR2024PE", "Nsennerpu24", "nsennerpu206"),
             new Credencial("20613482211", "MP2025PE", "Roboggrut25", "roboggrut206"),
-            */
+            new Credencial("20609800811", "LG2025PE", "Omptifish25", "omptifish206"),*/
         };
     }
 
