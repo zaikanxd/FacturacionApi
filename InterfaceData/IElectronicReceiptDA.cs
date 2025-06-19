@@ -9,7 +9,7 @@ namespace InterfaceData
 {
     public interface IElectronicReceiptDA
     {
-        void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento, string jsonPath);
+        void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento, string jsonPath, bool resend);
 
         void updateElectronicReceipt(int id, EnviarDocumentoResponse pEnviarDocumentoResponse);
 

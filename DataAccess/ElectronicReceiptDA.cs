@@ -18,7 +18,7 @@ namespace DataAccess
         private Database _db;
         public Database db { get { return (_db == null ? _db = new SqlDatabase(Util.AppSettings.cnxBillingBD) : _db); } }
 
-        public void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento, string jsonPath)
+        public void insertElectronicReceipt(EnviarDocumentoResponse pEnviarDocumentoResponse, DocumentoElectronico documento, string jsonPath, bool resend)
         {
             using (DbCommand cmd = db.GetStoredProcCommand(Util.GetNameStoreProcedure.bi_ElectronicReceipt_Insert))
             {
@@ -97,6 +97,7 @@ namespace DataAccess
                 db.AddInParameter(cmd, "cdrLink", DbType.String, pEnviarDocumentoResponse.cdrPath);
                 db.AddInParameter(cmd, "jsonLink", DbType.String, jsonPath);
                 db.AddInParameter(cmd, "observation", DbType.String, documento.Notas);
+                db.AddInParameter(cmd, "resend", DbType.Boolean, resend);
                 if (documento.Discrepancias != null && documento.Discrepancias.Count > 0)
                 {
                     db.AddInParameter(cmd, "discrepancyRefNumber", DbType.String, documento.Discrepancias[0].NroReferencia);

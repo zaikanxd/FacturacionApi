@@ -260,15 +260,14 @@ namespace FacturacionApi.Controllers
                 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+                bool resend = resultado.MensajeError != null && ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode));
 
-                if (resultado.MensajeError != null)
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath, resend);
+
+                if (resend)
                 {
-                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
-                    {
-                        enviarDocumentoResponse.Exito = true;
-                        enviarDocumentoResponse.MensajeError = null;
-                    }
+                    enviarDocumentoResponse.Exito = true;
+                    enviarDocumentoResponse.MensajeError = null;
                 }
             }
             catch (Exception ex)
@@ -1308,15 +1307,14 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+                bool resend = resultado.MensajeError != null && ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode));
 
-                if (resultado.MensajeError != null)
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath, resend);
+
+                if (resend)
                 {
-                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
-                    {
-                        enviarDocumentoResponse.Exito = true;
-                        enviarDocumentoResponse.MensajeError = null;
-                    }
+                    enviarDocumentoResponse.Exito = true;
+                    enviarDocumentoResponse.MensajeError = null;
                 }
             }
             catch (Exception ex)
@@ -1544,15 +1542,14 @@ namespace FacturacionApi.Controllers
 
                 File.WriteAllText(AppSettings.filePath + saveJSONPath, JsonConvert.SerializeObject(documento, Formatting.Indented));
 
-                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath);
+                bool resend = resultado.MensajeError != null && ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode));
 
-                if (resultado.MensajeError != null)
+                oElectronicReceiptBL.insertElectronicReceipt(enviarDocumentoResponse, documento, saveJSONPath, resend);
+
+                if (resend)
                 {
-                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
-                    {
-                        enviarDocumentoResponse.Exito = true;
-                        enviarDocumentoResponse.MensajeError = null;
-                    }
+                    enviarDocumentoResponse.Exito = true;
+                    enviarDocumentoResponse.MensajeError = null;
                 }
             }
             catch (Exception ex)

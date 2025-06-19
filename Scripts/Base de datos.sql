@@ -46,7 +46,8 @@ CREATE TABLE ElectronicReceipt (
  creditNoteType INT NULL,
  debitNoteType INT NULL,
  discrepancyRefNumber VARCHAR(50) NULL,
- discrepancyDescription VARCHAR(200) NULL
+ discrepancyDescription VARCHAR(200) NULL,
+ resend BIT NULL
 )
 
 CREATE TABLE ElectronicReceiptDet (

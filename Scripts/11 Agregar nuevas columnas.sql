@@ -5,7 +5,8 @@ ADD observation VARCHAR(100) NULL,
  creditNoteType INT NULL,
  debitNoteType INT NULL,
  discrepancyRefNumber VARCHAR(50) NULL,
- discrepancyDescription VARCHAR(200) NULL
+ discrepancyDescription VARCHAR(200) NULL,
+ resend BIT NULL
 
 CREATE TABLE ElectronicReceiptDet (
 id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
