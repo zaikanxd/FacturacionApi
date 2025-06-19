@@ -264,7 +264,7 @@ namespace FacturacionApi.Controllers
 
                 if (resultado.MensajeError != null)
                 {
-                    if (resultado.MensajeError.Contains("0111"))
+                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
                     {
                         enviarDocumentoResponse.Exito = true;
                         enviarDocumentoResponse.MensajeError = null;
@@ -1312,7 +1312,7 @@ namespace FacturacionApi.Controllers
 
                 if (resultado.MensajeError != null)
                 {
-                    if (resultado.MensajeError.Contains("0111"))
+                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
                     {
                         enviarDocumentoResponse.Exito = true;
                         enviarDocumentoResponse.MensajeError = null;
@@ -1548,7 +1548,7 @@ namespace FacturacionApi.Controllers
 
                 if (resultado.MensajeError != null)
                 {
-                    if (resultado.MensajeError.Contains("0111"))
+                    if (ElectronicReceipt.ResendingErrorCode.list.Any(errorCode => resultado.MensajeError.Contains(errorCode)))
                     {
                         enviarDocumentoResponse.Exito = true;
                         enviarDocumentoResponse.MensajeError = null;

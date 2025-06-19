@@ -228,6 +228,18 @@ namespace FacturacionApi.Utils
         }
 
         public const decimal montoMaximoBoletaSimple = 700;
+
+        public struct ResendingErrorCode
+        {
+            public const string E0111 = "Client.0111";
+            public const string E0109 = "Client.0109";
+            public const string E0130 = "Client.0130";
+            public const string E0132 = "Client.0132";
+            public const string E0133 = "Client.0133";
+            public const string E0200 = "Client.0200";
+
+            public static readonly string[] list = { E0111, E0109, E0130, E0132, E0133, E0200 };
+        }
     }
     
     public struct CredencialEmpresa
