@@ -237,8 +237,14 @@ namespace FacturacionApi.Utils
             public const string E0132 = "Client.0132";
             public const string E0133 = "Client.0133";
             public const string E0200 = "Client.0200";
+            public const string E0100 = "Client.0100";
 
-            public static readonly string[] list = { E0111, E0109, E0130, E0132, E0133, E0200 };
+            public const string E1 = "Error en el servidor remoto: (502)";
+            public const string E2 = "No se puede resolver el nombre remoto";
+            public const string E3 = "tiempo de espera";
+            public const string E4 = "No es posible conectar con el servidor";
+
+            public static readonly string[] list = { E0111, E0109, E0130, E0132, E0133, E0200, E0100, E1, E2, E3, E4 };
         }
     }
     
